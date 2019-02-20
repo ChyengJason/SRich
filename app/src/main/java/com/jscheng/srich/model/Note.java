@@ -8,13 +8,13 @@ public class Note {
 
     private String title;
 
-    private String content;
-
     private long createTime;
 
     private long modifyTime;
 
     private String summary;
+
+    private String summaryImageUrl;
 
     public int getId() {
         return id;
@@ -30,14 +30,6 @@ public class Note {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public long getCreateTime() {
@@ -62,5 +54,13 @@ public class Note {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getSummaryImageUrl() {
+        return summaryImageUrl;
+    }
+
+    public void setSummaryImageUrl(String summaryImageUrl) {
+        this.summaryImageUrl = summaryImageUrl;
     }
 }

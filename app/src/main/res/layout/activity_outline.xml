@@ -10,13 +10,24 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <include
+        layout="@layout/outline_item_view_date"
+        android:id="@+id/outline_head_date"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/outline_item_date_height"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outline_title_bar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/outline_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/outline_title_bar">
+        app:layout_constraintTop_toBottomOf="@id/outline_title_bar"
+        android:overScrollMode="never">
     </android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>
