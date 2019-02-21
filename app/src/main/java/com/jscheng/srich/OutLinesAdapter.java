@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/20
  */
-public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
+public class OutLinesAdapter extends RecyclerView.Adapter {
     private final static String TAG = "Adapter";
     private final static int TYPE_ITEM_DATE_BAR = 1;
     private final static int TYPE_ITEM_NOTE = 2;
@@ -31,7 +31,7 @@ public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
     private List<OutLine> mOutlines = null;
     private LinearLayoutManager mLayoutManager = null;
 
-    public OutLinesRecyclerViewAdapter(Context context, LinearLayoutManager layoutManager) {
+    public OutLinesAdapter(Context context, LinearLayoutManager layoutManager) {
         mLayoutInfater = LayoutInflater.from(context);
         mLayoutManager = layoutManager;
         mNotes = new ArrayList();

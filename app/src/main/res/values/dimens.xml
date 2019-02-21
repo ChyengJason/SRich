@@ -3,4 +3,5 @@
     <dimen name="outline_title_bar_height">50dp</dimen>
     <dimen name="outline_item_date_height">50dp</dimen>
     <dimen name="outline_item_note_height">100dp</dimen>
+    <dimen name="outline_float_new_btn_size">50dp</dimen>
 </resources>
