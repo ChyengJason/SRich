@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.OutLine;
+import com.jscheng.srich.uitl.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +25,10 @@ public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
     private final static String TAG = "Adapter";
     private final static int TYPE_ITEM_DATE_BAR = 1;
     private final static int TYPE_ITEM_NOTE = 2;
-    private final static int ITEM_DATE_BAR_COUNT = 1;
 
     private LayoutInflater mLayoutInfater = null;
     private List<Note> mNotes = null;
+    private List<OutLine> mOutlines = null;
     private LinearLayoutManager mLayoutManager = null;
 
     public OutLinesRecyclerViewAdapter(Context context, LinearLayoutManager layoutManager) {
@@ -38,12 +40,26 @@ public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
     public void setData(List<Note> notes) {
         if (notes != null && notes.size() > 0) {
             this.mNotes = notes;
+            this.mOutlines = OutLineFactory.build(mNotes);
         }
         notifyDataSetChanged();// 后续用DiffUtil优化
     }
 
     public List<Note> getData() {
         return mNotes;
+    }
+
+    public long getFirstVisibleDateTime() {
+        int position = mLayoutManager.findFirstVisibleItemPosition();
+        if (position >= 0) {
+            OutLine outLine = mOutlines.get(position);
+            if (outLine.getType() == OutLine.Type.Date) {
+                return outLine.getTime();
+            } else {
+                return outLine.getNote().getModifyTime();
+            }
+        }
+        return 0;
     }
 
     @NonNull
@@ -63,57 +79,34 @@ public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         int viewType = getItemViewType(position);
+        OutLine outline = mOutlines.get(position);
         if (viewType == TYPE_ITEM_DATE_BAR) {
-            ItemDateViewHolder dateViewHolder = (ItemDateViewHolder)viewHolder;
-            Note note = getData(1);
-            bindDateView(dateViewHolder, note);
+            ItemDateViewHolder dateViewHolder = (ItemDateViewHolder) viewHolder;
+            bindDateViewHlder(dateViewHolder, outline);
         } else {
-            ItemNoteViewHolder noteViewHolder = (ItemNoteViewHolder)viewHolder;
-            Note note = getData(position);
-            bindNoteView(noteViewHolder, note);
+            ItemNoteViewHolder noteViewHolder = (ItemNoteViewHolder) viewHolder;
+            bindNoteViewHolder(noteViewHolder, outline);
         }
     }
 
-    private void bindDateView(ItemDateViewHolder dateViewHolder, Note note) {
-        if (note != null) {
-            dateViewHolder.dateTextView.setText("1 : 2");
-        }
+    private void bindDateViewHlder(ItemDateViewHolder dateViewHolder, OutLine outline) {
+        String date = DateUtil.formatDate(outline.getTime());
+        dateViewHolder.dateTextView.setText(date);
     }
 
-    private void bindNoteView(ItemNoteViewHolder noteViewHolder, Note note) {
-        if (note != null) {
-            noteViewHolder.titleText.setText(note.getTitle());
-        }
-    }
-
-    public Note getFirstVisibleData() {
-        int firstVisiblePosition =  mLayoutManager.findFirstVisibleItemPosition();
-        Log.e(TAG, "getFirstVisiableData: " + firstVisiblePosition);
-        if (firstVisiblePosition <= 0 ) { // first time show
-            return null;
-        }
-        return getData(firstVisiblePosition);
+    private void bindNoteViewHolder(ItemNoteViewHolder noteViewHolder, OutLine outline) {
+        String title = outline.getNote().getTitle();
+        noteViewHolder.titleText.setText(title);
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? TYPE_ITEM_DATE_BAR : TYPE_ITEM_NOTE;
+        return mOutlines.get(position).getType() == OutLine.Type.Date ? TYPE_ITEM_DATE_BAR : TYPE_ITEM_NOTE;
     }
 
     @Override
     public int getItemCount() {
-        if (!mNotes.isEmpty()) {
-            return ITEM_DATE_BAR_COUNT + mNotes.size();
-        }
-        return 0;
-    }
-
-    private Note getData(int position) {
-        int index = position - ITEM_DATE_BAR_COUNT;
-        if (index >= 0 && index < mNotes.size()) {
-            return mNotes.get(index);
-        }
-        return null;
+        return mOutlines.size();
     }
 
     private class ItemDateViewHolder extends RecyclerView.ViewHolder {
@@ -125,10 +118,10 @@ public class OutLinesRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     private class ItemNoteViewHolder extends RecyclerView.ViewHolder {
-//        public TextView weekText;
+        public TextView weekText;
         public TextView titleText;
-//        public TextView summaryText;
-//        public ImageView summaryImage;
+        public TextView summaryText;
+        public ImageView summaryImage;
 
         public ItemNoteViewHolder(View itemView) {
             super(itemView);
