@@ -2,7 +2,7 @@ package com.jscheng.srich;
 
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
-import com.jscheng.srich.uitl.DateUtil;
+import com.jscheng.srich.utils.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

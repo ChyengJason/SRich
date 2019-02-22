@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
-import com.jscheng.srich.uitl.DateUtil;
+import com.jscheng.srich.utils.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;

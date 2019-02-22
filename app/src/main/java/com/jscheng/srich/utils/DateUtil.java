@@ -1,7 +1,4 @@
-package com.jscheng.srich.uitl;
-
-import android.annotation.TargetApi;
-import android.os.Build;
+package com.jscheng.srich.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

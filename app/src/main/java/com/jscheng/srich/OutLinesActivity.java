@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.route.Router;
 import com.jscheng.srich.route.RouterConfig;
-import com.jscheng.srich.uitl.DateUtil;
+import com.jscheng.srich.utils.DateUtil;
 import com.jscheng.srich.widget.FloatNewButton;
 
 import java.util.List;
