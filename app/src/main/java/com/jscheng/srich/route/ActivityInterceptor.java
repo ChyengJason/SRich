@@ -13,14 +13,22 @@ public class ActivityInterceptor implements RouterInterceptor {
     public RouterResponse process(RouterChain chain) {
         RouterRequest request = chain.getRequest();
         RouterResponse response = chain.proceed(request);
-        if (response.isDone() || !isAimInstance(request.getAim())) {
+        if (response.isDone() || !isAimInstance(response.getCls())) {
             return response;
         }
         return doRequst(request, response);
     }
 
+    private boolean isAimInstance(Class cls) {
+        if (cls == null) {
+            return false;
+        }
+        boolean isActivity =  Activity.class.isAssignableFrom(cls);
+        return isActivity;
+    }
+
     private RouterResponse doRequst(RouterRequest request, RouterResponse response) {
-        Class activityCls = request.getAim();
+        Class activityCls = response.getCls();
         Context context = request.getContext();
         response.setIntent(buildIntent(context, activityCls));
         response.setDone(true);
@@ -29,11 +37,6 @@ public class ActivityInterceptor implements RouterInterceptor {
             context.startActivity(buildIntent(context, activityCls));
         }
         return response;
-    }
-
-    private boolean isAimInstance(Class cls) {
-        boolean isActivity =  Activity.class.isAssignableFrom(cls);
-        return isActivity;
     }
 
     private Intent buildIntent(Context context, Class cls) {

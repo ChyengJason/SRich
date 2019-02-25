@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.jscheng.srich.EditNotePresenter;
 import com.jscheng.srich.R;
 
 /**
@@ -16,6 +18,7 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
     private ImageView mBackView;
     private ImageView mMoreView;
     private ImageView mTickView;
+    private EditNotePresenter mPresenter;
 
     public EditNoteToolbar(Context context) {
         this(context, null);
@@ -38,6 +41,10 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
         mTickView.setOnClickListener(this);
     }
 
+    public void setPresenter(EditNotePresenter mPresenter) {
+        this.mPresenter = mPresenter;
+    }
+
     public void writingMode() {
         mBackView.setVisibility(GONE);
         mTickView.setVisibility(VISIBLE);
@@ -50,15 +57,25 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        checkPresenter();
         switch (v.getId()) {
             case R.id.back_btn:
+                mPresenter.tapBack();
                 break;
             case R.id.more_btn:
+                mPresenter.tapMore();
                 break;
             case R.id.tick_btn:
+                mPresenter.tapTick();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void checkPresenter() {
+        if (mPresenter == null) {
+            throw new RuntimeException("you need to call setPresenter() at first");
         }
     }
 }

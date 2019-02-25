@@ -4,15 +4,14 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include
+    <com.jscheng.srich.widget.EditNoteToolbar
         android:id="@+id/edit_note_toolbar"
-        layout="@layout/edit_note_toolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/edit_note_toolbar_height"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:focusable="false" />
+        app:layout_constraintTop_toTopOf="parent">
+    </com.jscheng.srich.widget.EditNoteToolbar>
 
     <com.jscheng.srich.editor.NoteEditorText
         android:id="@+id/edit_note_editor"
@@ -23,6 +22,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:hint="@string/app_name" />
+
+    <com.jscheng.srich.editor.NoteEditorBar
+        android:id="@+id/edit_note_bar"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </com.jscheng.srich.editor.NoteEditorBar>
 
     <com.jscheng.srich.widget.FloatEditButton
         android:id="@+id/float_edit_button"

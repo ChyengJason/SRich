@@ -13,6 +13,8 @@ public class RouterResponse {
 
     private Intent intent;
 
+    private Class cls;
+
     public boolean isDone() {
         return isDone;
     }
@@ -35,5 +37,13 @@ public class RouterResponse {
 
     public void setIntent(Intent intent) {
         this.intent = intent;
+    }
+
+    public void setCls(Class cls) {
+        this.cls = cls;
+    }
+
+    public Class getCls() {
+        return cls;
     }
 }

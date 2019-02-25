@@ -11,7 +11,6 @@ import java.util.List;
 public class RouterRequest {
     private Context context;
     private String uri;
-    private Class aim;
     private boolean isJump;
 
     public RouterRequest(Context context) {
@@ -21,7 +20,6 @@ public class RouterRequest {
 
     public RouterRequest route(String uri) {
         this.uri = uri;
-        this.aim = Router.getRouteTable().get(uri);
         return this;
     }
 
@@ -58,10 +56,6 @@ public class RouterRequest {
         if ( object == null) {
             throw new RuntimeException("you should register uri at first");
         }
-    }
-
-    public Class getAim() {
-        return aim;
     }
 
     public String getUri() {

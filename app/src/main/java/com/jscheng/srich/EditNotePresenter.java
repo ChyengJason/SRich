@@ -24,6 +24,7 @@ public class EditNotePresenter implements IPresenter {
     public interface EditNoteView extends IView {
         void writingMode();
         void readingMode();
+        void finish();
     }
 
     @Override
@@ -42,12 +43,37 @@ public class EditNotePresenter implements IPresenter {
     }
 
     public void tapEdit() {
-        if (mMode == Mode.Reading) {
-            mView.writingMode();
-            mMode = Mode.Writing;
-        } else {
+        writingMode();
+    }
+
+    public void tapTick() {
+        readingMode();
+    }
+
+    public void tapBack() {
+
+    }
+
+    public void tapMore() {
+
+    }
+
+    private void readingMode() {
+        mView.readingMode();
+        mMode = Mode.Reading;
+    }
+
+    private void writingMode() {
+        mView.writingMode();
+        mMode = Mode.Writing;
+    }
+
+    public void pressBack() {
+        if (mMode == Mode.Writing) {
             mView.readingMode();
-            mMode = Mode.Reading;
+        } else {
+            mView.finish();
         }
     }
+
 }

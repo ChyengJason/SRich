@@ -5,9 +5,13 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 
+import com.jscheng.srich.EditNotePresenter;
 import com.jscheng.srich.R;
 
 /**
@@ -15,8 +19,7 @@ import com.jscheng.srich.R;
  */
 public class FloatEditButton extends android.support.v7.widget.AppCompatImageView implements View.OnClickListener{
     private static final String NameSpace = "http://schemas.android.com/apk/res/android";
-    private OnClickListener mClickListener = null;
-    private Animation mAnimation = null;
+    private EditNotePresenter mPresenter;
 
     public FloatEditButton(Context context) {
         this(context, null);
@@ -36,37 +39,72 @@ public class FloatEditButton extends android.support.v7.widget.AppCompatImageVie
         this.setClickable(true);
         super.setOnClickListener(this);
         if (src == 0) {
-            Drawable defaultDrawable =context.getResources().getDrawable(R.mipmap.ic_compose, null);
+            Drawable defaultDrawable =context.getResources().getDrawable(R.mipmap.ic_note_edit_edit, null);
             this.setScaleType(ScaleType.CENTER_CROP);
             this.setImageDrawable(defaultDrawable);
         }
-        this.mAnimation = new RotateAnimation(0, 90,
-                Animation.RELATIVE_TO_SELF,0.5f,
-                Animation.RELATIVE_TO_SELF,0.5f);
-        this.mAnimation.setDuration(500);
     }
 
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener listener) {
-        this.mClickListener = listener;
+    public void setPresenter(EditNotePresenter mPresenter) {
+        this.mPresenter = mPresenter;
     }
 
     @Override
     public void onClick(final View v) {
-        this.startAnimation(mAnimation);
-        mAnimation.setAnimationListener(new Animation.AnimationListener() {
+        checkPresenter();
+        AnimationSet animationSet = getHideAniamtion();
+        this.startAnimation(animationSet);
+        animationSet.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) { }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (mClickListener != null) {
-                    mClickListener.onClick(v);
-                }
+                setVisibility(GONE);
+                mPresenter.tapEdit();
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) { }
         });
+    }
+
+    public void show() {
+        AnimationSet animationSet = getShowAniamtion();
+        this.startAnimation(animationSet);
+        animationSet.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) { }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setVisibility(VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+    }
+
+    private AnimationSet getHideAniamtion() {
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(new TranslateAnimation(0, 0, 0, getMeasuredHeight()));
+        animationSet.addAnimation(new AlphaAnimation(getAlpha(), getAlpha()/2));
+        animationSet.setDuration(500);
+        return animationSet;
+    }
+
+    private AnimationSet getShowAniamtion() {
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(new TranslateAnimation(0, 0, getMeasuredHeight(), 0));
+        animationSet.addAnimation(new AlphaAnimation(getAlpha()/2, getAlpha()));
+        animationSet.setDuration(300);
+        return animationSet;
+    }
+
+    private void checkPresenter() {
+        if (mPresenter == null) {
+            throw new RuntimeException("you need to call setPresenter() at first");
+        }
     }
 }
