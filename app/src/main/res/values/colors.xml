@@ -3,4 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="editor_bar_item_text_color">#FFF</color>
+    <color name="editor_bar_item_selected_text_color">#129F3C</color>
+    <color name="editor_bar_backgroud_color">#414141</color>
+    <color name="e">#7fc7e2</color>
 </resources>

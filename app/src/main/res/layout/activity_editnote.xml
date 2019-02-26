@@ -17,16 +17,21 @@
         android:id="@+id/edit_note_editor"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/edit_note_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/edit_note_bar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:paddingTop="@dimen/editor_text_padding"
+        android:paddingBottom="@dimen/editor_text_padding"
+        android:paddingLeft="@dimen/editor_text_padding"
+        android:paddingRight="@dimen/editor_text_padding_right"
         android:hint="@string/app_name" />
 
     <com.jscheng.srich.editor.NoteEditorBar
         android:id="@+id/edit_note_bar"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">

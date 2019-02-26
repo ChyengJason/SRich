@@ -11,6 +11,7 @@
         android:src="@mipmap/ic_note_edit_back"
         android:scaleType="centerCrop"
         android:clickable="true"
+        android:layout_marginLeft="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -19,6 +20,7 @@
         android:id="@+id/tick_btn"
         android:layout_width="@dimen/edit_note_toolbar_btn_size"
         android:layout_height="@dimen/edit_note_toolbar_btn_size"
+        android:layout_marginLeft="10dp"
         android:src="@mipmap/ic_note_edit_tick"
         android:scaleType="centerCrop"
         android:clickable="true"
@@ -34,6 +36,7 @@
         android:src="@mipmap/ic_note_edit_more"
         android:scaleType="centerCrop"
         android:clickable="true"
+        android:layout_marginRight="10dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

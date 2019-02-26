@@ -4,6 +4,13 @@
     <dimen name="outline_item_date_height">50dp</dimen>
     <dimen name="outline_item_note_height">100dp</dimen>
     <dimen name="outline_float_new_btn_size">50dp</dimen>
-    <dimen name="edit_note_toolbar_btn_size">30dp</dimen>
+    <dimen name="edit_note_toolbar_btn_size">25dp</dimen>
     <dimen name="edit_note_toolbar_height">50dp</dimen>
+    <dimen name="editor_text_padding">10dp</dimen>
+    <dimen name="editor_text_padding_right">5dp</dimen>
+    <dimen name="editor_bar_height">50dp</dimen>
+    <dimen name="editor_bar_item_size">30dp</dimen>
+    <dimen name="editor_bar_item_text_size">15sp</dimen>
+    <dimen name="editor_bar_item_padding">3dp</dimen>
+    <dimen name="note_edit_item_right_size">30dp</dimen>
 </resources>

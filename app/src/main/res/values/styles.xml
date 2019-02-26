@@ -8,4 +8,14 @@
         <item name="colorControlActivated">@android:color/black</item>
     </style>
 
+    <style name="NoteEditBarItemStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/editor_bar_item_text_size</item>
+        <item name="android:textColor">@color/editor_bar_item_text_color</item>
+        <item name="android:clickable">@dimen/editor_bar_item_text_size</item>
+        <item name="android:paddingLeft">@dimen/editor_bar_item_padding</item>
+        <item name="android:paddingRight">@dimen/editor_bar_item_padding</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

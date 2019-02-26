@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/editor_bar_height"
+    android:background="@color/editor_bar_backgroud_color">
+
+    <LinearLayout
+        android:id="@+id/note_edit_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true">
+        <ImageView
+            android:id="@+id/edit_note_bar_forward"
+            android:src="@mipmap/ic_note_edit_forward"
+            android:layout_width="@dimen/note_edit_item_right_size"
+            android:layout_height="@dimen/note_edit_item_right_size"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_vertical" />
+        <ImageView
+            android:id="@+id/edit_note_bar_backward"
+            android:src="@mipmap/ic_note_edit_backward"
+            android:layout_width="@dimen/note_edit_item_right_size"
+            android:layout_height="@dimen/note_edit_item_right_size"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/edit_note_bar_scroll_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/note_edit_right">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/edit_bar_bold"
+                style="@style/NoteEditBarItemStyle"
+                android:text="粗体" />
+
+            <TextView
+                android:id="@+id/edit_bar_italic"
+                style="@style/NoteEditBarItemStyle"
+                android:text="斜体" />
+
+            <TextView
+                android:id="@+id/edit_bar_underline"
+                style="@style/NoteEditBarItemStyle"
+                android:text="下划线" />
+
+            <TextView
+                android:id="@+id/edit_bar_checkbox"
+                style="@style/NoteEditBarItemStyle"
+                android:text="复选框" />
+
+            <TextView
+                android:id="@+id/edit_bar_background_color"
+                style="@style/NoteEditBarItemStyle"
+                android:text="涂色" />
+
+            <TextView
+                android:id="@+id/edit_bar_num_list"
+                style="@style/NoteEditBarItemStyle"
+                android:text="有序" />
+
+            <TextView
+                android:id="@+id/edit_bar_bullet_list"
+                style="@style/NoteEditBarItemStyle"
+                android:text="无序" />
+
+            <TextView
+                android:id="@+id/edit_bar_indentation"
+                style="@style/NoteEditBarItemStyle"
+                android:text="减少缩进" />
+
+            <TextView
+                android:id="@+id/edit_bar_reduce_indentation"
+                style="@style/NoteEditBarItemStyle"
+                android:text="增加缩进" />
+
+
+            <TextView
+                android:id="@+id/edit_bar_dividing_line"
+                style="@style/NoteEditBarItemStyle"
+                android:text="分割线" />
+
+            <TextView
+                android:id="@+id/edit_bar_superscript"
+                style="@style/NoteEditBarItemStyle"
+                android:text="上标" />
+
+            <TextView
+                android:id="@+id/edit_bar_subscript"
+                style="@style/NoteEditBarItemStyle"
+                android:text="下标" />
+
+            <TextView
+                android:id="@+id/edit_bar_strikethrough"
+                style="@style/NoteEditBarItemStyle"
+                android:text="删除线" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</RelativeLayout>

@@ -1,34 +1,37 @@
 package com.jscheng.srich.editor;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
-import android.text.InputType;
+import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-
-import com.jscheng.srich.editor.spans.BoldSpan;
 import com.jscheng.srich.utils.EditTextUtil;
+import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.OsUtil;
 
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText implements TextWatcher {
+public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     private static final String TAG = "NoteEditorText";
     private int startTextChangePos = 0;
     private int endTextChangePos = 0;
+    private NoteEditorOptions mEditorOptions;
 
     public NoteEditorText(Context context) {
-        this(context, null);
+        super(context, null);
+        init();
     }
 
     public NoteEditorText(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs, 0);
+        init();
     }
 
     public NoteEditorText(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -37,10 +40,20 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher {
     }
 
     private void init() {
+        this.setOverScrollMode(OVER_SCROLL_ALWAYS);
+        this.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
+        this.setInputType(EditorInfo.TYPE_CLASS_TEXT
+                | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+                | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         this.setBackground(null);
-        this.setHighlightColor(Color.GREEN);
-        this.setCursorColor(Color.GREEN);
-        this.setHandlerColor(Color.GREEN);
+        this.setHighlightColor(NoteEditorConfig.HighLightColor);
+        this.setCursorColor(NoteEditorConfig.CursorColor);
+        this.setHandlerColor(NoteEditorConfig.HandleColor);
+        this.setSingleLine(false);
+        this.setTextSize(TypedValue.COMPLEX_UNIT_SP, NoteEditorConfig.TextSizeSp);
+        this.setLetterSpacing(NoteEditorConfig.LetterSpacing);
+        this.setLineSpacing(NoteEditorConfig.LineSpacing, 1f);
+        this.setFocusableInTouchMode(true); // 触摸获得焦点
         this.readingMode();
     }
 
@@ -57,26 +70,21 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher {
     // 写模式
     public void writingMode() {
         this.setCursorVisible(true);
-        this.setFocusableInTouchMode(true); // 触摸获得焦点
-        this.setInputType(EditorInfo.TYPE_CLASS_TEXT
-                | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-                | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         this.setSelected(true);
         this.showSoftKeyBoard();
-        this.moveCursorToLastSpan();
         this.requestFocus();
+        this.moveCursorToLastSpan();
         this.addTextChangedListener(this);
+        this.setFilters(new InputFilter[] {new WritingInputFilter()});
     }
 
     // 读模式
     public void readingMode() {
-        this.setFocusableInTouchMode(false); // 触摸获得焦点
         this.setCursorVisible(false);
         this.setSelected(false);
-        this.clearFocus();
-        this.setInputType(InputType.TYPE_NULL);
-        this.hideSoftKeyBoard();
         this.removeTextChangedListener(this);
+        this.setFilters(new InputFilter[] {new ReadingInputFilter()});
+        this.hideSoftKeyBoard();
     }
 
     private void moveCursorToLastSpan() {
@@ -87,23 +95,19 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher {
     }
 
     private void hideSoftKeyBoard() {
-        InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        manager.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.SHOW_FORCED);
+        clearFocus();
+        KeyboardUtil.configSoftInput(this, false);
+        KeyboardUtil.hideSoftInput(getContext(), this);
     }
 
     private void showSoftKeyBoard() {
-        InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        manager.showSoftInput(this, InputMethodManager.SHOW_FORCED);
+        KeyboardUtil.configSoftInput(this, true);
+        KeyboardUtil.showSoftInput(getContext(), this);
     }
 
     @Override
     protected void onSelectionChanged(int selStart, int selEnd){
         super.onSelectionChanged(selStart, selEnd);
-        if (selStart == selEnd) {
-
-        } else {
-
-        }
     }
 
     @Override
@@ -124,8 +128,47 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher {
      */
     @Override
     public void afterTextChanged(Editable editable) {
-        BoldSpan boldSpan = new BoldSpan();
-        editable.setSpan(boldSpan, startTextChangePos, endTextChangePos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        BoldSpan boldSpan = new BoldSpan();
+//        ItalicSpan italicSpan = new ItalicSpan();
+//        editable.setSpan(boldSpan, startTextChangePos, endTextChangePos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        editable.setSpan(italicSpan, startTextChangePos, endTextChangePos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+   }
+
+    public void apply(NoteEditorOptions editorOptions) {
+        this.mEditorOptions = editorOptions;
     }
 
+    int downX = 0;
+    int downY = 0;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                downX = (int) event.getX();
+                downY = (int) event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int upX = (int) event.getX();
+                int upY = (int) event.getY();
+                break;
+            default:
+                break;
+        }
+       return super.onTouchEvent(event);
+    }
+
+    private class ReadingInputFilter implements InputFilter {
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            return source.length() < 1 ? dest.subSequence(dstart, dend) : "";
+        }
+    }
+
+    private class WritingInputFilter implements InputFilter {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            return null;
+        }
+    }
 }
