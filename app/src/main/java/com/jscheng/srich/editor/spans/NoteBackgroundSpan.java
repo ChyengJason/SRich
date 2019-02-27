@@ -6,11 +6,15 @@ import android.text.style.BackgroundColorSpan;
 /**
  * Created By Chengjunsen on 2019/2/25
  */
-public class BackgroundSpan extends BackgroundColorSpan {
+public class NoteBackgroundSpan extends BackgroundColorSpan{
 
     private final static int color = Color.YELLOW;
 
-    public BackgroundSpan() {
+    public NoteBackgroundSpan() {
         super(color);
+    }
+
+    public static NoteBackgroundSpan create() {
+        return new NoteBackgroundSpan();
     }
 }

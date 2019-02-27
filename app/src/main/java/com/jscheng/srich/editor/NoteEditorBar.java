@@ -1,16 +1,11 @@
 package com.jscheng.srich.editor;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -18,14 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.utils.DisplayUtil;
-
-import org.w3c.dom.Text;
 
 /**
  * Created By Chengjunsen on 2019/2/25
  */
-public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlobalLayoutListener, View.OnClickListener{
+public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlobalLayoutListener,
+        View.OnClickListener, OnSelectionChangeListener{
     private ImageView mForwardButton;
     private ImageView mBackwardButton;
     private TextView mBoldButton;
@@ -41,11 +34,9 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private TextView mSuperScriptButton;
     private TextView mSubscriptButton;
     private TextView mStrikethroughButton;
-
     private HorizontalScrollView mScollView;
-    private NoteEditorOptions mEditorOptions;
 
-    private NoteEditorText mEditorText;
+    private NoteEditorStyleManager mStyleManager;
 
     public NoteEditorBar(Context context) {
         super(context);
@@ -62,9 +53,13 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         init();
     }
 
+    public void setEditorText(NoteEditorText mEditorText) {
+        this.mStyleManager = mEditorText.getStyleManager();
+        this.mStyleManager.addSelectionChangeListener(this);
+    }
+
     private void init() {
         initView();
-        this.mEditorOptions = new NoteEditorOptions();
     }
 
     private void initView() {
@@ -190,39 +185,35 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
                 tapBarSubscript();
                 break;
             case R.id.edit_bar_strikethrough:
-                tapbarStrikeThrought();
+                tapbarStrikeThrough();
                 break;
             default:
                 break;
         }
     }
 
-    private void tapbarStrikeThrought() {
-        boolean isSelected = !mEditorOptions.isStrikethrough();
-        mEditorOptions.setStrikethrough(isSelected);
-        applyStatus(mStrikethroughButton, isSelected);
+    private void tapbarStrikeThrough() {
+        boolean isSelected = !mStrikethroughButton.isSelected();
+        mStrikethroughButton.setSelected(isSelected);
+        mStyleManager.commandStrikeThrough(isSelected);
     }
 
     private void tapBarSubscript() {
-        boolean isSelected = !mEditorOptions.isSubScript();
-        mEditorOptions.setSubScript(isSelected);
-        applyStatus(mSubscriptButton, isSelected);
-
+        boolean isSelected = !mSubscriptButton.isSelected();
+        mSubscriptButton.setSelected(isSelected);
         if (isSelected) {
-            mEditorOptions.setSuperScript(false);
-            applyStatus(mSuperScriptButton, false);
+            mSuperScriptButton.setSelected(false);
         }
+        mStyleManager.commandSubscript(isSelected);
     }
 
     private void tapBarSuperscript() {
-        boolean isSelected = !mEditorOptions.isSuperScript();
-        mEditorOptions.setSuperScript(isSelected);
-        applyStatus(mSuperScriptButton, isSelected);
-
+        boolean isSelected = !mSuperScriptButton.isSelected();
+        mSuperScriptButton.setSelected(isSelected);
         if (isSelected) {
-            mEditorOptions.setSubScript(false);
-            applyStatus(mSubscriptButton, false);
+            mSubscriptButton.setSelected(false);
         }
+        mStyleManager.commandSuperscript(isSelected);
     }
 
     private void tapBarDividingLine() {
@@ -246,9 +237,9 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarColor() {
-        boolean isSelected = !mEditorOptions.isColor();
-        mEditorOptions.setColor(isSelected);
-        applyStatus(mColorButton, isSelected);
+        boolean isSelected = !mColorButton.isSelected();
+        mColorButton.setSelected(isSelected);
+        mStyleManager.commandColor(isSelected);
     }
 
     private void tapBarCheckBox() {
@@ -256,21 +247,21 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarUnderline() {
-        boolean isSelected = !mEditorOptions.isUnderline();
-        mEditorOptions.setUnderline(isSelected);
-        applyStatus(mUnderlineButton, isSelected);
+        boolean isSelected = !mUnderlineButton.isSelected();
+        mUnderlineButton.setSelected(isSelected);
+        mStyleManager.commandUnderline(isSelected);
     }
 
     private void tapBarItalic() {
-        boolean isSelected = !mEditorOptions.isItalic();
-        mEditorOptions.setItalic(isSelected);
-        applyStatus(mItalicButton, isSelected);
+        boolean isSelected = !mItalicButton.isSelected();
+        mItalicButton.setSelected(isSelected);
+        mStyleManager.commandItalic(isSelected);
     }
 
     private void tapBarBold() {
-        boolean isSelected = !mEditorOptions.isBold();
-        mEditorOptions.setBold(isSelected);
-        applyStatus(mBoldButton, isSelected);
+        boolean isSelected = !mBoldButton.isSelected();
+        mBoldButton.setSelected(isSelected);
+        mStyleManager.commandBold(isSelected);
     }
 
     private void backward() {
@@ -285,24 +276,18 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         mBackwardButton.setVisibility(VISIBLE);
     }
 
-    public void apply(NoteEditorOptions options) {
-        this.mEditorOptions = options;
-        this.applyStatus(mBoldButton, options.isBold());
-        this.applyStatus(mItalicButton, options.isItalic());
-        this.applyStatus(mUnderlineButton, options.isUnderline());
+    @Override
+    public void onStyleChange(int start, int end, NoteEditorOptions options) {
+        applyEditorOptions(options);
     }
 
-    private void applyStatus(TextView view, boolean isSelected) {
-        if (isSelected) {
-            int color = getContext().getResources().getColor(R.color.editor_bar_item_selected_text_color, null);
-            view.setTextColor(color);
-        } else {
-            int color = getContext().getResources().getColor(R.color.editor_bar_item_text_color, null);
-            view.setTextColor(color);
-        }
-    }
-
-    public NoteEditorOptions getNoteEditorOptions() {
-        return mEditorOptions;
+    private void applyEditorOptions(NoteEditorOptions options) {
+        mBoldButton.setSelected(options.isBold());
+        mItalicButton.setSelected(options.isItalic());
+        mUnderlineButton.setSelected(options.isUnderline());
+        mColorButton.setSelected(options.isColor());
+        mSuperScriptButton.setSelected(options.isSuperScript());
+        mSubscriptButton.setSelected(options.isSubScript());
+        mStrikethroughButton.setSelected(options.isStrikethrough());
     }
 }

@@ -7,14 +7,13 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
+
 import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.OsUtil;
-
 /**
  * Created By Chengjunsen on 2019/2/21
  */
@@ -22,7 +21,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     private static final String TAG = "NoteEditorText";
     private int startTextChangePos = 0;
     private int endTextChangePos = 0;
-    private NoteEditorOptions mEditorOptions;
+    private NoteEditorStyleManager mStyleManager;
 
     public NoteEditorText(Context context) {
         super(context, null);
@@ -40,6 +39,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     }
 
     private void init() {
+        this.mStyleManager = new NoteEditorStyleManager(this);
         this.setOverScrollMode(OVER_SCROLL_ALWAYS);
         this.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
         this.setInputType(EditorInfo.TYPE_CLASS_TEXT
@@ -71,7 +71,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     public void writingMode() {
         this.setCursorVisible(true);
         this.setSelected(true);
-        this.showSoftKeyBoard();
+        this.showSoftKeyboard();
         this.requestFocus();
         this.moveCursorToLastSpan();
         this.addTextChangedListener(this);
@@ -84,7 +84,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
         this.setSelected(false);
         this.removeTextChangedListener(this);
         this.setFilters(new InputFilter[] {new ReadingInputFilter()});
-        this.hideSoftKeyBoard();
+        this.hideSoftKeyboard();
     }
 
     private void moveCursorToLastSpan() {
@@ -94,20 +94,23 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
         }
     }
 
-    private void hideSoftKeyBoard() {
+    private void hideSoftKeyboard() {
         clearFocus();
         KeyboardUtil.configSoftInput(this, false);
         KeyboardUtil.hideSoftInput(getContext(), this);
     }
 
-    private void showSoftKeyBoard() {
+    private void showSoftKeyboard() {
         KeyboardUtil.configSoftInput(this, true);
         KeyboardUtil.showSoftInput(getContext(), this);
     }
 
     @Override
-    protected void onSelectionChanged(int selStart, int selEnd){
+    protected void onSelectionChanged(int selStart, int selEnd) {
         super.onSelectionChanged(selStart, selEnd);
+        if (mStyleManager != null) {
+            mStyleManager.onSelectionChanged(getEditableText(), selStart, selEnd);
+        }
     }
 
     @Override
@@ -128,15 +131,10 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
      */
     @Override
     public void afterTextChanged(Editable editable) {
-//        BoldSpan boldSpan = new BoldSpan();
-//        ItalicSpan italicSpan = new ItalicSpan();
-//        editable.setSpan(boldSpan, startTextChangePos, endTextChangePos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        editable.setSpan(italicSpan, startTextChangePos, endTextChangePos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (mStyleManager != null) {
+            mStyleManager.onTextChanged(editable, startTextChangePos, endTextChangePos);
+        }
    }
-
-    public void apply(NoteEditorOptions editorOptions) {
-        this.mEditorOptions = editorOptions;
-    }
 
     int downX = 0;
     int downY = 0;
@@ -157,8 +155,11 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
        return super.onTouchEvent(event);
     }
 
-    private class ReadingInputFilter implements InputFilter {
+    public NoteEditorStyleManager getStyleManager() {
+        return mStyleManager;
+    }
 
+    private class ReadingInputFilter implements InputFilter {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
             return source.length() < 1 ? dest.subSequence(dstart, dend) : "";

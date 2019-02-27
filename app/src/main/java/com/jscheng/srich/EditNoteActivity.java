@@ -33,6 +33,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mToolbar.setPresenter(mPresenter);
 
         mEditorBar = findViewById(R.id.edit_note_bar);
+        mEditorBar.setEditorText(mEditorText);
         mEditorBar.hide();
     }
 

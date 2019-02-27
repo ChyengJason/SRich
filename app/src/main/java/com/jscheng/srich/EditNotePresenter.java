@@ -70,7 +70,7 @@ public class EditNotePresenter implements IPresenter {
 
     public void pressBack() {
         if (mMode == Mode.Writing) {
-            mView.readingMode();
+            readingMode();
         } else {
             mView.finish();
         }

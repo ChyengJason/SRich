@@ -6,14 +6,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ReplacementSpan;
 
+import com.jscheng.srich.editor.NoteEditorConfig;
+
 /**
  * Created By Chengjunsen on 2019/2/25
  */
-public class DividingLineSpan extends ReplacementSpan {
+public class NoteDividingLineSpan extends ReplacementSpan {
+
     private int mWidth;
 
-    public DividingLineSpan(int mWidth) {
-        this.mWidth = mWidth;
+    public NoteDividingLineSpan(int width) {
+        this.mWidth = width;
     }
 
     @Override
@@ -26,5 +29,9 @@ public class DividingLineSpan extends ReplacementSpan {
         paint.setStrokeWidth(1);
         int lineY = top + (bottom - top) / 2;
         canvas.drawLine(x , lineY, x + mWidth, lineY, paint);
+    }
+
+    public static NoteDividingLineSpan create(int mWidth) {
+        return new NoteDividingLineSpan(mWidth);
     }
 }
