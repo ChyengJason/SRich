@@ -4,6 +4,7 @@ import android.text.Editable;
 import android.text.Spanned;
 import com.jscheng.srich.editor.spans.NoteBackgroundSpan;
 import com.jscheng.srich.editor.spans.NoteBoldSpan;
+import com.jscheng.srich.editor.spans.NoteBulletSpan;
 import com.jscheng.srich.editor.spans.NoteDividingLineSpan;
 import com.jscheng.srich.editor.spans.NoteItalicSpan;
 import com.jscheng.srich.editor.spans.NoteStrikethroughSpan;
@@ -120,13 +121,19 @@ public class NoteEditableExecutor {
     }
 
     public static void addDividingLine(int width, Editable editable, int pos) {
-        int start = pos;
-        int length = editable.length();
-        editable.append("\u200B");
-        int end = pos + editable.length() - length;
-        addSpan(NoteDividingLineSpan.create(width), editable, start, end);
+        editable.insert(pos, "-");
+        addSpan(NoteDividingLineSpan.create(width), editable, pos, pos + 1);
     }
 
+    public static void addBulletList(Editable editable, int pos) {
+        int start = getParagraphPosition(editable, pos);
+        editable.insert(start, "*");
+        addSpan(NoteBulletSpan.create(), editable, start, start + 1);
+    }
+
+    public static void removeBulletList(Editable editable, int pos) {
+        int start = getParagraphPosition(editable, pos);
+    }
 
     /**
      * 添加样式
@@ -177,4 +184,20 @@ public class NoteEditableExecutor {
         editable.removeSpan(span);
     }
 
+    private static int getParagraphPosition(Editable editable, int pos) {
+        int first = pos >= editable.length() ? editable.length() - 1 : pos;
+        while (first > 0) {
+            int c = editable.charAt(first);
+            if (c == NoteEditorConfig.NewLine) {
+                if (first < editable.length() - 1) {
+                    // firstPos 指向换行符下一个字符
+                    first++;
+                }
+                break;
+            } else {
+                first--;
+            }
+        }
+        return first;
+    }
 }

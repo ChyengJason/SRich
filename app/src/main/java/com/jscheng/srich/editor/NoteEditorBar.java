@@ -231,7 +231,9 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarBulletList() {
-
+        boolean isSelected = !mBulletListButton.isSelected();
+        mBulletListButton.setSelected(isSelected);
+        mStyleManager.commandBulletList(isSelected);
     }
 
     private void tapBarNumList() {
@@ -291,5 +293,6 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         mSuperScriptButton.setSelected(options.isSuperScript());
         mSubscriptButton.setSelected(options.isSubScript());
         mStrikethroughButton.setSelected(options.isStrikethrough());
+        mBulletListButton.setSelected(options.isBulletList());
     }
 }

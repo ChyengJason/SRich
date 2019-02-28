@@ -92,6 +92,15 @@ public class NoteEditorManager {
         NoteEditableExecutor.addDividingLine(mEditorText.getMeasuredWidth(), mEditorText.getEditableText(), mEditorText.getSelectionStart());
     }
 
+    public void commandBulletList(boolean isSelected) {
+        deleteIntervleSelected();
+        if (isSelected) {
+            NoteEditableExecutor.addBulletList(mEditorText.getEditableText(), mEditorText.getSelectionStart());
+        } else {
+            NoteEditableExecutor.removeBulletList(mEditorText.getEditableText(), mEditorText.getSelectionStart());
+        }
+    }
+
     private <T> void applyIntervelSelectedStyle(boolean isSelected, Class<T> styleSpanCls) {
         int start = mEditorText.getSelectionStart();
         int end = mEditorText.getSelectionEnd();
@@ -118,4 +127,5 @@ public class NoteEditorManager {
             editable.delete(start, end);
         }
     }
+
 }

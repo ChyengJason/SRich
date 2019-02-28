@@ -4,6 +4,8 @@ package com.jscheng.srich.editor;
  * Created By Chengjunsen on 2019/2/26
  */
 public class NoteEditorConfig {
+    public static final int NewLine = '\n';
+
     public static final int HighLightColor = 0xFFCBE5EF;
 
     public static final int CursorColor = 0xFF000000;
