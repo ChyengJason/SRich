@@ -21,7 +21,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     private static final String TAG = "NoteEditorText";
     private int startTextChangePos = 0;
     private int endTextChangePos = 0;
-    private NoteEditorStyleManager mStyleManager;
+    private NoteEditorManager mStyleManager;
 
     public NoteEditorText(Context context) {
         super(context, null);
@@ -39,7 +39,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     }
 
     private void init() {
-        this.mStyleManager = new NoteEditorStyleManager(this);
+        this.mStyleManager = new NoteEditorManager(this);
         this.setOverScrollMode(OVER_SCROLL_ALWAYS);
         this.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
         this.setInputType(EditorInfo.TYPE_CLASS_TEXT
@@ -155,7 +155,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
        return super.onTouchEvent(event);
     }
 
-    public NoteEditorStyleManager getStyleManager() {
+    public NoteEditorManager getStyleManager() {
         return mStyleManager;
     }
 

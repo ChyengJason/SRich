@@ -36,7 +36,7 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private TextView mStrikethroughButton;
     private HorizontalScrollView mScollView;
 
-    private NoteEditorStyleManager mStyleManager;
+    private NoteEditorManager mStyleManager;
 
     public NoteEditorBar(Context context) {
         super(context);
@@ -201,23 +201,25 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private void tapBarSubscript() {
         boolean isSelected = !mSubscriptButton.isSelected();
         mSubscriptButton.setSelected(isSelected);
+        mStyleManager.commandSubscript(isSelected);
         if (isSelected) {
             mSuperScriptButton.setSelected(false);
+            mStyleManager.commandSuperscript(false);
         }
-        mStyleManager.commandSubscript(isSelected);
     }
 
     private void tapBarSuperscript() {
         boolean isSelected = !mSuperScriptButton.isSelected();
         mSuperScriptButton.setSelected(isSelected);
+        mStyleManager.commandSuperscript(isSelected);
         if (isSelected) {
             mSubscriptButton.setSelected(false);
+            mStyleManager.commandSubscript(false);
         }
-        mStyleManager.commandSuperscript(isSelected);
     }
 
     private void tapBarDividingLine() {
-
+        mStyleManager.commandDividingLine();
     }
 
     private void tapBarReduceIndentation() {

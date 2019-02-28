@@ -2,13 +2,14 @@ package com.jscheng.srich.editor;
 
 import android.text.Editable;
 
+import com.jscheng.srich.editor.spans.NoteBackgroundSpan;
 import com.jscheng.srich.editor.spans.NoteBoldSpan;
-import com.jscheng.srich.editor.spans.NoteColorSpan;
 import com.jscheng.srich.editor.spans.NoteItalicSpan;
 import com.jscheng.srich.editor.spans.NoteStrikethroughSpan;
 import com.jscheng.srich.editor.spans.NoteSubscriptSpan;
 import com.jscheng.srich.editor.spans.NoteSuperscriptSpan;
 import com.jscheng.srich.editor.spans.NoteUnderLineSpan;
+import com.jscheng.srich.model.Note;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,25 +17,22 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/27
  */
-public class NoteEditorStyleManager {
+public class NoteEditorManager {
+    private Note mNote;
     private NoteEditorOptions mEditorOptions;
-    private  NoteEditorStyleApplier mStyleApplier;
+    private NoteEditorSelection mEditorSelection;
     private List<OnSelectionChangeListener> mSelectionListeners;
     private NoteEditorText mEditorText;
 
-    public NoteEditorStyleManager(NoteEditorText editorText) {
+    public NoteEditorManager(NoteEditorText editorText) {
         mEditorOptions = new NoteEditorOptions();
-        mStyleApplier = new NoteEditorStyleApplier();
         mSelectionListeners = new ArrayList<>();
+        mEditorSelection = new NoteEditorSelection(editorText);
         mEditorText = editorText;
     }
 
     public void addSelectionChangeListener(OnSelectionChangeListener listener) {
         mSelectionListeners.add(listener);
-    }
-
-    public void removeSelectionChangeListener(OnSelectionChangeListener listener) {
-        mSelectionListeners.remove(listener);
     }
 
     public void notifySelectionChangeListener(int start, int end, NoteEditorOptions options) {
@@ -46,16 +44,16 @@ public class NoteEditorStyleManager {
     }
 
     public void onTextChanged(Editable editable, int startTextChangePos, int endTextChangePos) {
-        mStyleApplier.insert(mEditorOptions, editable, startTextChangePos, endTextChangePos);
+        NoteEditableExecutor.insert(mEditorOptions, editable, startTextChangePos, endTextChangePos);
     }
 
     public void onSelectionChanged(Editable editableText, int selStart, int selEnd) {
-        mEditorOptions = mStyleApplier.detect(editableText, selStart, selEnd);
+        mEditorOptions = mEditorSelection.detect(selStart, selEnd);
         notifySelectionChangeListener(selStart, selEnd, mEditorOptions);
     }
 
     public void commandColor(boolean isSelected) {
-        applyIntervelSelectedStyle(isSelected, NoteColorSpan.class);
+        applyIntervelSelectedStyle(isSelected, NoteBackgroundSpan.class);
         mEditorOptions.setColor(isSelected);
     }
 
@@ -89,22 +87,35 @@ public class NoteEditorStyleManager {
         mEditorOptions.setStrikethrough(isSelected);
     }
 
-    private <T> void applyIntervelSelectedStyle(boolean isSelected, Class<T> styleSpanCls) {
-        if (!isIntervelSelected()) {
-            return;
-        }
+    public void commandDividingLine() {
+        deleteIntervleSelected();
+        NoteEditableExecutor.addDividingLine(mEditorText.getMeasuredWidth(), mEditorText.getEditableText(), mEditorText.getSelectionStart());
+    }
 
+    private <T> void applyIntervelSelectedStyle(boolean isSelected, Class<T> styleSpanCls) {
         int start = mEditorText.getSelectionStart();
         int end = mEditorText.getSelectionEnd();
         Editable editable = mEditorText.getEditableText();
-        if (isSelected) {
-            mStyleApplier.add(styleSpanCls, editable, start, end);
-        } else {
-            mStyleApplier.remove(styleSpanCls, editable, start, end);
+
+        if (mEditorSelection.isIntervelSelected()) { // 区间选择
+            if (isSelected) {
+                NoteEditableExecutor.add(styleSpanCls, editable, start, end);
+            } else {
+                NoteEditableExecutor.remove(styleSpanCls, editable, start, end);
+            }
+        } else { // 非区间选择
+            if (!isSelected) {
+                NoteEditableExecutor.seperate(styleSpanCls, editable, start);
+            }
         }
     }
 
-    private boolean isIntervelSelected() {
-        return mEditorText.getSelectionStart() != mEditorText.getSelectionEnd();
+    private void deleteIntervleSelected() {
+        if (mEditorSelection.isIntervelSelected()) {
+            Editable editable = mEditorText.getEditableText();
+            int start = mEditorText.getSelectionStart();
+            int end = mEditorText.getSelectionEnd();
+            editable.delete(start, end);
+        }
     }
 }
