@@ -1,5 +1,8 @@
 package com.jscheng.srich.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created By Chengjunsen on 2019/2/20
  */
@@ -15,6 +18,16 @@ public class Note {
     private String summary;
 
     private String summaryImageUrl;
+
+    private List<Paragraph> paragraphs;
+
+    public Note() {
+        paragraphs = new ArrayList<>();
+    }
+
+    public List<Paragraph> getParagraphs() {
+        return paragraphs;
+    }
 
     public int getId() {
         return id;
