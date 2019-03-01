@@ -115,6 +115,9 @@ public class NoteEditorText extends AppCompatEditText{
     @Override
     protected void onSelectionChanged(int selStart, int selEnd) {
         super.onSelectionChanged(selStart, selEnd);
+        if (mStyleManager != null) {
+            mStyleManager.setSeletion(selStart, selEnd);
+        }
     }
 
     public NoteEditorManager getStyleManager() {
@@ -125,7 +128,7 @@ public class NoteEditorText extends AppCompatEditText{
     public boolean onTextContextMenuItem(int id) {
         switch (id) {
             case android.R.id.paste:
-                mStyleManager.commandPaste("");
+                mStyleManager.commandPaste("", true);
                 super.onTextContextMenuItem(id);
                 return true;
             default:

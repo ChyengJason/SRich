@@ -4,6 +4,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputConnectionWrapper;
 
+import static com.jscheng.srich.editor.NoteEditorRender.StopCode;
+
 /**
  * Created By Chengjunsen on 2019/3/1
  */
@@ -19,7 +21,14 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
         Log.e(TAG, "commitText: " + newCursorPosition + " -> " + text);
-        mStyleManager.commandInput(text);
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == StopCode) {
+                mStyleManager.commandEnter(false);
+            } else {
+                mStyleManager.commandInput(text.charAt(i), false);
+            }
+        }
+        mStyleManager.requestDraw();
         return true;
     }
 
@@ -30,7 +39,7 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
      **/
     @Override
     public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-        mStyleManager.commandDelete();
+        mStyleManager.commandDelete(true);
         //super.deleteSurroundingText(beforeLength, afterLength);
         return true;
     }
@@ -41,9 +50,17 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
      **/
     @Override
     public boolean sendKeyEvent(KeyEvent event) {
-        if( event.getKeyCode() == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN){
-            mStyleManager.commandDelete();
-            return true;
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_DEL:
+                    mStyleManager.commandDelete(true);
+                    return true;
+                case KeyEvent.KEYCODE_ENTER:
+                    mStyleManager.commandEnter(true);
+                    return true;
+                default:
+                    return super.sendKeyEvent(event);
+            }
         }
         return super.sendKeyEvent(event);
     }

@@ -10,6 +10,8 @@ import com.jscheng.srich.model.Style;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jscheng.srich.editor.NoteEditorRender.StopCode;
+
 /**
  * Created By Chengjunsen on 2019/2/27
  * SPAN_EXCLUSIVE_EXCLUSIVE // 在Span前后输入的字符都不应用Span效果
@@ -24,6 +26,8 @@ public class NoteEditorManager {
     private List<OnSelectionChangeListener> mSelectionListeners;
     private NoteEditorText mEditorText;
     private NoteEditorRender mRender;
+    private int mSelectionStart;
+    private int mSelectionEnd;
 
     public NoteEditorManager(NoteEditorText editorText) {
         mNote = new Note();
@@ -45,97 +49,218 @@ public class NoteEditorManager {
         }
     }
 
-    public void commandColor(boolean isSelected) {
+    public void commandColor(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandUnderline(boolean isSelected) {
+    public void commandUnderline(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandItalic(boolean isSelected) {
+    public void commandItalic(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandBold(boolean isSelected) {
+    public void commandBold(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandSuperscript(boolean isSelected) {
+    public void commandSuperscript(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandSubscript(boolean isSelected) {
+    public void commandSubscript(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandStrikeThrough(boolean isSelected) {
+    public void commandStrikeThrough(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandDividingLine() {
+    public void commandDividingLine(boolean draw) {
 
     }
 
-    public void commandBulletList(boolean isSelected) {
+    public void commandBulletList(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandNumList(boolean isSelected) {
+    public void commandNumList(boolean isSelected, boolean draw) {
 
     }
 
-    public void commandInput(CharSequence text) {
-        int start = mEditorText.getSelectionStart();
-        int end = mEditorText.getSelectionEnd();
-        List<Paragraph> selectParagraphs = getParagraph(start, end);
-        Paragraph paragraph;
-        if (selectParagraphs.isEmpty()) {
-            paragraph = newParagraph(mOptions, start, end);
+
+    public void commandDelete(boolean draw) {
+
+    }
+
+    public void commandPaste(String content, boolean draw) {
+
+    }
+
+    public void commandEnter(boolean draw) {
+        // 合并掉区间内容
+        mergeSelectionParagraphs();
+
+        Paragraph paragraph = getParagraph(mSelectionStart);
+        if (paragraph == null ) {
+            paragraph = newParagraph(mSelectionStart);
+            paragraph.add(StopCode, mOptions); // 结束符号
+            paragraph = newParagraph(mSelectionStart);
+        } else if (isIndependentParagraph(paragraph)) {
+            paragraph.add(StopCode, mOptions); // 结束符号
+            int pos = getParagraphPosition(paragraph) + paragraph.getLength();
+            paragraph = newParagraph(pos);
         } else {
-            paragraph = selectParagraphs.get(0);
+            paragraph.add(StopCode, mOptions); // 结束符号
+            paragraph = newParagraph(mSelectionStart);
         }
-        for (int i = 0 ; i< text.length(); i++) {
-            paragraph.add(text.charAt(i), mOptions);
+
+        int pos = getParagraphPosition(paragraph);
+        mSelectionStart = mSelectionEnd = pos;
+        if (draw) {
+            requestDraw();
         }
-        Editable editable = mEditorText.getEditableText();
-        mRender.draw(editable, mNote.getParagraphs());
     }
 
-    public void commandDelete() {
+    public void commandInput(char c, boolean draw) {
+        // 合并掉区间内容
+        mergeSelectionParagraphs();
 
+        Paragraph paragraph = getParagraph(mSelectionStart);
+        if (paragraph == null ) {
+            paragraph = newParagraph(mSelectionStart);
+        } else if (isIndependentParagraph(paragraph)) {
+            paragraph.add(StopCode, mOptions); // 结束符号
+            int pos = getParagraphPosition(paragraph) + paragraph.getLength();
+            paragraph = newParagraph(pos);
+        }
+
+        int pos = getParagraphPosition(paragraph);
+        paragraph.add(c, mOptions);
+        mSelectionStart = mSelectionEnd = pos + 1;
+
+        if (draw) {
+            requestDraw();
+        }
     }
 
-    public void commandPaste(String content) {
+    /**
+     * 合并选择区间
+     */
+    private void mergeSelectionParagraphs() {
+        if (mSelectionStart == mSelectionEnd) {
+            return;
+        }
+        List<Paragraph> intervalParagraphs = getParagraph(mSelectionStart, mSelectionEnd);
 
+        if (intervalParagraphs.size() == 1) {
+            Paragraph paragraph = intervalParagraphs.get(0);
+            int paragraphPos = getParagraphPosition(paragraph);
+            int start = mSelectionStart - paragraphPos;
+            int end = mSelectionEnd - paragraphPos;
+            paragraph.remove(start, end);
+            paragraph.setDirty(true);
+            setSeletion(mSelectionStart);
+
+        } else if (intervalParagraphs.size() > 1) {
+            Paragraph firstParagraph = intervalParagraphs.get(0);
+            Paragraph lastParagraph = intervalParagraphs.get(intervalParagraphs.size() - 1);
+
+            for (int i = 1; i < intervalParagraphs.size() - 1; i++) {
+                mNote.getParagraphs().remove(intervalParagraphs.get(i));
+            }
+
+            int firstParagraphPos = getParagraphPosition(firstParagraph);
+            firstParagraph.remove(mSelectionStart - firstParagraphPos, firstParagraph.getLength());
+            firstParagraph.setDirty(true);
+
+            int lastParagraphPos = getParagraphPosition(lastParagraph);
+            lastParagraph.remove(lastParagraphPos, mSelectionEnd - lastParagraphPos);
+            lastParagraph.setDirty(true);
+            setSeletion(mSelectionStart);
+        }
     }
 
-    public List<Paragraph> getParagraph(int start, int end) {
+    public List<Paragraph> getParagraph(int globalStart, int globalEnd) {
         List<Paragraph> paragraphs = mNote.getParagraphs();
         List<Paragraph> selects = new ArrayList<>();
-        int startPos = 0;
-        int endPos = 0;
+        int paragraphStart = 0;
+        int paragraphEnd = 0;
         for (Paragraph paragraph: paragraphs) {
-            endPos = paragraph.getLength();
-            if (start <= startPos && endPos <= end) {
+            paragraphEnd = paragraph.getLength();
+            if (globalStart <= paragraphStart && paragraphEnd <= globalEnd) {
                 selects.add(paragraph);
             }
-            startPos = endPos;
+            paragraphStart = paragraphEnd;
         }
         return selects;
     }
 
-    public Paragraph newParagraph(Options options, int start, int end) {
+    public Paragraph getParagraph(int globalPos) {
+        List<Paragraph> paragraphs = mNote.getParagraphs();
+        int startPos = 0;
+        int endPos = 0;
+        for (Paragraph paragraph: paragraphs) {
+            endPos = paragraph.getLength();
+            if (globalPos <= startPos && endPos <= globalPos) {
+                return paragraph;
+            }
+            startPos = endPos;
+        }
+        return null;
+    }
+
+    /**
+     * 将全局位置转对应的 paragraph 位置
+     * @param paragraph
+     * @return
+     */
+    public int getParagraphPosition(Paragraph paragraph) {
+        int pos = 0;
+        for (Paragraph item : mNote.getParagraphs()) {
+            if (item == paragraph) {
+                return pos;
+            }
+            pos += item.getLength();
+        }
+        return -1;
+    }
+
+    //todo
+    public Paragraph newParagraph(int globalPos) {
         List<Paragraph> paragraphs = mNote.getParagraphs();
         Paragraph paragraph = new Paragraph();
-        int lineStyle = options.getLineStyle();
-        int indentation = options.getIndentation();
+        int lineStyle = mOptions.getLineStyle();
+        int indentation = mOptions.getIndentation();
 
         paragraph.setLineStyle(lineStyle);
         paragraph.setIndentation(indentation);
         paragraph.setDirty(true);
 
         paragraphs.add(paragraph);
+
         return paragraph;
+    }
+
+    public void setSeletion(int globalPos) {
+        mSelectionStart = globalPos;
+        mSelectionEnd = globalPos;
+    }
+
+    public void setSeletion(int globalStart, int globalEnd) {
+        mSelectionStart = globalStart;
+        mSelectionEnd = globalEnd;
+    }
+
+    private boolean isIndependentParagraph(Paragraph paragraph) {
+        if (paragraph == null) {
+            return false;
+        }
+        return paragraph.isDividingLine() || paragraph.isImage();
+    }
+
+    public void requestDraw() {
+        mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
     }
 }

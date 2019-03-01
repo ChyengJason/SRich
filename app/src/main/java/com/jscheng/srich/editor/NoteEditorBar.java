@@ -196,31 +196,31 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private void tapbarStrikeThrough() {
         boolean isSelected = !mStrikethroughButton.isSelected();
         mStrikethroughButton.setSelected(isSelected);
-        mStyleManager.commandStrikeThrough(isSelected);
+        mStyleManager.commandStrikeThrough(isSelected, true);
     }
 
     private void tapBarSubscript() {
         boolean isSelected = !mSubscriptButton.isSelected();
         mSubscriptButton.setSelected(isSelected);
-        mStyleManager.commandSubscript(isSelected);
+        mStyleManager.commandSubscript(isSelected, true);
         if (isSelected) {
             mSuperScriptButton.setSelected(false);
-            mStyleManager.commandSuperscript(false);
+            mStyleManager.commandSuperscript(false, true);
         }
     }
 
     private void tapBarSuperscript() {
         boolean isSelected = !mSuperScriptButton.isSelected();
         mSuperScriptButton.setSelected(isSelected);
-        mStyleManager.commandSuperscript(isSelected);
+        mStyleManager.commandSuperscript(isSelected,true);
         if (isSelected) {
             mSubscriptButton.setSelected(false);
-            mStyleManager.commandSubscript(false);
+            mStyleManager.commandSubscript(false,true);
         }
     }
 
     private void tapBarDividingLine() {
-        mStyleManager.commandDividingLine();
+        mStyleManager.commandDividingLine(true);
     }
 
     private void tapBarReduceIndentation() {
@@ -234,19 +234,19 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private void tapBarBulletList() {
         boolean isSelected = !mBulletListButton.isSelected();
         mBulletListButton.setSelected(isSelected);
-        mStyleManager.commandBulletList(isSelected);
+        mStyleManager.commandBulletList(isSelected, true);
     }
 
     private void tapBarNumList() {
         boolean isSelected = !mNumListButton.isSelected();
         mNumListButton.setSelected(isSelected);
-        mStyleManager.commandNumList(isSelected);
+        mStyleManager.commandNumList(isSelected,true);
     }
 
     private void tapBarColor() {
         boolean isSelected = !mColorButton.isSelected();
         mColorButton.setSelected(isSelected);
-        mStyleManager.commandColor(isSelected);
+        mStyleManager.commandColor(isSelected,true);
     }
 
     private void tapBarCheckBox() {
@@ -256,19 +256,19 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private void tapBarUnderline() {
         boolean isSelected = !mUnderlineButton.isSelected();
         mUnderlineButton.setSelected(isSelected);
-        mStyleManager.commandUnderline(isSelected);
+        mStyleManager.commandUnderline(isSelected,true);
     }
 
     private void tapBarItalic() {
         boolean isSelected = !mItalicButton.isSelected();
         mItalicButton.setSelected(isSelected);
-        mStyleManager.commandItalic(isSelected);
+        mStyleManager.commandItalic(isSelected,true);
     }
 
     private void tapBarBold() {
         boolean isSelected = !mBoldButton.isSelected();
         mBoldButton.setSelected(isSelected);
-        mStyleManager.commandBold(isSelected);
+        mStyleManager.commandBold(isSelected,true);
     }
 
     private void backward() {

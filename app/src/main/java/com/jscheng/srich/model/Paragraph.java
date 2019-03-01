@@ -1,6 +1,5 @@
 package com.jscheng.srich.model;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,6 +16,10 @@ public class Paragraph {
 
     private int indentation;
 
+    private boolean isDividingLine;
+
+    private boolean isImage;
+
     private boolean isDirty;
 
     public Paragraph() {
@@ -24,6 +27,8 @@ public class Paragraph {
         this.words = new StringBuilder();
         this.lineStyle = 0;
         this.indentation = 0;
+        this.isDividingLine = false;
+        this.isImage = false;
     }
 
     public int getLength() {
@@ -43,15 +48,21 @@ public class Paragraph {
         wordStyles.add(options.getWordStyle());
     }
 
+    public void add(CharSequence content, Options options) {
+        for (int i = 0; i < content.length(); i++) {
+            add(content.charAt(i), options);
+        }
+    }
+
     public void insert(int pos, char c, Options options) {
         words.insert(pos, c);
         wordStyles.add(pos, options.getWordStyle());
     }
 
-    public void remove(int pos, int offset) {
-        words.delete(pos, pos + offset);
-        for (int i = pos; i < pos + offset; i++) {
-            wordStyles.remove(pos);
+    public void remove(int start, int end) {
+        words.delete(start, end);
+        for (int i = start; i < end; i++) {
+            wordStyles.remove(start);
         }
     }
 
@@ -73,5 +84,21 @@ public class Paragraph {
 
     public StringBuilder getWords() {
         return words;
+    }
+
+    public boolean isNull() {
+        return getLength() == 0;
+    }
+
+    public boolean isDividingLine() {
+        return isDividingLine;
+    }
+
+    public void setDividingLine(boolean dividingLine) {
+        isDividingLine = dividingLine;
+    }
+
+    public boolean isImage() {
+        return isImage;
     }
 }
