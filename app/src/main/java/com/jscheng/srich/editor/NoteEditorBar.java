@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jscheng.srich.R;
+import com.jscheng.srich.model.Options;
 
 /**
  * Created By Chengjunsen on 2019/2/25
@@ -237,7 +238,9 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarNumList() {
-
+        boolean isSelected = !mNumListButton.isSelected();
+        mNumListButton.setSelected(isSelected);
+        mStyleManager.commandNumList(isSelected);
     }
 
     private void tapBarColor() {
@@ -281,11 +284,11 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     @Override
-    public void onStyleChange(int start, int end, NoteEditorOptions options) {
+    public void onStyleChange(int start, int end, Options options) {
         applyEditorOptions(options);
     }
 
-    private void applyEditorOptions(NoteEditorOptions options) {
+    private void applyEditorOptions(Options options) {
         mBoldButton.setSelected(options.isBold());
         mItalicButton.setSelected(options.isItalic());
         mUnderlineButton.setSelected(options.isUnderline());
@@ -294,5 +297,6 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         mSubscriptButton.setSelected(options.isSubScript());
         mStrikethroughButton.setSelected(options.isStrikethrough());
         mBulletListButton.setSelected(options.isBulletList());
+        mNumListButton.setSelected(options.isNumList());
     }
 }

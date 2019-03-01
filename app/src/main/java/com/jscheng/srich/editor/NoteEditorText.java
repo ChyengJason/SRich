@@ -7,9 +7,12 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
@@ -17,11 +20,10 @@ import com.jscheng.srich.utils.OsUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText implements TextWatcher{
+public class NoteEditorText extends AppCompatEditText{
     private static final String TAG = "NoteEditorText";
-    private int startTextChangePos = 0;
-    private int endTextChangePos = 0;
     private NoteEditorManager mStyleManager;
+    private NoteEditorInputConnection mInputConnection;
 
     public NoteEditorText(Context context) {
         super(context, null);
@@ -40,6 +42,7 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
 
     private void init() {
         this.mStyleManager = new NoteEditorManager(this);
+        this.mInputConnection = new NoteEditorInputConnection(mStyleManager);
         this.setOverScrollMode(OVER_SCROLL_ALWAYS);
         this.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
         this.setInputType(EditorInfo.TYPE_CLASS_TEXT
@@ -74,7 +77,6 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
         this.showSoftKeyboard();
         this.requestFocus();
         this.moveCursorToLastSpan();
-        this.addTextChangedListener(this);
         this.setFilters(new InputFilter[] {new WritingInputFilter()});
     }
 
@@ -82,7 +84,6 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     public void readingMode() {
         this.setCursorVisible(false);
         this.setSelected(false);
-        this.removeTextChangedListener(this);
         this.setFilters(new InputFilter[] {new ReadingInputFilter()});
         this.hideSoftKeyboard();
     }
@@ -106,57 +107,30 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
     }
 
     @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        mInputConnection.setTarget(super.onCreateInputConnection(outAttrs));
+        return mInputConnection;
+    }
+
+    @Override
     protected void onSelectionChanged(int selStart, int selEnd) {
         super.onSelectionChanged(selStart, selEnd);
-        if (mStyleManager != null) {
-            mStyleManager.onSelectionChanged(getEditableText(), selStart, selEnd);
-        }
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        this.startTextChangePos = start;
-        this.endTextChangePos = start + count;
-    }
-
-    /**
-     * SPAN_EXCLUSIVE_EXCLUSIVE // 在Span前后输入的字符都不应用Span效果
-     * SPAN_EXCLUSIVE_INCLUSIVE // 在Span前面输入的字符不应用Span效果，后面输入的字符应用Span效果
-     * SPAN_INCLUSIVE_EXCLUSIVE // 在Span前面输入的字符应用Span效果，后面输入的字符不应用Span效果
-     * SPAN_INCLUSIVE_INCLUSIVE // 在Span前后输入的字符都应用Span效果
-     */
-    @Override
-    public void afterTextChanged(Editable editable) {
-        if (mStyleManager != null) {
-            mStyleManager.onTextChanged(editable, startTextChangePos, endTextChangePos);
-        }
-   }
-
-    int downX = 0;
-    int downY = 0;
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                downX = (int) event.getX();
-                downY = (int) event.getY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int upX = (int) event.getX();
-                int upY = (int) event.getY();
-                break;
-            default:
-                break;
-        }
-       return super.onTouchEvent(event);
     }
 
     public NoteEditorManager getStyleManager() {
         return mStyleManager;
+    }
+
+    @Override
+    public boolean onTextContextMenuItem(int id) {
+        switch (id) {
+            case android.R.id.paste:
+                mStyleManager.commandPaste("");
+                super.onTextContextMenuItem(id);
+                return true;
+            default:
+                return super.onTextContextMenuItem(id);
+        }
     }
 
     private class ReadingInputFilter implements InputFilter {
@@ -172,4 +146,5 @@ public class NoteEditorText extends AppCompatEditText implements TextWatcher{
             return null;
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.jscheng.srich.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -8,64 +9,69 @@ import java.util.List;
  */
 public class Paragraph {
 
-    public static final int Bold = 1;
-
-    public static final int Italic = 2;
-
-    public static final int UnderLine = 4;
-
-    public static final int Strikethrough = 8;
-
-    public static final int BackgroudColor = 16;
-
-    public static final int SuperScript = 32;
-
-    public static final int SubScript = 64;
-
-    public static final int DividingLine = 1;
-
-    public static final int CheckBox = 2;
-
-    public static final int NumList = 4;
-
-    public static final int BulletList = 8;
-
-    private int start;
-
-    private int end;
-
     private StringBuilder words;
 
     private List<Integer> wordStyles;
 
     private int lineStyle;
 
-    private int indent;
+    private int indentation;
+
+    private boolean isDirty;
 
     public Paragraph() {
-        this.start = 0;
-        this.end = 0;
-        this.wordStyles = new ArrayList<>();
+        this.wordStyles = new LinkedList<>();
         this.words = new StringBuilder();
         this.lineStyle = 0;
-        this.indent = 0;
+        this.indentation = 0;
     }
 
-    public int getStart() {
-        return start;
+    public int getLength() {
+        return words.length();
     }
 
-    public void setStart(int start) {
-        this.start = start;
+    public boolean isDirty() {
+        return isDirty;
     }
 
-    public int getEnd() {
-        return end;
+    public void setDirty(boolean dirty) {
+        isDirty = dirty;
     }
 
-    public void setEnd(int end) {
-        this.end = end;
+    public void add(char c, Options options) {
+        words.append(c);
+        wordStyles.add(options.getWordStyle());
     }
 
-    public void add(String words, )
+    public void insert(int pos, char c, Options options) {
+        words.insert(pos, c);
+        wordStyles.add(pos, options.getWordStyle());
+    }
+
+    public void remove(int pos, int offset) {
+        words.delete(pos, pos + offset);
+        for (int i = pos; i < pos + offset; i++) {
+            wordStyles.remove(pos);
+        }
+    }
+
+    public void setLineStyle(int lineStyle) {
+        this.lineStyle = lineStyle;
+    }
+
+    public int getLineStyle() {
+        return lineStyle;
+    }
+
+    public int getIndentation() {
+        return indentation;
+    }
+
+    public void setIndentation(int indentation) {
+        this.indentation = indentation;
+    }
+
+    public StringBuilder getWords() {
+        return words;
+    }
 }
