@@ -165,8 +165,8 @@ public class NoteEditorManager {
         deleteSelctionParagraphs(mSelectionStart, mSelectionEnd);
     }
 
-    public void deleteSelctionParagraphs(int start, int end) {
-        if (start < 0 || start >= end) {
+    public void deleteSelctionParagraphs(int startSel, int endSel) {
+        if (startSel < 0 || startSel >= endSel) {
             return;
         }
         int startPos = 0;
@@ -176,30 +176,25 @@ public class NoteEditorManager {
         while(iter.hasNext()){
             Paragraph paragraph = iter.next();
             endPos = startPos + paragraph.getLength();
-            if (startPos >= start && endPos <= end) {
+            if (startPos >= startSel && endPos <= endSel) {
                 iter.remove();
-            } else if (startPos <= start && start <= endPos) {
-                int startCutPos = start - startPos;
-                int endCutPos = end - startPos;
+            } else if (startPos <= startSel && startSel <= endPos) {
+                int startCutPos = startSel - startPos;
+                int endCutPos = endSel - startPos;
                 if (endCutPos > paragraph.getLength()) {
                     endCutPos = paragraph.getLength();
                 }
                 paragraph.remove(startCutPos, endCutPos);
                 paragraph.setDirty(true);
-                continue;
-            } else if (startPos <= end && end <= endPos) {
+            } else if (startPos <= endSel && endSel <= endPos) {
                 int startCutPos = 0;
-                int endCutPos = end - startPos;
-                if (endCutPos > paragraph.getLength()) {
-                    endCutPos = paragraph.getLength();
-                }
+                int endCutPos = endSel - startPos;
                 paragraph.remove(startCutPos, endCutPos);
                 paragraph.setDirty(true);
-                continue;
             }
             startPos = endPos + 1;
         }
-        setSeletion(start);
+        setSeletion(startSel);
     }
 
     public Paragraph getParagraph(int globalPos) {
