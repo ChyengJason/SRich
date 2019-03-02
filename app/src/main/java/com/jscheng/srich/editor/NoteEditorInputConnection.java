@@ -4,7 +4,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputConnectionWrapper;
 
-import static com.jscheng.srich.editor.NoteEditorRender.StopCode;
+import static com.jscheng.srich.editor.NoteEditorRender.EndCode;
 
 /**
  * Created By Chengjunsen on 2019/3/1
@@ -22,7 +22,7 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
     public boolean commitText(CharSequence text, int newCursorPosition) {
         Log.e(TAG, "commitText: " + newCursorPosition + " -> " + text);
         for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == StopCode) {
+            if (text.charAt(i) == '\n') {
                 mStyleManager.commandEnter(false);
             } else {
                 mStyleManager.commandInput(text.charAt(i), false);
@@ -39,7 +39,7 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
      **/
     @Override
     public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-        mStyleManager.commandDelete(true);
+        mStyleManager.commandDelete(beforeLength - afterLength, true);
         //super.deleteSurroundingText(beforeLength, afterLength);
         return true;
     }

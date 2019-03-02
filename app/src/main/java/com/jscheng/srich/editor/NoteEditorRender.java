@@ -12,27 +12,35 @@ import java.util.List;
  * 负责渲染
  */
 public class NoteEditorRender {
-    public static final char StopCode = '\n';
+    public static final String EndCode = "^";
 
     public void draw(EditText editText, List<Paragraph> paragraphs, int selectionStart, int selectionEnd) {
         int start = 0;
-        boolean isDirty = false;
-        for (int i = 0; i < paragraphs.size(); i++) {
-            Paragraph paragraph = paragraphs.get(i);
-            isDirty = isDirty || paragraph.isDirty();
-            int end = start + paragraph.getLength();
-            if (isDirty) {
-                drawParagraph(paragraph, start, end, editText.getText());
-                paragraph.setDirty(false);
+        int end = 0;
+        editText.getText().clear();
+
+        if (!paragraphs.isEmpty()) {
+            for (int i = 0; i < paragraphs.size() - 1; i++) {
+                Paragraph paragraph = paragraphs.get(i);
+                end = start + paragraph.getLength();
+
+                drawParagraph(paragraph, start, editText.getText());
+                drawEndCode(end, editText.getText());
+                start = end + 1;
             }
-            start = end;
+            Paragraph paragraph = paragraphs.get(paragraphs.size() - 1);
+            drawParagraph(paragraph, start, editText.getText());
         }
+
         editText.setSelection(selectionStart, selectionEnd);
     }
 
-    private void drawParagraph(Paragraph paragraph, int start, int end, Editable editable) {
-        editable.delete(start, editable.length());
-        editable.insert(start, paragraph.getWords());
+    private void drawParagraph(Paragraph paragraph, int pos, Editable editable) {
+        editable.insert(pos, paragraph.getWords());
+    }
+
+    private void drawEndCode(int pos, Editable editable) {
+        editable.insert(pos, EndCode);
     }
 
 }

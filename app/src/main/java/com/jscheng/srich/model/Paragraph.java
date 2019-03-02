@@ -29,6 +29,7 @@ public class Paragraph {
         this.indentation = 0;
         this.isDividingLine = false;
         this.isImage = false;
+        this.isDirty = true;
     }
 
     public int getLength() {
@@ -46,6 +47,7 @@ public class Paragraph {
     public void add(char c, Options options) {
         words.append(c);
         wordStyles.add(options.getWordStyle());
+        setDirty(true);
     }
 
     public void add(CharSequence content, Options options) {
@@ -57,13 +59,13 @@ public class Paragraph {
     public void insert(int pos, char c, Options options) {
         words.insert(pos, c);
         wordStyles.add(pos, options.getWordStyle());
+        setDirty(true);
     }
 
     public void remove(int start, int end) {
-        words.delete(start, end);
-        for (int i = start; i < end; i++) {
-            wordStyles.remove(start);
-        }
+        removeWords(start, end);
+        removeWordStyles(start, end);
+        setDirty(true);
     }
 
     public void setLineStyle(int lineStyle) {
@@ -82,8 +84,60 @@ public class Paragraph {
         this.indentation = indentation;
     }
 
-    public StringBuilder getWords() {
-        return words;
+    public void setWords(String words, List<Integer> wordStyles) {
+        if (words != null && wordStyles != null && !words.isEmpty() && !wordStyles.isEmpty()) {
+            this.words = new StringBuilder(words);
+            this.wordStyles = new LinkedList<>(wordStyles);
+        }
+    }
+
+    public void addWords(String words, List<Integer> wordStyles) {
+        if (words != null && wordStyles != null && !words.isEmpty() && !wordStyles.isEmpty()) {
+            this.words.append(words);
+            this.wordStyles.addAll(wordStyles);
+        }
+    }
+
+    public String getWords() {
+        return words.toString();
+    }
+
+    public String getWords(int start, int end) {
+        return words.subSequence(start, end).toString();
+    }
+
+    public char getWord(int pos) {
+        return words.charAt(pos);
+    }
+
+    private void removeWords(int start, int end) {
+        words.delete(start, end);
+    }
+
+    private void removeWord(int pos) {
+        words.deleteCharAt(pos);
+    }
+
+    public List<Integer> getWordStyles() {
+        return wordStyles;
+    }
+
+    public List<Integer> getWordStyles(int start, int end) {
+        return wordStyles.subList(start, end);
+    }
+
+    private void removeWordStyles(int start, int end) {
+        for (int i = start; i < end; i++) {
+            wordStyles.remove(start);
+        }
+    }
+
+    private void removeWordStyle(int pos) {
+        wordStyles.remove(pos);
+    }
+
+    public int getWordStyle(int pos) {
+        return wordStyles.get(pos);
     }
 
     public boolean isNull() {
@@ -100,5 +154,10 @@ public class Paragraph {
 
     public boolean isImage() {
         return isImage;
+    }
+
+    @Override
+    public String toString() {
+        return words.toString().replace('\n', '^');
     }
 }
