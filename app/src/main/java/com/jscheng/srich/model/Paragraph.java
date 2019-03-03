@@ -62,6 +62,14 @@ public class Paragraph {
         setDirty(true);
     }
 
+    public void insert(int pos, String content, Options options) {
+        words.insert(pos, content);
+        for (int i = pos; i < pos + content.length(); i++) {
+            wordStyles.add(i, options.getWordStyle());
+        }
+        setDirty(true);
+    }
+
     public void remove(int start, int end) {
         removeWords(start, end);
         removeWordStyles(start, end);

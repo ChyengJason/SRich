@@ -4,8 +4,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputConnectionWrapper;
 
-import static com.jscheng.srich.editor.NoteEditorRender.EndCode;
-
 /**
  * Created By Chengjunsen on 2019/3/1
  */
@@ -20,15 +18,12 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
 
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
-        Log.e(TAG, "commitText: " + newCursorPosition + " -> " + text);
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '\n') {
-                mStyleManager.commandEnter(false);
-            } else {
-                mStyleManager.commandInput(text.charAt(i), false);
-            }
+        Log.e(TAG, "commitText: " + newCursorPosition + " count: " + text.length() + " -> " + text);
+        if (text.length() == 0) {
+            mStyleManager.commandDelete(true);
+        } else {
+            mStyleManager.commandInput(text, true);
         }
-        mStyleManager.requestDraw();
         return true;
     }
 
@@ -42,6 +37,12 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
         mStyleManager.commandDelete(beforeLength - afterLength, true);
         //super.deleteSurroundingText(beforeLength, afterLength);
         return true;
+    }
+
+    @Override
+    public boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength) {
+        Log.e(TAG, "deleteSurroundingTextInCodePoints: " + (afterLength - beforeLength));
+        return super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
     }
 
     /**
@@ -59,6 +60,7 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
                     mStyleManager.commandEnter(true);
                     return true;
                 default:
+                    Log.e(TAG, "sendKeyEvent: " + event.getKeyCode());
                     return super.sendKeyEvent(event);
             }
         }

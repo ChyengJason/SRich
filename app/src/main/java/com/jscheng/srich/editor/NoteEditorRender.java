@@ -12,7 +12,8 @@ import java.util.List;
  * 负责渲染
  */
 public class NoteEditorRender {
-    public static final String EndCode = "^";
+    public static final String EndCode = "\n";
+    public static final char EndCodeChar = '\n';
 
     public void draw(EditText editText, List<Paragraph> paragraphs, int selectionStart, int selectionEnd) {
         int start = 0;
