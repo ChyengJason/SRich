@@ -25,7 +25,7 @@ public class Style {
     public static final int BulletList = 4;
 
     public static boolean isStyle(int style, int flag) {
-        return (style & style) == flag;
+        return (style & flag) == flag;
     }
 
     public static int setStyle(int style, boolean b, int flag) {

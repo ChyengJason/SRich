@@ -166,6 +166,11 @@ public class Paragraph {
 
     @Override
     public String toString() {
-        return words.toString().replace('\n', '^');
+        StringBuilder content = new StringBuilder(words);
+//        content.append(" : ");
+//        for (int i : wordStyles) {
+//            content.append(i + " ");
+//        }
+        return content.toString();
     }
 }

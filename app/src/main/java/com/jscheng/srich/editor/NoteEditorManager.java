@@ -28,7 +28,7 @@ public class NoteEditorManager {
 
     public NoteEditorManager(NoteEditorText editorText) {
         mNote = new Note();
-        mRender = new NoteEditorRender();
+        mRender = new NoteEditorRender(editorText);
         mOptions = new Options();
         mSelectionListeners = new ArrayList<>();
         mEditorText = editorText;
@@ -47,35 +47,36 @@ public class NoteEditorManager {
     }
 
     public void commandColor(boolean isSelected, boolean draw) {
-
+        mOptions.setColor(isSelected);
     }
 
     public void commandUnderline(boolean isSelected, boolean draw) {
-
+        mOptions.setUnderline(isSelected);
     }
 
     public void commandItalic(boolean isSelected, boolean draw) {
-
+        mOptions.setItalic(isSelected);
     }
 
     public void commandBold(boolean isSelected, boolean draw) {
-
+        mOptions.setBold(isSelected);
     }
 
     public void commandSuperscript(boolean isSelected, boolean draw) {
-
+        mOptions.setSuperScript(isSelected);
     }
 
     public void commandSubscript(boolean isSelected, boolean draw) {
-
+        mOptions.setSubScript(isSelected);
     }
 
     public void commandStrikeThrough(boolean isSelected, boolean draw) {
-
+        mOptions.setStrikethrough(isSelected);
     }
 
     public void commandDividingLine(boolean draw) {
-
+        inputDividingLine();
+        if (draw) { requestDraw(); }
     }
 
     public void commandBulletList(boolean isSelected, boolean draw) {
@@ -88,7 +89,7 @@ public class NoteEditorManager {
 
     public void commandDeleteSelection(boolean draw) {
         deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
-        if (draw) requestDraw();
+        if (draw) { requestDraw(); }
     }
 
     public void commandDelete(boolean draw) {
@@ -103,7 +104,7 @@ public class NoteEditorManager {
 
     public void commandDelete(int num, boolean draw) {
         deleteSelectionParagraphs(mSelectionStart - num, mSelectionStart);
-        if (draw) requestDraw();
+        if (draw) { requestDraw(); }
     }
 
     public void commandPaste(String content, boolean draw) {
@@ -112,7 +113,7 @@ public class NoteEditorManager {
 
     public void commandEnter(boolean draw) {
         inputEnter();
-        if (draw) requestDraw();
+        if (draw) { requestDraw(); }
     }
 
     public void commandInput(CharSequence content, boolean draw) {
@@ -121,16 +122,18 @@ public class NoteEditorManager {
             for (int i = 0; i < content.length(); i++) {
                 char c = content.charAt(i);
                 if (c == NoteEditorRender.EndCodeChar) {
-                    inputEnter();
                     inputParagraph(contentNoEnter.toString());
+                    inputEnter();
                     contentNoEnter.delete(0, contentNoEnter.length());
                 } else {
                     contentNoEnter.append(c);
                 }
             }
-            inputParagraph(contentNoEnter.toString());
+            if (contentNoEnter.length() > 0) {
+                inputParagraph(contentNoEnter.toString());
+            }
         }
-        if (draw) requestDraw();
+        if (draw) { requestDraw(); }
     }
 
     private void inputEnter() {
@@ -168,7 +171,7 @@ public class NoteEditorManager {
 
     private void inputParagraph(String content) {
         Log.e(TAG, "inputParagraph: " + content );
-        if (content.isEmpty()) return;
+        if (content.isEmpty()) { return; }
         // 删除区间
         deleteSelectionParagraphs();
 
@@ -188,6 +191,20 @@ public class NoteEditorManager {
 
         // 调整选择区
         setSeletion(pos + content.length());
+    }
+
+    private void inputDividingLine() {
+        // 删除区间
+        deleteSelectionParagraphs();
+
+        int pos = mSelectionStart;
+
+        Paragraph paragraph = getParagraph(mSelectionStart);
+        if (paragraph == null) {
+            paragraph = createDividingParagraph(0);
+        }
+
+        setSeletion(pos);
     }
 
     private void deleteSelectionParagraphs() {
@@ -283,6 +300,17 @@ public class NoteEditorManager {
         return paragraph;
     }
 
+    private Paragraph createDividingParagraph(int index) {
+        Paragraph paragraph = new Paragraph();
+        paragraph.setDirty(true);
+        paragraph.setIndentation(0);
+        paragraph.setLineStyle(0);
+        paragraph.setDividingLine(true);
+
+        mNote.getParagraphs().add(index, paragraph);
+        return paragraph;
+    }
+
     public void setSeletion(int globalPos) {
         mSelectionStart = globalPos;
         mSelectionEnd = globalPos;
@@ -300,13 +328,12 @@ public class NoteEditorManager {
 
     public void print() {
         List<Paragraph> paragraphs = mNote.getParagraphs();
-        Log.e(TAG, " count: " + paragraphs.size());
+        Log.e(TAG, " count: " + paragraphs.size() + "selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
         for (Paragraph paragraph: paragraphs) {
             int startPos = getParagraphBegin(paragraph);
             int endPos = getParagraphEnd(paragraph);
             Log.e(TAG, "[ " + startPos + "->" + endPos + " ] " + paragraph.toString());
         }
-        Log.e(TAG, "selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )" );
     }
 
     public String getSelectionText() {
