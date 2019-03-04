@@ -4,6 +4,8 @@ import android.util.Log;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
+import com.jscheng.srich.model.Style;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -147,23 +149,27 @@ public class NoteEditorManager {
             lastParagraph = createParagraph(0);
         }
 
-        int index = getParagraphIndex(lastParagraph);
-
-        // 分割成两部分
-        int cutPos = pos - getParagraphBegin(lastParagraph);
+        int lastEndPos = getParagraphEnd(lastParagraph);
+        int lastIndex = getParagraphIndex(lastParagraph);
         int newLineStyle = lastParagraph.getLineStyle();
         int newIndentation = lastParagraph.getIndentation();
-        String newWords = lastParagraph.getWords(cutPos, lastParagraph.getLength());
-        List<Integer> newWordStyles = new LinkedList<>(
-                lastParagraph.getWordStyles(cutPos, lastParagraph.getLength()));
 
-        // 删除旧段落后半部分
-        lastParagraph.remove(cutPos, lastParagraph.getLength());
-
-        // 加入新段落
-        Paragraph newParagraph = createParagraph(index + 1, newIndentation, newLineStyle);
-        newParagraph.setWords(newWords, newWordStyles);
-
+        Paragraph newParagraph;
+        if (lastEndPos == mSelectionStart) {
+            // 直接创建新段落
+            newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
+        } else {
+            // 分割成两部分
+            int cutPos = pos - getParagraphBegin(lastParagraph);
+            String newWords = lastParagraph.getWords(cutPos, lastParagraph.getLength());
+            List<Integer> newWordStyles = new LinkedList<>(
+                    lastParagraph.getWordStyles(cutPos, lastParagraph.getLength()));
+            // 删除旧段落后半部分
+            lastParagraph.remove(cutPos, lastParagraph.getLength());
+            // 加入新段落
+            newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
+            newParagraph.setWords(newWords, newWordStyles);
+        }
         // 计算新的选择区
         int newPos = getParagraphBegin(newParagraph);
         setSeletion(newPos);
@@ -180,6 +186,10 @@ public class NoteEditorManager {
         Paragraph paragraph = getParagraph(pos);
         if (paragraph == null) {
             paragraph = createParagraph(0);
+        } else if (paragraph.isDividingLine() || paragraph.isImage()) {
+            int index = getParagraphIndex(paragraph);
+            paragraph = createParagraph(index + 1, paragraph.getIndentation(), paragraph.getLineStyle());
+            pos = getParagraphBegin(paragraph);
         }
 
         // 计算插入位置
@@ -198,13 +208,15 @@ public class NoteEditorManager {
         deleteSelectionParagraphs();
 
         int pos = mSelectionStart;
-
-        Paragraph paragraph = getParagraph(mSelectionStart);
+        Paragraph paragraph = getParagraph(pos);
+        Paragraph dividingParagraph;
         if (paragraph == null) {
-            paragraph = createDividingParagraph(0);
+            dividingParagraph = createDividingParagraph(0);
+        } else {
+            int index = getParagraphIndex(paragraph);
+            dividingParagraph = createDividingParagraph(index + 1);
         }
-
-        setSeletion(pos);
+        setSeletion(getParagraphEnd(dividingParagraph));
     }
 
     private void deleteSelectionParagraphs() {
@@ -295,7 +307,7 @@ public class NoteEditorManager {
         paragraph.setIndentation(indenteation);
         paragraph.setLineStyle(lineStyle);
         paragraph.setDividingLine(false);
-
+        paragraph.setImage(false);
         mNote.getParagraphs().add(index, paragraph);
         return paragraph;
     }
@@ -303,9 +315,12 @@ public class NoteEditorManager {
     private Paragraph createDividingParagraph(int index) {
         Paragraph paragraph = new Paragraph();
         paragraph.setDirty(true);
+        paragraph.setLineStyle(mOptions.getLineStyle());
         paragraph.setIndentation(0);
-        paragraph.setLineStyle(0);
         paragraph.setDividingLine(true);
+        paragraph.setImage(false);
+
+        paragraph.add(NoteEditorRender.PlaceHoldChar, mOptions);
 
         mNote.getParagraphs().add(index, paragraph);
         return paragraph;
@@ -322,17 +337,18 @@ public class NoteEditorManager {
     }
 
     public void requestDraw() {
-        mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
         print();
+        mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
     }
 
     public void print() {
         List<Paragraph> paragraphs = mNote.getParagraphs();
-        Log.e(TAG, " count: " + paragraphs.size() + "selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
+        Log.e(TAG, " count: " + paragraphs.size() +
+                " selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
         for (Paragraph paragraph: paragraphs) {
             int startPos = getParagraphBegin(paragraph);
             int endPos = getParagraphEnd(paragraph);
-            Log.e(TAG, "[ " + startPos + "->" + endPos + " ] " + paragraph.toString());
+            Log.e(TAG, paragraph.getLineStyle() + " [ " + startPos + "->" + endPos + " ] " + paragraph.toString());
         }
     }
 

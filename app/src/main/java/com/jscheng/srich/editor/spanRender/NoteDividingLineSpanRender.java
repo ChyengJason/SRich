@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.jscheng.srich.editor.spans.NoteDividingLineSpan;
 import com.jscheng.srich.model.Paragraph;
+import com.jscheng.srich.model.Style;
 
 /**
  * Created By Chengjunsen on 2019/3/4
@@ -17,7 +18,7 @@ public class NoteDividingLineSpanRender extends NoteLineSpanRender {
 
     @Override
     protected boolean isStyle(Paragraph paragraph) {
-        return paragraph.isDividingLine();
+        return Style.isStyle(paragraph.getLineStyle(), Style.DividingLine);
     }
 
     @Override

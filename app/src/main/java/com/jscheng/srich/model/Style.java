@@ -24,12 +24,15 @@ public class Style {
 
     public static final int BulletList = 4;
 
+    public static final int DividingLine = 8;
+
+    public static final int Image = 16;
+
     public static boolean isStyle(int style, int flag) {
         return (style & flag) == flag;
     }
 
     public static int setStyle(int style, boolean b, int flag) {
-        return b ? style | flag : style ^ flag;
+        return b ? style | flag : (style | flag) ^ flag;
     }
-
 }

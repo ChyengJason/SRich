@@ -102,6 +102,14 @@ public class Options {
         lineStyle = Style.setStyle(lineStyle, bulletList, Style.BulletList);
     }
 
+    public boolean isDividingLine() {
+        return Style.isStyle(lineStyle, Style.DividingLine);
+    }
+
+    public void setDividingLine(boolean dividingLine) {
+        lineStyle = Style.setStyle(lineStyle, dividingLine, Style.DividingLine);
+    }
+
     public int getIndentation() {
         return indentation;
     }
@@ -125,4 +133,5 @@ public class Options {
     public void setLineStyle(int lineStyle) {
         this.lineStyle = lineStyle;
     }
+
 }

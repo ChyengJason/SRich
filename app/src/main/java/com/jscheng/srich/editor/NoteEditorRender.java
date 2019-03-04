@@ -1,7 +1,6 @@
 package com.jscheng.srich.editor;
 
 import android.text.Editable;
-import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -52,20 +51,17 @@ public class NoteEditorRender {
         int start = 0;
         int end = 0;
         boolean isDirty = false;
-        boolean isClear = false;
+        if (editText.getText() != null) {
+            editText.getText().clear();
+        }
         if (!paragraphs.isEmpty()) {
             for (int i = 0; i < paragraphs.size() ; i++) {
                 Paragraph paragraph = paragraphs.get(i);
                 end = start + paragraph.getLength();
                 isDirty = isDirty || paragraph.isDirty();
-                if (isDirty ) {
-                    if (!isClear) {
-                        isClear = clearLaterParagraphs(start, editText);
-                    }
-                    drawParagraph(paragraph, start, editText);
-                    if (i < paragraphs.size() - 1) {
-                        drawEndCode(end, editText.getText());
-                    }
+                drawParagraph(paragraph, start, editText);
+                if (i < paragraphs.size() - 1) {
+                    drawEndCode(end, editText.getText());
                 }
                 start = end + 1;
             }
@@ -73,42 +69,29 @@ public class NoteEditorRender {
         editText.setSelection(selectionStart, selectionEnd);
     }
 
-    /**
-     * TODO: 后续改进
-     * @param start
-     * @param editText
-     * @return
-     */
-    private boolean clearLaterParagraphs(int start, EditText editText) {
-        Editable editable = editText.getText();
-        Log.e(TAG, "clearLaterParagraphs: " + start + " -> " + editable.length());
-        CharacterStyle[] styles = editable.getSpans(start, editable.length(), CharacterStyle.class);
-        for (CharacterStyle style: styles) {
-            editable.removeSpan(style);
-        }
-        editable.delete(start, editable.length());
-        return true;
-    }
-
     private void drawParagraph(Paragraph paragraph, int globalPos, EditText text) {
         int pos = globalPos;
-        pos = drawLineStyle(paragraph, pos, text);
+        drawWords(paragraph, pos, text);
+        drawLineStyle(paragraph, pos, text);
         drawCodeStyle(paragraph, pos, text);
         paragraph.setDirty(false);
     }
 
-    private int drawLineStyle(Paragraph paragraph, int globalPos, EditText text) {
-        int pos = globalPos;
-        for (NoteLineSpanRender spanRender: mLineSpanRenderList) {
-            pos = spanRender.draw(pos, paragraph, text);
+    private void drawWords(Paragraph paragraph, int pos, EditText text) {
+        Log.e(TAG, "drawWords: " + pos + " " + paragraph.getWords());
+        Editable editable = text.getText();
+        if (paragraph.getLength() > 0) {
+            editable.insert(pos, paragraph.getWords());
         }
-        return pos;
+    }
+
+    private void drawLineStyle(Paragraph paragraph, int pos, EditText text) {
+        for (NoteLineSpanRender spanRender: mLineSpanRenderList) {
+            spanRender.draw(pos, paragraph, text);
+        }
     }
 
     private void drawCodeStyle(Paragraph paragraph, int pos, EditText text) {
-        Editable editable = text.getText();
-        editable.insert(pos, paragraph.getWords());
-
         for (NoteWordSpanRender wordSpanRender: mWordSpanRenderList) {
             wordSpanRender.draw(pos, paragraph, text);
         }

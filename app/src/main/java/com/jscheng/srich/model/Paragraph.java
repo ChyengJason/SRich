@@ -16,10 +16,6 @@ public class Paragraph {
 
     private int indentation;
 
-    private boolean isDividingLine;
-
-    private boolean isImage;
-
     private boolean isDirty;
 
     public Paragraph() {
@@ -27,8 +23,6 @@ public class Paragraph {
         this.words = new StringBuilder();
         this.lineStyle = 0;
         this.indentation = 0;
-        this.isDividingLine = false;
-        this.isImage = false;
         this.isDirty = true;
     }
 
@@ -152,25 +146,27 @@ public class Paragraph {
         return getLength() == 0;
     }
 
-    public boolean isDividingLine() {
-        return isDividingLine;
-    }
-
-    public void setDividingLine(boolean dividingLine) {
-        isDividingLine = dividingLine;
-    }
-
-    public boolean isImage() {
-        return isImage;
-    }
 
     @Override
     public String toString() {
         StringBuilder content = new StringBuilder(words);
-//        content.append(" : ");
-//        for (int i : wordStyles) {
-//            content.append(i + " ");
-//        }
         return content.toString();
     }
+
+    public boolean isDividingLine() {
+        return Style.isStyle(lineStyle, Style.DividingLine);
+    }
+
+    public void setDividingLine(boolean dividingLine) {
+        lineStyle = Style.setStyle(lineStyle, dividingLine, Style.DividingLine);
+    }
+
+    public boolean isImage() {
+        return Style.isStyle(lineStyle, Style.Image);
+    }
+
+    public void setImage(boolean image) {
+        lineStyle = Style.setStyle(lineStyle, image, Style.Image);
+    }
+
 }
