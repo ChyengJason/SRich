@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
+import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.OsUtil;
@@ -128,9 +129,17 @@ public class NoteEditorText extends AppCompatEditText{
     public boolean onTextContextMenuItem(int id) {
         switch (id) {
             case android.R.id.paste:
-                mStyleManager.commandPaste("", true);
-                super.onTextContextMenuItem(id);
+                String pasteContent = ClipboardUtil.paste(getContext());
+                mStyleManager.commandPaste(pasteContent, true);
                 return true;
+            case android.R.id.cut:
+                String cutContent = mStyleManager.getSelectionText();
+                ClipboardUtil.copy(cutContent, getContext());
+                mStyleManager.commandDeleteSelection(true);
+                return true;
+            case android.R.id.copy:
+                String copyContent = mStyleManager.getSelectionText();
+                ClipboardUtil.copy(copyContent, getContext());
             default:
                 return super.onTextContextMenuItem(id);
         }

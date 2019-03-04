@@ -86,24 +86,56 @@ public class NoteEditorManager {
 
     }
 
+    public void commandDeleteSelection(boolean draw) {
+        deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
+        if (draw) requestDraw();
+    }
 
     public void commandDelete(boolean draw) {
-        deleteSelctionParagraphs();
+        if (mSelectionStart == mSelectionEnd) {
+            deleteSelectionParagraphs(mSelectionStart - 1, mSelectionStart);
+        } else {
+            deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
+        }
+        deleteSelectionParagraphs();
         if (draw) { requestDraw(); }
     }
 
     public void commandDelete(int num, boolean draw) {
-        deleteSelctionParagraphs(mSelectionStart - num, mSelectionStart);
-        if (draw) { requestDraw(); }
+        deleteSelectionParagraphs(mSelectionStart - num, mSelectionStart);
+        if (draw) requestDraw();
     }
 
     public void commandPaste(String content, boolean draw) {
-
+        commandInput(content, draw);
     }
 
     public void commandEnter(boolean draw) {
+        inputEnter();
+        if (draw) requestDraw();
+    }
+
+    public void commandInput(CharSequence content, boolean draw) {
+        if (content.length() > 0) {
+            StringBuilder contentNoEnter = new StringBuilder();
+            for (int i = 0; i < content.length(); i++) {
+                char c = content.charAt(i);
+                if (c == NoteEditorRender.EndCodeChar) {
+                    inputEnter();
+                    inputParagraph(contentNoEnter.toString());
+                    contentNoEnter.delete(0, contentNoEnter.length());
+                } else {
+                    contentNoEnter.append(c);
+                }
+            }
+            inputParagraph(contentNoEnter.toString());
+        }
+        if (draw) requestDraw();
+    }
+
+    private void inputEnter() {
         // 删除区间
-        deleteSelctionParagraphs();
+        deleteSelectionParagraphs();
 
         int pos = mSelectionStart;
         // 获取段落
@@ -132,13 +164,13 @@ public class NoteEditorManager {
         // 计算新的选择区
         int newPos = getParagraphBegin(newParagraph);
         setSeletion(newPos);
-
-        if (draw) { requestDraw(); }
     }
 
-    public void commandInput(char c, boolean draw) {
+    private void inputParagraph(String content) {
+        Log.e(TAG, "inputParagraph: " + content );
+        if (content.isEmpty()) return;
         // 删除区间
-        deleteSelctionParagraphs();
+        deleteSelectionParagraphs();
 
         int pos = mSelectionStart;
         // 获取段落
@@ -152,52 +184,56 @@ public class NoteEditorManager {
         int insertPos = pos - begin;
 
         // 插入位置
-        paragraph.insert(insertPos, c, mOptions);
+        paragraph.insert(insertPos, content, mOptions);
 
         // 调整选择区
-        setSeletion(pos + 1);
-        if (draw) {
-            requestDraw();
-        }
+        setSeletion(pos + content.length());
     }
 
-    public void deleteSelctionParagraphs() {
-        deleteSelctionParagraphs(mSelectionStart, mSelectionEnd);
+    private void deleteSelectionParagraphs() {
+        deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
     }
 
-    public void deleteSelctionParagraphs(int startSel, int endSel) {
-        if (startSel < 0 || startSel >= endSel) {
+    private void deleteSelectionParagraphs(int start, int end) {
+        if (start < 0 || start >= end) {
             return;
         }
-        int startPos = 0;
-        int endPos;
-
+        Paragraph firstParagraph = null;
         Iterator<Paragraph> iter = mNote.getParagraphs().iterator();
-        while(iter.hasNext()){
-            Paragraph paragraph = iter.next();
-            endPos = startPos + paragraph.getLength();
-            if (startPos >= startSel && endPos <= endSel) {
-                iter.remove();
-            } else if (startPos <= startSel && startSel <= endPos) {
-                int startCutPos = startSel - startPos;
-                int endCutPos = endSel - startPos;
-                if (endCutPos > paragraph.getLength()) {
-                    endCutPos = paragraph.getLength();
+
+        int startPos = 0;
+        int endPos = 0;
+        while (iter.hasNext()) {
+            Paragraph item = iter.next();
+            endPos = startPos + item.getLength();
+            if (start >= startPos && start <= endPos) { // first paragraph
+                firstParagraph = item;
+                int delParaStartPos = start - startPos;
+                int delParaEndPos = end - startPos;
+                if (delParaEndPos > item.getLength()) {
+                    delParaEndPos = item.getLength();
                 }
-                paragraph.remove(startCutPos, endCutPos);
-                paragraph.setDirty(true);
-            } else if (startPos <= endSel && endSel <= endPos) {
-                int startCutPos = 0;
-                int endCutPos = endSel - startPos;
-                paragraph.remove(startCutPos, endCutPos);
-                paragraph.setDirty(true);
+                firstParagraph.remove(delParaStartPos,delParaEndPos);
+
+            } else if (start <= startPos && end >= endPos) { // middle paragraph
+                iter.remove();
+
+            } else if (end >= startPos && end <= endPos) { // last paragraph
+                int demainParaStartPos = end - startPos;
+                int demainParaEndPos = item.getLength();
+                String demainContent = item.getWords(demainParaStartPos, demainParaEndPos);
+                List<Integer> demainStyles = item.getWordStyles(demainParaStartPos, demainParaEndPos);
+                firstParagraph.addWords(demainContent, demainStyles);
+                iter.remove();
+                break;
+
             }
             startPos = endPos + 1;
         }
-        setSeletion(startSel);
+        setSeletion(start);
     }
 
-    public Paragraph getParagraph(int globalPos) {
+    private Paragraph getParagraph(int globalPos) {
         int startPos = 0;
         int endPos;
         for (Paragraph paragraph : mNote.getParagraphs()) {
@@ -214,7 +250,7 @@ public class NoteEditorManager {
         return mNote.getParagraphs().indexOf(paragraph);
     }
 
-    public int getParagraphBegin(Paragraph aim) {
+    private int getParagraphBegin(Paragraph aim) {
         int startPos = 0;
         int endPos;
         for (Paragraph paragraph : mNote.getParagraphs()) {
@@ -227,16 +263,16 @@ public class NoteEditorManager {
         return startPos;
     }
 
-    public int getParagraphEnd(Paragraph aim) {
+    private int getParagraphEnd(Paragraph aim) {
         int begin = getParagraphBegin(aim);
         return begin + aim.getLength();
     }
 
-    public Paragraph createParagraph(int index) {
+    private Paragraph createParagraph(int index) {
         return createParagraph(index, mOptions.getIndentation(), mOptions.getLineStyle());
     }
 
-    public Paragraph createParagraph(int index, int indenteation, int lineStyle) {
+    private Paragraph createParagraph(int index, int indenteation, int lineStyle) {
         Paragraph paragraph = new Paragraph();
         paragraph.setDirty(true);
         paragraph.setIndentation(indenteation);
@@ -271,5 +307,9 @@ public class NoteEditorManager {
             Log.e(TAG, "[ " + startPos + "->" + endPos + " ] " + paragraph.toString());
         }
         Log.e(TAG, "selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )" );
+    }
+
+    public String getSelectionText() {
+        return "test \n test";
     }
 }
