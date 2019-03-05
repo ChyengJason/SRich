@@ -28,9 +28,11 @@ public class NoteDividingLineSpan extends ReplacementSpan {
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setColor(Color.BLACK);
-        paint.setStrokeWidth(1);
+        paint.setStrokeWidth(2);
+        int lineX = (int)x + 10;
+        int width = mWidth - 30;
         int lineY = top + (bottom - top) / 2;
-        canvas.drawLine(x , lineY, x + mWidth, lineY, paint);
+        canvas.drawLine(lineX , lineY, lineX + width, lineY, paint);
     }
 
     public static NoteDividingLineSpan create(int mWidth) {

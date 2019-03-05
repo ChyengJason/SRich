@@ -13,15 +13,22 @@ import com.jscheng.srich.model.Paragraph;
 public abstract class NoteLineSpanRender<T> {
 
     public void draw(int globalPos, Paragraph paragraph, EditText editText) {
-        if (isStyle(paragraph)) {
+        if (isParagraphStyle(paragraph)) {
             Editable editable = editText.getText();
             int start = globalPos;
             int end = globalPos + paragraph.getLength();
             editable.setSpan(createSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else if (isLineStyle(paragraph) && paragraph.isPlaceHolder()) {
+            Editable editable = editText.getText();
+            int start = globalPos;
+            int end = globalPos + NoteEditorRender.PlaceHoldChar.length();
+            editable.setSpan(createSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 
-    protected abstract boolean isStyle(Paragraph paragraph);
+    protected abstract boolean isParagraphStyle(Paragraph paragraph);
+
+    protected abstract boolean isLineStyle(Paragraph paragraph);
 
     protected abstract T createSpan();
 }

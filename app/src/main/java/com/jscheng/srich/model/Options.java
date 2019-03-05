@@ -1,4 +1,7 @@
 package com.jscheng.srich.model;
+
+import java.util.List;
+
 /**
  * Created By Chengjunsen on 2019/2/26
  */
@@ -27,7 +30,7 @@ public class Options {
     }
 
     public void setBold(boolean bold) {
-        wordStyle = Style.setStyle(wordStyle, bold, Style.Bold);
+        wordStyle = Style.setWordStyle(wordStyle, bold, Style.Bold);
     }
 
     public boolean isItalic() {
@@ -35,7 +38,7 @@ public class Options {
     }
 
     public void setItalic(boolean italic) {
-        wordStyle = Style.setStyle(wordStyle, italic, Style.Italic);
+        wordStyle = Style.setWordStyle(wordStyle, italic, Style.Italic);
     }
 
     public boolean isUnderline() {
@@ -43,7 +46,7 @@ public class Options {
     }
 
     public void setUnderline(boolean underline) {
-        wordStyle = Style.setStyle(wordStyle, underline, Style.UnderLine);
+        wordStyle = Style.setWordStyle(wordStyle, underline, Style.UnderLine);
     }
 
     public boolean isColor() {
@@ -51,7 +54,7 @@ public class Options {
     }
 
     public void setColor(boolean color) {
-        wordStyle = Style.setStyle(wordStyle, color, Style.BackgroudColor);
+        wordStyle = Style.setWordStyle(wordStyle, color, Style.BackgroudColor);
     }
 
     public boolean isSuperScript() {
@@ -59,7 +62,7 @@ public class Options {
     }
 
     public void setSuperScript(boolean superScript) {
-        wordStyle = Style.setStyle(wordStyle, superScript, Style.SuperScript);
+        wordStyle = Style.setWordStyle(wordStyle, superScript, Style.SuperScript);
     }
 
     public boolean isSubScript() {
@@ -67,7 +70,7 @@ public class Options {
     }
 
     public void setSubScript(boolean subScript) {
-        wordStyle = Style.setStyle(wordStyle, subScript, Style.SubScript);
+        wordStyle = Style.setWordStyle(wordStyle, subScript, Style.SubScript);
     }
 
     public boolean isStrikethrough() {
@@ -75,7 +78,7 @@ public class Options {
     }
 
     public void setStrikethrough(boolean strikethrough) {
-        wordStyle = Style.setStyle(wordStyle, strikethrough, Style.Strikethrough);
+        wordStyle = Style.setWordStyle(wordStyle, strikethrough, Style.Strikethrough);
     }
 
     public boolean isCheckBox() {
@@ -83,7 +86,7 @@ public class Options {
     }
 
     public void setCheckBox(boolean checkBox) {
-        lineStyle = Style.setStyle(lineStyle, checkBox, Style.CheckBox);
+        lineStyle = Style.setLineStyle(lineStyle, checkBox, Style.CheckBox);
     }
 
     public boolean isNumList() {
@@ -91,7 +94,7 @@ public class Options {
     }
 
     public void setNumList(boolean numList) {
-        lineStyle = Style.setStyle(lineStyle, numList, Style.NumList);
+        lineStyle = Style.setLineStyle(lineStyle, numList, Style.NumList);
     }
 
     public boolean isBulletList() {
@@ -99,7 +102,7 @@ public class Options {
     }
 
     public void setBulletList(boolean bulletList) {
-        lineStyle = Style.setStyle(lineStyle, bulletList, Style.BulletList);
+        lineStyle = Style.setLineStyle(lineStyle, bulletList, Style.BulletList);
     }
 
     public boolean isDividingLine() {
@@ -107,7 +110,7 @@ public class Options {
     }
 
     public void setDividingLine(boolean dividingLine) {
-        lineStyle = Style.setStyle(lineStyle, dividingLine, Style.DividingLine);
+        lineStyle = Style.setLineStyle(lineStyle, dividingLine, Style.DividingLine);
     }
 
     public int getIndentation() {
@@ -134,4 +137,45 @@ public class Options {
         this.lineStyle = lineStyle;
     }
 
+    public static Options getSameStyle(int indentation, int lineStyle, List<Integer> wordStyles) {
+        Options options = new Options();
+        options.setLineStyle(lineStyle);
+        options.setIndentation(indentation);
+
+        if (wordStyles.isEmpty()) {
+            return options;
+        }
+
+        options.setBold(true);
+        options.setItalic(true);
+        options.setUnderline(true);
+        options.setStrikethrough(true);
+        options.setColor(true);
+        options.setSuperScript(true);
+        options.setSubScript(true);
+        for (int word: wordStyles) {
+            if (!Style.isStyle(word, Style.Bold)) {
+                options.setBold(false);
+            }
+            if (!Style.isStyle(word, Style.Italic)) {
+                options.setItalic(false);
+            }
+            if (!Style.isStyle(word, Style.UnderLine)) {
+                options.setUnderline(false);
+            }
+            if (!Style.isStyle(word, Style.Strikethrough)) {
+                options.setStrikethrough(false);
+            }
+            if (!Style.isStyle(word, Style.BackgroudColor)) {
+                options.setColor(false);
+            }
+            if (!Style.isStyle(word, Style.SuperScript)) {
+                options.setSuperScript(false);
+            }
+            if (!Style.isStyle(word, Style.SubScript)) {
+                options.setSubScript(false);
+            }
+        }
+        return options;
+    }
 }

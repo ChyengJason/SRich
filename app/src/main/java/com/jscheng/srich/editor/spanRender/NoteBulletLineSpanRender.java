@@ -2,6 +2,7 @@ package com.jscheng.srich.editor.spanRender;
 
 import android.view.View;
 
+import com.jscheng.srich.editor.spans.NoteBulletSpan;
 import com.jscheng.srich.editor.spans.NoteDividingLineSpan;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
@@ -9,25 +10,23 @@ import com.jscheng.srich.model.Style;
 /**
  * Created By Chengjunsen on 2019/3/4
  */
-public class NoteDividingLineSpanRender extends NoteLineSpanRender {
-    private View view;
+public class NoteBulletLineSpanRender extends NoteLineSpanRender {
 
-    public NoteDividingLineSpanRender(View view) {
-        this.view = view;
+    public NoteBulletLineSpanRender() {
     }
 
     @Override
     protected boolean isParagraphStyle(Paragraph paragraph) {
-        return Style.isStyle(paragraph.getLineStyle(), Style.DividingLine);
-    }
-
-    @Override
-    protected boolean isLineStyle(Paragraph paragraph) {
         return false;
     }
 
     @Override
+    protected boolean isLineStyle(Paragraph paragraph) {
+        return Style.isStyle(paragraph.getLineStyle(), Style.BulletList);
+    }
+
+    @Override
     protected Object createSpan() {
-        return NoteDividingLineSpan.create(view.getWidth());
+        return NoteBulletSpan.create();
     }
 }

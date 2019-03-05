@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import com.jscheng.srich.editor.spanRender.NoteBackgroundSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteDividingLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteItalicSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteLineSpanRender;
@@ -45,6 +46,7 @@ public class NoteEditorRender {
         mWordSpanRenderList.add(new NoteUnderlineSpanRender());
 
         mLineSpanRenderList.add(new NoteDividingLineSpanRender(editText));
+        mLineSpanRenderList.add(new NoteBulletLineSpanRender());
     }
 
     public void draw(EditText editText, List<Paragraph> paragraphs, int selectionStart, int selectionEnd) {

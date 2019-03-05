@@ -32,7 +32,20 @@ public class Style {
         return (style & flag) == flag;
     }
 
-    public static int setStyle(int style, boolean b, int flag) {
+    public static int setWordStyle(int style, boolean b, int flag) {
         return b ? style | flag : (style | flag) ^ flag;
+    }
+
+    public static int setLineStyle(int style, boolean b, int flag) {
+        style = b ? flag : (style == flag ? 0 : style);
+        return style;
+    }
+
+    public static int clearLineStyle(int style) {
+        return 0;
+    }
+
+    public static int clearWordStyle(int style) {
+        return 0;
     }
 }

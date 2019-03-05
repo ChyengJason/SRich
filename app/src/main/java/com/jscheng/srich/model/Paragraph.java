@@ -1,5 +1,7 @@
 package com.jscheng.srich.model;
 
+import com.jscheng.srich.editor.NoteEditorRender;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +64,30 @@ public class Paragraph {
             wordStyles.add(i, options.getWordStyle());
         }
         setDirty(true);
+    }
+
+    public boolean insertPlaceHolder() {
+        setDirty(true);
+        if (!isPlaceHolder()) {
+            words.insert(0, NoteEditorRender.PlaceHoldChar);
+            wordStyles.add(0, 0);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removePlaceHolder() {
+        setDirty(true);
+        if (isPlaceHolder()) {
+            words.delete(0, 1);
+            wordStyles.remove(0);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPlaceHolder() {
+       return words.length() > 0 && words.substring(0, 1).equals(NoteEditorRender.PlaceHoldChar);
     }
 
     public void remove(int start, int end) {
@@ -146,7 +172,6 @@ public class Paragraph {
         return getLength() == 0;
     }
 
-
     @Override
     public String toString() {
         StringBuilder content = new StringBuilder(words);
@@ -158,7 +183,7 @@ public class Paragraph {
     }
 
     public void setDividingLine(boolean dividingLine) {
-        lineStyle = Style.setStyle(lineStyle, dividingLine, Style.DividingLine);
+        lineStyle = Style.setLineStyle(lineStyle, dividingLine, Style.DividingLine);
     }
 
     public boolean isImage() {
@@ -166,7 +191,34 @@ public class Paragraph {
     }
 
     public void setImage(boolean image) {
-        lineStyle = Style.setStyle(lineStyle, image, Style.Image);
+        lineStyle = Style.setLineStyle(lineStyle, image, Style.Image);
     }
 
+    public boolean isBulletList() {
+        return Style.isStyle(lineStyle, Style.BulletList);
+    }
+
+    public void setBulletList(boolean bullet) {
+        lineStyle = Style.setLineStyle(lineStyle, bullet, Style.BulletList);
+    }
+
+    public boolean isNumList() {
+        return Style.isStyle(lineStyle, Style.NumList);
+    }
+
+    public void setNumList(boolean numlist) {
+        lineStyle = Style.setStyle(lineStyle, numlist, Style.NumList);
+    }
+
+    public boolean isCheckbox() {
+        return Style.isStyle(lineStyle, Style.CheckBox);
+    }
+
+    public void setCheckbox(boolean numlist) {
+        lineStyle = Style.setStyle(lineStyle, numlist, Style.CheckBox);
+    }
+
+    public boolean isHeadStyle() {
+        return isBulletList() || isNumList() || isCheckbox();
+    }
 }
