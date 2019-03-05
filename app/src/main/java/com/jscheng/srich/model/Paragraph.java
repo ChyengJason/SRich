@@ -207,7 +207,7 @@ public class Paragraph {
     }
 
     public void setNumList(boolean numlist) {
-        lineStyle = Style.setStyle(lineStyle, numlist, Style.NumList);
+        lineStyle = Style.setLineStyle(lineStyle, numlist, Style.NumList);
     }
 
     public boolean isCheckbox() {
@@ -215,7 +215,7 @@ public class Paragraph {
     }
 
     public void setCheckbox(boolean numlist) {
-        lineStyle = Style.setStyle(lineStyle, numlist, Style.CheckBox);
+        lineStyle = Style.setLineStyle(lineStyle, numlist, Style.CheckBox);
     }
 
     public boolean isHeadStyle() {
