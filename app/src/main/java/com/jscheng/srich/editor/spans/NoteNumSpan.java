@@ -13,6 +13,7 @@ import android.text.style.ReplacementSpan;
 public class NoteNumSpan extends ReplacementSpan{
     private int mNum;
     private int mTextSize;
+    private int mWidth = 50;
 
     public NoteNumSpan(int textSize, int num) {
         this.mNum = num;
@@ -21,7 +22,7 @@ public class NoteNumSpan extends ReplacementSpan{
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-        return 50;
+        return mWidth;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class NoteNumSpan extends ReplacementSpan{
         canvas.save();
         paint.setTextSize(mTextSize);
         paint.setColor(Color.BLACK);
-        canvas.drawText(String.valueOf(mNum), x, y, paint);
+        canvas.drawText(String.valueOf(mNum) + ".", x, y, paint);
         canvas.restore();
     }
 

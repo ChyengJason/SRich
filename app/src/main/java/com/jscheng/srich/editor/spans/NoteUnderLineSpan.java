@@ -1,6 +1,5 @@
 package com.jscheng.srich.editor.spans;
 
-import android.text.Editable;
 import android.text.style.UnderlineSpan;
 
 /**

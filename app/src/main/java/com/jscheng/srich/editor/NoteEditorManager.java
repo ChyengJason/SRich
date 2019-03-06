@@ -164,15 +164,26 @@ public class NoteEditorManager {
             lastParagraph = createParagraph(0);
         }
 
+        int lastBeginPos = getParagraphBegin(lastParagraph);
         int lastEndPos = getParagraphEnd(lastParagraph);
         int lastIndex = getParagraphIndex(lastParagraph);
         int newLineStyle = lastParagraph.getLineStyle();
         int newIndentation = lastParagraph.getIndentation();
 
         Paragraph newParagraph;
-        if (lastEndPos == pos) {
+        if (lastBeginPos == mSelectionStart) {
+            // 插入一个新段落
+            createParagraph(lastIndex, newIndentation, 0);
+            newParagraph = lastParagraph;
+            // 计算新的选择区
+            int newPos = getParagraphBegin(newParagraph);
+            setSeletion(newPos);
+        } else if (lastEndPos == mSelectionStart) {
             // 直接创建新段落
             newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
+            // 计算新的选择区
+            int newPos = getParagraphBeginWithHead(newParagraph);
+            setSeletion(newPos);
         } else {
             // 分割成两部分
             int cutPos = pos - getParagraphBegin(lastParagraph);
@@ -184,10 +195,10 @@ public class NoteEditorManager {
             // 加入新段落
             newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
             newParagraph.addWords(newWords, newWordStyles);
+            // 计算新的选择区
+            int newPos = getParagraphBeginWithHead(newParagraph);
+            setSeletion(newPos);
         }
-        // 计算新的选择区
-        int newPos = getParagraphBeginWithHead(newParagraph);
-        setSeletion(newPos);
     }
 
     private void inputParagraph(String content) {

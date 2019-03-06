@@ -4,13 +4,19 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Layout;
 import android.text.Spanned;
+import android.text.style.CharacterStyle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.widget.Toast;
 
+import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
@@ -18,7 +24,7 @@ import com.jscheng.srich.utils.OsUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText{
+public class NoteEditorText extends AppCompatEditText {
     private static final String TAG = "NoteEditorText";
     private NoteEditorManager mStyleManager;
     private NoteEditorInputConnection mInputConnection;
@@ -142,6 +148,27 @@ public class NoteEditorText extends AppCompatEditText{
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int x = (int)event.getX();
+        int y = (int)event.getY();
+        x -= getTotalPaddingLeft();
+        y -= getTotalPaddingTop();
+
+        x += getScrollX();
+        y += getScrollY();
+
+        Layout layout = getLayout();
+        int line = layout.getLineForVertical(y);
+        int off = layout.getOffsetForHorizontal(line, x);
+
+        CharacterStyle[] spans = getText().getSpans(off, off, CharacterStyle.class);
+        if (spans.length > 0) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
     private class ReadingInputFilter implements InputFilter {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
@@ -155,5 +182,4 @@ public class NoteEditorText extends AppCompatEditText{
             return null;
         }
     }
-
 }

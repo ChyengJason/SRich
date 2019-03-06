@@ -5,7 +5,7 @@ import android.text.style.URLSpan;
 /**
  * Created By Chengjunsen on 2019/2/25
  */
-public class NoteUriSpan extends URLSpan {
+public class NoteUriSpan extends URLSpan implements NoteClickSpan{
 
     public NoteUriSpan(String url) {
         super(url);
