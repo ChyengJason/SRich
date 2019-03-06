@@ -28,6 +28,7 @@ public class NoteDividingLineSpanRender extends NoteLineSpanRender {
 
     @Override
     protected Object createSpan(int num) {
-        return NoteDividingLineSpan.create(view.getWidth());
+        int width = view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
+        return NoteDividingLineSpan.create(width);
     }
 }

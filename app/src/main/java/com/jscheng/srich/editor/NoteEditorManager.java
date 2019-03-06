@@ -1,6 +1,7 @@
 package com.jscheng.srich.editor;
 import android.util.Log;
 
+import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
@@ -511,6 +512,17 @@ public class NoteEditorManager {
         lineStyle = Math.max(0, lineStyle);
         indentation = Math.max(0, indentation);
         return Options.getSameStyle(indentation, lineStyle, wordStyles);
+    }
+
+    /**
+     * checkbox uncheckbox image uri
+     * @param span
+     * @param globalPos
+     * @return
+     */
+    public boolean onSpanTouched(NoteClickSpan span, int globalPos) {
+
+        return false;
     }
 
     public void requestDraw() {

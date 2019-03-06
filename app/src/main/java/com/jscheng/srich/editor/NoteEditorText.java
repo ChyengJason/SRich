@@ -6,16 +6,11 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
 import android.text.Spanned;
-import android.text.style.CharacterStyle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.widget.Toast;
-
 import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
@@ -162,8 +157,8 @@ public class NoteEditorText extends AppCompatEditText {
         int line = layout.getLineForVertical(y);
         int off = layout.getOffsetForHorizontal(line, x);
 
-        CharacterStyle[] spans = getText().getSpans(off, off, CharacterStyle.class);
-        if (spans.length > 0) {
+        NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
+        if (spans.length > 0 && mStyleManager.onSpanTouched(spans[0], off)) {
             return true;
         }
         return super.onTouchEvent(event);

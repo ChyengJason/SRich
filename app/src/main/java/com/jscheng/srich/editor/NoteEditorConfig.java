@@ -11,9 +11,9 @@ public class NoteEditorConfig {
 
     public static final int HandleColor = 0xFF01A832;
 
-    public static final int TextSizeSp = 18;
+    public static final int TextSizeSp = 16;
 
     public static final float LetterSpacing = 0.01f;
 
-    public static final int LineSpacing = 12;
+    public static final int LineSpacing = 15;
 }
