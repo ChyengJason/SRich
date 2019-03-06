@@ -4,7 +4,6 @@ import android.util.Log;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
-import com.jscheng.srich.model.Style;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -88,26 +87,40 @@ public class NoteEditorManager {
     }
 
     public void commandNumList(boolean isSelected, boolean draw) {
+        mOptions.setNumList(isSelected);
+        inputNumList(isSelected);
+        if (draw) { requestDraw(); }
+    }
 
+    public void commandCheckBox(boolean isSelected, boolean draw) {
+        if (isSelected) {
+            mOptions.setUnCheckBox(true);
+            mOptions.setCheckBox(false);
+        } else {
+            mOptions.setUnCheckBox(false);
+            mOptions.setCheckBox(false);
+        }
+        inputUnCheckBox(isSelected);
+        if (draw) { requestDraw(); }
     }
 
     public void commandDeleteSelection(boolean draw) {
-        deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
+        deleteSelection(mSelectionStart, mSelectionEnd);
         if (draw) { requestDraw(); }
     }
 
     public void commandDelete(boolean draw) {
         if (mSelectionStart == mSelectionEnd) {
-            deleteSelectionParagraphs(mSelectionStart - 1, mSelectionStart);
+            deleteSelection(mSelectionStart - 1, mSelectionStart);
         } else {
-            deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
+            deleteSelection(mSelectionStart, mSelectionEnd);
         }
-        deleteSelectionParagraphs();
+        deleteSelection();
         if (draw) { requestDraw(); }
     }
 
     public void commandDelete(int num, boolean draw) {
-        deleteSelectionParagraphs(mSelectionStart - num, mSelectionStart);
+        deleteSelection(mSelectionStart - num, mSelectionStart);
         if (draw) { requestDraw(); }
     }
 
@@ -142,7 +155,7 @@ public class NoteEditorManager {
 
     private void inputEnter() {
         // 删除区间
-        deleteSelectionParagraphs();
+        deleteSelection();
 
         int pos = mSelectionStart;
         // 获取段落
@@ -157,7 +170,7 @@ public class NoteEditorManager {
         int newIndentation = lastParagraph.getIndentation();
 
         Paragraph newParagraph;
-        if (lastEndPos == mSelectionStart) {
+        if (lastEndPos == pos) {
             // 直接创建新段落
             newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
         } else {
@@ -170,10 +183,10 @@ public class NoteEditorManager {
             lastParagraph.remove(cutPos, lastParagraph.getLength());
             // 加入新段落
             newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
-            newParagraph.setWords(newWords, newWordStyles);
+            newParagraph.addWords(newWords, newWordStyles);
         }
         // 计算新的选择区
-        int newPos = getParagraphBegin(newParagraph);
+        int newPos = getParagraphBeginWithHead(newParagraph);
         setSeletion(newPos);
     }
 
@@ -181,7 +194,7 @@ public class NoteEditorManager {
         Log.e(TAG, "inputParagraph: " + content );
         if (content.isEmpty()) { return; }
         // 删除区间
-        deleteSelectionParagraphs();
+        deleteSelection();
 
         int pos = mSelectionStart;
         // 获取段落
@@ -195,7 +208,7 @@ public class NoteEditorManager {
                 index += 1;
             }
             paragraph = createParagraph(index, paragraph.getIndentation(), paragraph.getLineStyle());
-            pos = getParagraphBegin(paragraph);
+            pos = getParagraphBeginWithHead(paragraph);
         }
 
         // 计算插入位置
@@ -211,7 +224,7 @@ public class NoteEditorManager {
 
     private void inputDividingLine() {
         // 删除区间
-        deleteSelectionParagraphs();
+        deleteSelection();
 
         int pos = mSelectionStart;
         Paragraph paragraph = getParagraph(pos);
@@ -222,30 +235,83 @@ public class NoteEditorManager {
             int index = getParagraphIndex(paragraph);
             dividingParagraph = createDividingParagraph(index + 1);
         }
-        setSeletion(getParagraphEnd(dividingParagraph));
+        pos = getParagraphEnd(dividingParagraph);
+        setSeletion(pos);
     }
 
     private void inputBulletList(boolean isSelected) {
         List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
-        for (Paragraph paragraph : paragraphs) {
-            paragraph.setBulletList(isSelected);
-            if (isSelected) {
-                if (paragraph.insertPlaceHolder()) {
-                    setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-                }
-            } else {
-                if (paragraph.removePlaceHolder()) {
-                    setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
+        if (paragraphs.isEmpty()) {
+            Paragraph newParagraph = createParagraph(0);
+            paragraphs.add(newParagraph);
+            setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+        } else {
+            for (Paragraph paragraph : paragraphs) {
+                paragraph.setBulletList(isSelected);
+                if (isSelected) {
+                    if (paragraph.insertPlaceHolder()) {
+                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+                    }
+                } else {
+                    if (paragraph.removePlaceHolder()) {
+                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
+                    }
                 }
             }
         }
     }
 
-    private void deleteSelectionParagraphs() {
-        deleteSelectionParagraphs(mSelectionStart, mSelectionEnd);
+    private void inputNumList(boolean isSelected) {
+        List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
+        if (paragraphs.isEmpty()) {
+            Paragraph newParagraph = createParagraph(0);
+            paragraphs.add(newParagraph);
+            setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+        } else {
+            for (Paragraph paragraph : paragraphs) {
+                paragraph.setNumList(isSelected);
+                if (isSelected) {
+                    if (paragraph.insertPlaceHolder()) {
+                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+                    }
+                } else {
+                    if (paragraph.removePlaceHolder()) {
+                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
+                    }
+                }
+            }
+        }
     }
 
-    private void deleteSelectionParagraphs(int start, int end) {
+    private void inputUnCheckBox(boolean isSelected) {
+        List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
+        if (paragraphs.isEmpty()) {
+            Paragraph newParagraph = createParagraph(0);
+            paragraphs.add(newParagraph);
+            setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+        } else {
+            for (Paragraph paragraph : paragraphs) {
+                paragraph.setUnCheckbox(isSelected);
+                paragraph.setCheckbox(false);
+                if (isSelected) {
+                    if (paragraph.insertPlaceHolder()) {
+                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+                    }
+                } else {
+                    if (paragraph.removePlaceHolder()) {
+                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void deleteSelection() {
+        deleteSelection(mSelectionStart, mSelectionEnd);
+    }
+
+    private void deleteSelection(int start, int end) {
         if (start < 0 || start >= end) {
             return;
         }
@@ -264,20 +330,27 @@ public class NoteEditorManager {
                 if (delParaEndPos > item.getLength()) {
                     delParaEndPos = item.getLength();
                 }
-                firstParagraph.remove(delParaStartPos,delParaEndPos);
-
+                item.remove(delParaStartPos, delParaEndPos);
+                if (delParaStartPos <= 0 && delParaEndPos >= 1) {
+                    item.clearHeadStyle();
+                }
             } else if (start <= startPos && end >= endPos) { // middle paragraph
                 iter.remove();
 
             } else if (end >= startPos && end <= endPos) { // last paragraph
                 int demainParaStartPos = end - startPos;
                 int demainParaEndPos = item.getLength();
-                String demainContent = item.getWords(demainParaStartPos, demainParaEndPos);
-                List<Integer> demainStyles = item.getWordStyles(demainParaStartPos, demainParaEndPos);
-                firstParagraph.addWords(demainContent, demainStyles);
+                if (item.isHeadStyle() && demainParaStartPos <= 0 && demainParaEndPos >= 1) {
+                    item.clearHeadStyle();
+                    demainParaStartPos += 1;
+                }
+                if (demainParaStartPos < demainParaEndPos) {
+                    String demainContent = item.getWords(demainParaStartPos, demainParaEndPos);
+                    List<Integer> demainStyles = item.getWordStyles(demainParaStartPos, demainParaEndPos);
+                    firstParagraph.addWords(demainContent, demainStyles);
+                }
                 iter.remove();
                 break;
-
             }
             startPos = endPos + 1;
         }
@@ -316,6 +389,14 @@ public class NoteEditorManager {
 
     private int getParagraphIndex(Paragraph paragraph) {
         return mNote.getParagraphs().indexOf(paragraph);
+    }
+
+    private int getParagraphBeginWithHead(Paragraph aim) {
+        int pos = getParagraphBegin(aim);
+        if (aim.isHeadStyle()) {
+            pos++;
+        }
+        return pos;
     }
 
     private int getParagraphBegin(Paragraph aim) {
@@ -383,25 +464,29 @@ public class NoteEditorManager {
         notifySelectionChangeListener(selStart, selEnd, mOptions);
     }
 
+    /**
+     * 获取对应位置的样式：wordStyle 和 lineStyle
+     * @param start
+     * @param end
+     * @return
+     */
     private Options detectStyle(int start, int end) {
-        if (start == end && start > 0) {
-            start -= 1;
-        }
-
         int startPos = 0;
         int endPos;
         int lineStyle = -1;
         int indentation = -1;
         List<Integer> wordStyles = new ArrayList<>();
+
         for (Paragraph paragraph : mNote.getParagraphs()) {
             endPos = startPos + paragraph.getLength();
             int rangeLeft = Math.max(start, startPos);
             int rangeRight = Math.min(end, endPos);
-            if (rangeLeft < rangeRight) {
+            if (rangeLeft <= rangeRight) {
                 // 计算交集的区间
                 int rangeLeftPos = rangeLeft - startPos;
                 int rangeRightPos = rangeRight - startPos;
-                List<Integer> rangeWordStyles = paragraph.getWordStyles().subList(rangeLeftPos, rangeRightPos);
+                Log.e(TAG, "detectStyle: " + rangeLeftPos + " -> " + rangeRightPos );
+                List<Integer> rangeWordStyles = paragraph.getWordStyles(rangeLeftPos, rangeRightPos);
                 wordStyles.addAll(rangeWordStyles);
                 if (lineStyle == -1) {
                     lineStyle = paragraph.getLineStyle();

@@ -20,6 +20,6 @@ public class NoteItalicSpanRender extends NoteWordSpanRender<NoteItalicSpan> {
 
     @Override
     protected boolean isStyle(int style) {
-        return Style.isStyle(style, getStyle());
+        return Style.isWordStyle(style, getStyle());
     }
 }

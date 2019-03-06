@@ -19,6 +19,6 @@ public class NoteUnderlineSpanRender extends NoteWordSpanRender<NoteUnderLineSpa
 
     @Override
     protected boolean isStyle(int style) {
-        return Style.isStyle(style, getStyle());
+        return Style.isWordStyle(style, getStyle());
     }
 }

@@ -250,7 +250,9 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarCheckBox() {
-
+        boolean isSelected = !mCheckboxButton.isSelected();
+        mCheckboxButton.setSelected(isSelected);
+        mStyleManager.commandCheckBox(isSelected,true);
     }
 
     private void tapBarUnderline() {
@@ -298,5 +300,6 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         mStrikethroughButton.setSelected(options.isStrikethrough());
         mBulletListButton.setSelected(options.isBulletList());
         mNumListButton.setSelected(options.isNumList());
+        mCheckboxButton.setSelected(options.isCheckBox() || options.isUnCheckBox());
     }
 }

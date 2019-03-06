@@ -7,12 +7,15 @@ import android.widget.EditText;
 import com.jscheng.srich.editor.spanRender.NoteBackgroundSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteCheckBoxLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteDividingLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteItalicSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteLineSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteNumLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteStrikethroughWordSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteSubscriptSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteSuperscriptSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteUncheckBoxLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteUnderlineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteWordSpanRender;
 import com.jscheng.srich.model.Paragraph;
@@ -47,11 +50,15 @@ public class NoteEditorRender {
 
         mLineSpanRenderList.add(new NoteDividingLineSpanRender(editText));
         mLineSpanRenderList.add(new NoteBulletLineSpanRender());
+        mLineSpanRenderList.add(new NoteNumLineSpanRender(editText));
+        mLineSpanRenderList.add(new NoteCheckBoxLineSpanRender(editText));
+        mLineSpanRenderList.add(new NoteUncheckBoxLineSpanRender(editText));
     }
 
     public void draw(EditText editText, List<Paragraph> paragraphs, int selectionStart, int selectionEnd) {
         int start = 0;
         int end = 0;
+        int num = 0;
         boolean isDirty = false;
         if (editText.getText() != null) {
             editText.getText().clear();
@@ -61,7 +68,8 @@ public class NoteEditorRender {
                 Paragraph paragraph = paragraphs.get(i);
                 end = start + paragraph.getLength();
                 isDirty = isDirty || paragraph.isDirty();
-                drawParagraph(paragraph, start, editText);
+                num = paragraph.isNumList() ? num + 1 : 0;
+                drawParagraph(paragraph, start, num, editText);
                 if (i < paragraphs.size() - 1) {
                     drawEndCode(end, editText.getText());
                 }
@@ -71,10 +79,10 @@ public class NoteEditorRender {
         editText.setSelection(selectionStart, selectionEnd);
     }
 
-    private void drawParagraph(Paragraph paragraph, int globalPos, EditText text) {
+    private void drawParagraph(Paragraph paragraph, int globalPos, int num, EditText text) {
         int pos = globalPos;
         drawWords(paragraph, pos, text);
-        drawLineStyle(paragraph, pos, text);
+        drawLineStyle(paragraph, pos, num, text);
         drawCodeStyle(paragraph, pos, text);
         paragraph.setDirty(false);
     }
@@ -87,9 +95,9 @@ public class NoteEditorRender {
         }
     }
 
-    private void drawLineStyle(Paragraph paragraph, int pos, EditText text) {
+    private void drawLineStyle(Paragraph paragraph, int pos, int num, EditText text) {
         for (NoteLineSpanRender spanRender: mLineSpanRenderList) {
-            spanRender.draw(pos, paragraph, text);
+            spanRender.draw(pos, num, paragraph, text);
         }
     }
 

@@ -19,6 +19,6 @@ public class NoteBackgroundSpanRender extends NoteWordSpanRender<NoteBackgroundS
 
     @Override
     protected boolean isStyle(int style) {
-        return Style.isStyle(style, getStyle());
+        return Style.isWordStyle(style, getStyle());
     }
 }

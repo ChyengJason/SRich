@@ -18,7 +18,7 @@ public class NoteDividingLineSpanRender extends NoteLineSpanRender {
 
     @Override
     protected boolean isParagraphStyle(Paragraph paragraph) {
-        return Style.isStyle(paragraph.getLineStyle(), Style.DividingLine);
+        return Style.isLineStyle(paragraph.getLineStyle(), Style.DividingLine);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class NoteDividingLineSpanRender extends NoteLineSpanRender {
     }
 
     @Override
-    protected Object createSpan() {
+    protected Object createSpan(int num) {
         return NoteDividingLineSpan.create(view.getWidth());
     }
 }

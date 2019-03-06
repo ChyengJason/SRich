@@ -22,11 +22,11 @@ public class NoteBulletLineSpanRender extends NoteLineSpanRender {
 
     @Override
     protected boolean isLineStyle(Paragraph paragraph) {
-        return Style.isStyle(paragraph.getLineStyle(), Style.BulletList);
+        return Style.isLineStyle(paragraph.getLineStyle(), Style.BulletList);
     }
 
     @Override
-    protected Object createSpan() {
+    protected Object createSpan(int num) {
         return NoteBulletSpan.create();
     }
 }

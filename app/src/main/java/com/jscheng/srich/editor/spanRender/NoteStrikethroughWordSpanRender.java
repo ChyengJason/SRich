@@ -21,6 +21,6 @@ public class NoteStrikethroughWordSpanRender extends NoteWordSpanRender<NoteStri
 
     @Override
     protected boolean isStyle(int style) {
-        return Style.isStyle(style, getStyle());
+        return Style.isWordStyle(style, getStyle());
     }
 }

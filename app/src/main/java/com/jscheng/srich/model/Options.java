@@ -26,7 +26,7 @@ public class Options {
     }
 
     public boolean isBold() {
-        return Style.isStyle(wordStyle, Style.Bold);
+        return Style.isWordStyle(wordStyle, Style.Bold);
     }
 
     public void setBold(boolean bold) {
@@ -34,7 +34,7 @@ public class Options {
     }
 
     public boolean isItalic() {
-        return Style.isStyle(wordStyle, Style.Italic);
+        return Style.isWordStyle(wordStyle, Style.Italic);
     }
 
     public void setItalic(boolean italic) {
@@ -42,7 +42,7 @@ public class Options {
     }
 
     public boolean isUnderline() {
-        return Style.isStyle(wordStyle, Style.UnderLine);
+        return Style.isWordStyle(wordStyle, Style.UnderLine);
     }
 
     public void setUnderline(boolean underline) {
@@ -50,7 +50,7 @@ public class Options {
     }
 
     public boolean isColor() {
-        return Style.isStyle(wordStyle, Style.BackgroudColor);
+        return Style.isWordStyle(wordStyle, Style.BackgroudColor);
     }
 
     public void setColor(boolean color) {
@@ -58,7 +58,7 @@ public class Options {
     }
 
     public boolean isSuperScript() {
-        return Style.isStyle(wordStyle, Style.SuperScript);
+        return Style.isWordStyle(wordStyle, Style.SuperScript);
     }
 
     public void setSuperScript(boolean superScript) {
@@ -66,7 +66,7 @@ public class Options {
     }
 
     public boolean isSubScript() {
-        return Style.isStyle(wordStyle, Style.SubScript);
+        return Style.isWordStyle(wordStyle, Style.SubScript);
     }
 
     public void setSubScript(boolean subScript) {
@@ -74,7 +74,7 @@ public class Options {
     }
 
     public boolean isStrikethrough() {
-        return Style.isStyle(wordStyle, Style.Strikethrough);
+        return Style.isWordStyle(wordStyle, Style.Strikethrough);
     }
 
     public void setStrikethrough(boolean strikethrough) {
@@ -82,15 +82,23 @@ public class Options {
     }
 
     public boolean isCheckBox() {
-        return Style.isStyle(lineStyle, Style.CheckBox);
+        return Style.isLineStyle(lineStyle, Style.CheckBox);
     }
 
     public void setCheckBox(boolean checkBox) {
         lineStyle = Style.setLineStyle(lineStyle, checkBox, Style.CheckBox);
     }
 
+    public boolean isUnCheckBox() {
+        return Style.isLineStyle(lineStyle, Style.UnCheckBox);
+    }
+
+    public void setUnCheckBox(boolean checkBox) {
+        lineStyle = Style.setLineStyle(lineStyle, checkBox, Style.UnCheckBox);
+    }
+
     public boolean isNumList() {
-        return Style.isStyle(lineStyle, Style.NumList);
+        return Style.isLineStyle(lineStyle, Style.NumList);
     }
 
     public void setNumList(boolean numList) {
@@ -98,7 +106,7 @@ public class Options {
     }
 
     public boolean isBulletList() {
-        return Style.isStyle(lineStyle, Style.BulletList);
+        return Style.isLineStyle(lineStyle, Style.BulletList);
     }
 
     public void setBulletList(boolean bulletList) {
@@ -106,7 +114,7 @@ public class Options {
     }
 
     public boolean isDividingLine() {
-        return Style.isStyle(lineStyle, Style.DividingLine);
+        return Style.isLineStyle(lineStyle, Style.DividingLine);
     }
 
     public void setDividingLine(boolean dividingLine) {
@@ -154,25 +162,25 @@ public class Options {
         options.setSuperScript(true);
         options.setSubScript(true);
         for (int word: wordStyles) {
-            if (!Style.isStyle(word, Style.Bold)) {
+            if (!Style.isWordStyle(word, Style.Bold)) {
                 options.setBold(false);
             }
-            if (!Style.isStyle(word, Style.Italic)) {
+            if (!Style.isWordStyle(word, Style.Italic)) {
                 options.setItalic(false);
             }
-            if (!Style.isStyle(word, Style.UnderLine)) {
+            if (!Style.isWordStyle(word, Style.UnderLine)) {
                 options.setUnderline(false);
             }
-            if (!Style.isStyle(word, Style.Strikethrough)) {
+            if (!Style.isWordStyle(word, Style.Strikethrough)) {
                 options.setStrikethrough(false);
             }
-            if (!Style.isStyle(word, Style.BackgroudColor)) {
+            if (!Style.isWordStyle(word, Style.BackgroudColor)) {
                 options.setColor(false);
             }
-            if (!Style.isStyle(word, Style.SuperScript)) {
+            if (!Style.isWordStyle(word, Style.SuperScript)) {
                 options.setSuperScript(false);
             }
-            if (!Style.isStyle(word, Style.SubScript)) {
+            if (!Style.isWordStyle(word, Style.SubScript)) {
                 options.setSubScript(false);
             }
         }
