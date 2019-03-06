@@ -15,10 +15,11 @@ import com.jscheng.srich.editor.NoteEditorConfig;
 public class NoteDividingLineSpan extends ReplacementSpan {
 
     private int mWidth;
-    private int margin = 20;
+    private int margin;
 
     public NoteDividingLineSpan(int width) {
-        this.mWidth = width - margin;
+        this.mWidth = width * 3/4;
+        this.margin = width - mWidth;
     }
 
     @Override
@@ -30,10 +31,9 @@ public class NoteDividingLineSpan extends ReplacementSpan {
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(2);
-        int lineX = (int)x + margin;
-        int width = mWidth - margin;
+        int lineX = margin / 2;
         int lineY = top + (bottom - top) / 2;
-        canvas.drawLine(lineX , lineY, lineX + width, lineY, paint);
+        canvas.drawLine(lineX , lineY, lineX + mWidth, lineY, paint);
     }
 
     public static NoteDividingLineSpan create(int mWidth) {
