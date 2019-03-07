@@ -17,8 +17,13 @@ import com.jscheng.srich.R;
 public class EditNoteToolbar extends LinearLayout implements View.OnClickListener {
     private ImageView mBackView;
     private ImageView mMoreView;
+    private ImageView mRedoView;
+    private ImageView mUndoView;
+    private ImageView mFormatView;
+    private ImageView mAttachView;
     private ImageView mTickView;
     private EditNotePresenter mPresenter;
+    private boolean formatEnable;
 
     public EditNoteToolbar(Context context) {
         this(context, null);
@@ -39,6 +44,18 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
 
         mTickView = findViewById(R.id.tick_btn);
         mTickView.setOnClickListener(this);
+
+        mRedoView = findViewById(R.id.redo_btn);
+        mRedoView.setOnClickListener(this);
+
+        mUndoView = findViewById(R.id.undo_btn);
+        mUndoView.setOnClickListener(this);
+
+        mAttachView = findViewById(R.id.attach_btn);
+        mAttachView.setOnClickListener(this);
+
+        mFormatView = findViewById(R.id.format_btn);
+        mFormatView.setOnClickListener(this);
     }
 
     public void setPresenter(EditNotePresenter mPresenter) {
@@ -48,11 +65,19 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
     public void writingMode() {
         mBackView.setVisibility(GONE);
         mTickView.setVisibility(VISIBLE);
+        mUndoView.setVisibility(VISIBLE);
+        mRedoView.setVisibility(VISIBLE);
+        mAttachView.setVisibility(VISIBLE);
+        mFormatView.setVisibility(VISIBLE);
     }
 
     public void readingMode() {
         mBackView.setVisibility(VISIBLE);
         mTickView.setVisibility(GONE);
+        mUndoView.setVisibility(GONE);
+        mRedoView.setVisibility(GONE);
+        mAttachView.setVisibility(GONE);
+        mFormatView.setVisibility(GONE);
     }
 
     @Override
@@ -68,6 +93,18 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
             case R.id.tick_btn:
                 mPresenter.tapTick();
                 break;
+            case R.id.undo_btn:
+                mPresenter.tapUndo();
+                break;
+            case R.id.redo_btn:
+                mPresenter.tapRedo();
+                break;
+            case R.id.format_btn:
+                boolean isEnable = !mFormatView.isSelected();
+                mPresenter.tapEditorBar(isEnable);
+                break;
+            case R.id.attach_btn:
+                mPresenter.tapAttach();
             default:
                 break;
         }
@@ -77,5 +114,17 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
         if (mPresenter == null) {
             throw new RuntimeException("you need to call setPresenter() at first");
         }
+    }
+
+    public void setFormatEnable(boolean isEnable) {
+        mFormatView.setSelected(isEnable);
+    }
+
+    public void setUndoEnable(boolean isEnable) {
+        mUndoView.setEnabled(isEnable);
+    }
+
+    public void setRedoEnable(boolean isEnable) {
+        mRedoView.setEnabled(isEnable);
     }
 }

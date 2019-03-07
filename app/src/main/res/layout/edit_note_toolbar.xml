@@ -30,6 +30,56 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
+        android:id="@+id/redo_btn"
+        android:layout_width="@dimen/edit_note_toolbar_btn_size"
+        android:layout_height="@dimen/edit_note_toolbar_btn_size"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/editor_bar_redo_select"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:enabled="false"
+        app:layout_constraintRight_toLeftOf="@id/undo_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/undo_btn"
+        android:layout_width="@dimen/edit_note_toolbar_btn_size"
+        android:layout_height="@dimen/edit_note_toolbar_btn_size"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/editor_bar_undo_select"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:enabled="false"
+        app:layout_constraintRight_toLeftOf="@id/format_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/format_btn"
+        android:layout_width="@dimen/edit_note_toolbar_btn_size"
+        android:layout_height="@dimen/edit_note_toolbar_btn_size"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/editor_bar_format_select"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        app:layout_constraintRight_toLeftOf="@id/attach_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/attach_btn"
+        android:layout_width="@dimen/edit_note_toolbar_btn_size"
+        android:layout_height="@dimen/edit_note_toolbar_btn_size"
+        android:layout_marginRight="20dp"
+        android:src="@mipmap/ic_note_edit_attach"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        app:layout_constraintRight_toLeftOf="@id/more_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
         android:id="@+id/more_btn"
         android:layout_width="@dimen/edit_note_toolbar_btn_size"
         android:layout_height="@dimen/edit_note_toolbar_btn_size"

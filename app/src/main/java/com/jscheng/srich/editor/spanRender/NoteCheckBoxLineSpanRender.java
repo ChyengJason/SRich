@@ -19,7 +19,7 @@ public class NoteCheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBoxL
 
     public NoteCheckBoxLineSpanRender(View view) {
         this.mView = view;
-        this.mBitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.mipmap.ic_note_check);
+        this.mBitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.mipmap.ic_note_edit_check);
     }
 
     @Override

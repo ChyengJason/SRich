@@ -19,7 +19,7 @@ public class NoteUncheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBo
 
     public NoteUncheckBoxLineSpanRender(View view) {
         this.mView = view;
-        this.mBitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.mipmap.ic_note_uncheck);
+        this.mBitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.mipmap.ic_note_edit_uncheck);
     }
 
     @Override

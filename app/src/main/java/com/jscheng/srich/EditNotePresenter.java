@@ -15,6 +15,7 @@ public class EditNotePresenter implements IPresenter {
     private static final Mode DefaultMode = Mode.Reading;
     private Mode mMode = DefaultMode;
     private EditNoteView mView;
+    private boolean isEditorBarEnable;
 
     private enum Mode {
         Writing,
@@ -22,14 +23,17 @@ public class EditNotePresenter implements IPresenter {
     }
 
     public interface EditNoteView extends IView {
-        void writingMode();
+        void writingMode(boolean isEditorBarEnable);
         void readingMode();
         void finish();
+        void setEditorbar(boolean isEnable);
     }
 
     @Override
     public void onCreate(@NotNull LifecycleOwner owner) {
         this.mView = (EditNoteView)owner;
+        this.isEditorBarEnable = true;
+        this.readingMode();
     }
 
     @Override
@@ -58,13 +62,30 @@ public class EditNotePresenter implements IPresenter {
 
     }
 
+    public void tapRedo() {
+
+    }
+
+    public void tapUndo() {
+
+    }
+
+    public void tapAttach() {
+
+    }
+
+    public void tapEditorBar(boolean isEnable) {
+        isEditorBarEnable = isEnable;
+        mView.setEditorbar(isEditorBarEnable);
+    }
+
     private void readingMode() {
         mView.readingMode();
         mMode = Mode.Reading;
     }
 
     private void writingMode() {
-        mView.writingMode();
+        mView.writingMode(isEditorBarEnable);
         mMode = Mode.Writing;
     }
 

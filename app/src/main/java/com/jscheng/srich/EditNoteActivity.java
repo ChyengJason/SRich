@@ -2,6 +2,7 @@ package com.jscheng.srich;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorText;
@@ -38,10 +39,12 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     }
 
     @Override
-    public void writingMode() {
+    public void writingMode(boolean isEditorBarEnable) {
         mEditorText.writingMode();
         mToolbar.writingMode();
-        mEditorBar.show();
+        mEditorBar.setVisibility(isEditorBarEnable ? View.VISIBLE : View.GONE);
+        mToolbar.setFormatEnable(isEditorBarEnable);
+
     }
 
     @Override
@@ -49,7 +52,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mEditorText.readingMode();
         mToolbar.readingMode();
         mEditButton.show();
-        mEditorBar.hide();
+        mEditorBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -61,4 +64,11 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     public void finish() {
         super.finish();
     }
+
+    @Override
+    public void setEditorbar(boolean isEnable) {
+        mEditorBar.setVisibility(isEnable ? View.VISIBLE : View.GONE);
+        mToolbar.setFormatEnable(isEnable);
+    }
+
 }

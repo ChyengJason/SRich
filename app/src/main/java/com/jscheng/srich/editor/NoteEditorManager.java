@@ -36,6 +36,7 @@ public class NoteEditorManager {
 
     public void addSelectionChangeListener(OnSelectionChangeListener listener) {
         mSelectionListeners.add(listener);
+        notifySelectionChangeListener(mSelectionStart, mSelectionEnd, mOptions);
     }
 
     public void notifySelectionChangeListener(int start, int end, Options options) {
