@@ -3,6 +3,7 @@ import android.util.Log;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
+import com.jscheng.srich.model.Style;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,30 +50,58 @@ public class NoteEditorManager {
 
     public void commandColor(boolean isSelected, boolean draw) {
         mOptions.setColor(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.BackgroudColor);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandUnderline(boolean isSelected, boolean draw) {
         mOptions.setUnderline(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.UnderLine);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandItalic(boolean isSelected, boolean draw) {
         mOptions.setItalic(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Italic);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandBold(boolean isSelected, boolean draw) {
         mOptions.setBold(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Bold);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandSuperscript(boolean isSelected, boolean draw) {
         mOptions.setSuperScript(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SuperScript);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandSubscript(boolean isSelected, boolean draw) {
         mOptions.setSubScript(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SubScript);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandStrikeThrough(boolean isSelected, boolean draw) {
         mOptions.setStrikethrough(isSelected);
+        if (mSelectionEnd > mSelectionStart) {
+            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Strikethrough);
+            if (draw) { requestDraw(); }
+        }
     }
 
     public void commandDividingLine(boolean draw) {
@@ -101,6 +130,20 @@ public class NoteEditorManager {
             mOptions.setCheckBox(false);
         }
         inputUnCheckBox(isSelected);
+        if (draw) { requestDraw(); }
+    }
+
+    public void commandIndentation(boolean draw) {
+        int indentatin = Math.min(3, mOptions.getIndentation() + 1);
+        mOptions.setIndentation(indentatin);
+        applySelectionIndentation(mSelectionStart, mSelectionEnd);
+        if (draw) { requestDraw(); }
+    }
+
+    public void commandReduceIndentation(boolean draw) {
+        int indentatin = Math.min(0, mOptions.getIndentation() - 1);
+        mOptions.setIndentation(indentatin);
+        applySelectionReduceIndentation(mSelectionStart, mSelectionEnd);
         if (draw) { requestDraw(); }
     }
 
@@ -315,7 +358,50 @@ public class NoteEditorManager {
                 }
             }
         }
+    }
 
+    private boolean applySelectionStyle(int start, int end, boolean isAppend, int flag) {
+        if (start == end) {
+            return false;
+        }
+        int startPos = 0;
+        int endPos = 0;
+        for (Paragraph paragraph : mNote.getParagraphs()) {
+            endPos = startPos + paragraph.getLength();
+            int rangeLeft = Math.max(start, startPos);
+            int rangeRight = Math.min(end, endPos);
+            if (rangeLeft <= rangeRight) {
+                int rangeLeftPos = rangeLeft - startPos;
+                int rangeRightPos = rangeRight - startPos;
+                for (int i = rangeLeftPos; i < rangeRightPos; i++) {
+                    if (isAppend) {
+                        paragraph.appendWordStyle(i, flag);
+                    } else {
+                        paragraph.removeWordStyle(i, flag);
+                    }
+                }
+            }
+            startPos = endPos + 1;
+        }
+        return true;
+    }
+
+    private void applySelectionIndentation(int start, int end) {
+        List<Paragraph> paragraphs = getParagraphs(start, end);
+        for (Paragraph paragraph: paragraphs) {
+            int indentation = Math.min(3, paragraph.getIndentation() + 1);
+            paragraph.setIndentation(indentation);
+            paragraph.setDirty(true);
+        }
+    }
+
+    private void applySelectionReduceIndentation(int start, int end) {
+        List<Paragraph> paragraphs = getParagraphs(start, end);
+        for (Paragraph paragraph: paragraphs) {
+            int indentation = Math.max(0, paragraph.getIndentation() - 1);
+            paragraph.setIndentation(indentation);
+            paragraph.setDirty(true);
+        }
     }
 
     private void deleteSelection() {

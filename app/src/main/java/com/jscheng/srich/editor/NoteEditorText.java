@@ -23,7 +23,7 @@ public class NoteEditorText extends AppCompatEditText {
     private static final String TAG = "NoteEditorText";
     private NoteEditorManager mStyleManager;
     private NoteEditorInputConnection mInputConnection;
-
+    private boolean isReadMode;
     public NoteEditorText(Context context) {
         super(context, null);
         init();
@@ -71,19 +71,19 @@ public class NoteEditorText extends AppCompatEditText {
 
     // 写模式
     public void writingMode() {
+        this.isReadMode = false;
         this.setCursorVisible(true);
         this.setSelected(true);
         this.showSoftKeyboard();
         this.requestFocus();
         this.moveCursorToLastSpan();
-        this.setFilters(new InputFilter[] {new WritingInputFilter()});
     }
 
     // 读模式
     public void readingMode() {
+        this.isReadMode = true;
         this.setCursorVisible(false);
         this.setSelected(false);
-        this.setFilters(new InputFilter[] {new ReadingInputFilter()});
         this.hideSoftKeyboard();
     }
 
@@ -127,20 +127,36 @@ public class NoteEditorText extends AppCompatEditText {
     public boolean onTextContextMenuItem(int id) {
         switch (id) {
             case android.R.id.paste:
-                String pasteContent = ClipboardUtil.paste(getContext());
-                mStyleManager.commandPaste(pasteContent, true);
+                paste();
                 return true;
             case android.R.id.cut:
-                String cutContent = mStyleManager.getSelectionText();
-                ClipboardUtil.copy(cutContent, getContext());
-                mStyleManager.commandDeleteSelection(true);
+                cut();
                 return true;
             case android.R.id.copy:
-                String copyContent = mStyleManager.getSelectionText();
-                ClipboardUtil.copy(copyContent, getContext());
+                copy();
                 return true;
             default:
                 return super.onTextContextMenuItem(id);
+        }
+    }
+
+    private void copy() {
+        String copyContent = mStyleManager.getSelectionText();
+        ClipboardUtil.copy(copyContent, getContext());
+    }
+
+    private void cut() {
+        String cutContent = mStyleManager.getSelectionText();
+        ClipboardUtil.copy(cutContent, getContext());
+        if (!isReadMode) {
+            mStyleManager.commandDeleteSelection(true);
+        }
+    }
+
+    private void paste() {
+        if (!isReadMode) {
+            String pasteContent = ClipboardUtil.paste(getContext());
+            mStyleManager.commandPaste(pasteContent, true);
         }
     }
 
@@ -177,19 +193,5 @@ public class NoteEditorText extends AppCompatEditText {
             return true;
         }
         return false;
-    }
-
-    private class ReadingInputFilter implements InputFilter {
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            return source.length() < 1 ? dest.subSequence(dstart, dend) : "";
-        }
-    }
-
-    private class WritingInputFilter implements InputFilter {
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            return null;
-        }
     }
 }

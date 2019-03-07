@@ -92,8 +92,10 @@ public class Paragraph {
     }
 
     public void remove(int start, int end) {
-        removeWords(start, end);
-        removeWordStyles(start, end);
+        words.delete(start, end);
+        for (int i = start; i < end; i++) {
+            wordStyles.remove(start);
+        }
         setDirty(true);
     }
 
@@ -128,18 +130,6 @@ public class Paragraph {
         return words.subSequence(start, end).toString();
     }
 
-    public char getWord(int pos) {
-        return words.charAt(pos);
-    }
-
-    private void removeWords(int start, int end) {
-        words.delete(start, end);
-    }
-
-    private void removeWord(int pos) {
-        words.deleteCharAt(pos);
-    }
-
     public List<Integer> getWordStyles() {
         return wordStyles;
     }
@@ -156,18 +146,16 @@ public class Paragraph {
         return results;
     }
 
-    private void removeWordStyles(int start, int end) {
-        for (int i = start; i < end; i++) {
-            wordStyles.remove(start);
-        }
+    public void appendWordStyle(int pos, int flag) {
+        int wordStyle = wordStyles.get(pos);
+        wordStyle = Style.setWordStyle(wordStyle, true, flag);
+        wordStyles.set(pos, wordStyle);
     }
 
-    private void removeWordStyle(int pos) {
-        wordStyles.remove(pos);
-    }
-
-    public int getWordStyle(int pos) {
-        return wordStyles.get(pos);
+    public void removeWordStyle(int pos, int flag) {
+        int wordStyle = wordStyles.get(pos);
+        wordStyle = Style.setWordStyle(wordStyle, false, flag);
+        wordStyles.set(pos, wordStyle);
     }
 
     public boolean isNull() {

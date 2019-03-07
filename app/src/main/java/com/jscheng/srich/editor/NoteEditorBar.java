@@ -202,21 +202,23 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private void tapBarSubscript() {
         boolean isSelected = !mSubscriptButton.isSelected();
         mSubscriptButton.setSelected(isSelected);
-        mStyleManager.commandSubscript(isSelected, true);
+        mStyleManager.commandSubscript(isSelected, false);
         if (isSelected) {
             mSuperScriptButton.setSelected(false);
-            mStyleManager.commandSuperscript(false, true);
+            mStyleManager.commandSuperscript(false,false);
         }
+        mStyleManager.requestDraw();
     }
 
     private void tapBarSuperscript() {
         boolean isSelected = !mSuperScriptButton.isSelected();
         mSuperScriptButton.setSelected(isSelected);
-        mStyleManager.commandSuperscript(isSelected,true);
+        mStyleManager.commandSuperscript(isSelected,false);
         if (isSelected) {
             mSubscriptButton.setSelected(false);
-            mStyleManager.commandSubscript(false,true);
+            mStyleManager.commandSubscript(false,false);
         }
+        mStyleManager.requestDraw();
     }
 
     private void tapBarDividingLine() {
@@ -224,11 +226,11 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     }
 
     private void tapBarReduceIndentation() {
-
+        mStyleManager.commandReduceIndentation(true);
     }
 
     private void tapBarIndentation() {
-
+        mStyleManager.commandIndentation(true);
     }
 
     private void tapBarBulletList() {

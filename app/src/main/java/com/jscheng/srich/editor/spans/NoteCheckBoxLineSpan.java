@@ -2,6 +2,7 @@ package com.jscheng.srich.editor.spans;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
@@ -36,7 +37,7 @@ public class NoteCheckBoxLineSpan extends ReplacementSpan implements NoteClickSp
             int destTop = top + (bottom - top - heigth) / 2;
             int destBottom = destTop + heigth;
             Rect resRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
-            Rect destrect = new Rect(0, destTop, width, destBottom);
+            Rect destrect = new Rect((int)x, destTop, (int)x + width, destBottom);
             canvas.drawBitmap(mBitmap, resRect, destrect, paint);
         }
         canvas.restore();

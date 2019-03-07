@@ -13,11 +13,6 @@ public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
     }
 
     @Override
-    protected boolean isLineStyle(Paragraph paragraph) {
-        return false;
-    }
-
-    @Override
     protected NoteImageSpan createSpan(int num) {
         return null;
     }

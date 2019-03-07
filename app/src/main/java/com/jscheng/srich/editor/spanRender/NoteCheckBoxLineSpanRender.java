@@ -23,11 +23,6 @@ public class NoteCheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBoxL
     }
 
     @Override
-    protected boolean isParagraphStyle(Paragraph paragraph) {
-        return false;
-    }
-
-    @Override
     protected boolean isLineStyle(Paragraph paragraph) {
         return Style.isLineStyle(paragraph.getLineStyle(), Style.CheckBox);
     }

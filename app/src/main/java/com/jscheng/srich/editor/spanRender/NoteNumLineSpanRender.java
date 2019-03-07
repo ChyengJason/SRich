@@ -19,11 +19,6 @@ public class NoteNumLineSpanRender extends NoteLineSpanRender<NoteNumSpan> {
     }
 
     @Override
-    protected boolean isParagraphStyle(Paragraph paragraph) {
-        return false;
-    }
-
-    @Override
     protected boolean isLineStyle(Paragraph paragraph) {
         return Style.isLineStyle(paragraph.getLineStyle(), Style.NumList);
     }

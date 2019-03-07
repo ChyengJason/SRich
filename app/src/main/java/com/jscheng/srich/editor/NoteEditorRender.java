@@ -9,6 +9,7 @@ import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteCheckBoxLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteDividingLineSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteIndentationSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteItalicSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteNumLineSpanRender;
@@ -21,6 +22,7 @@ import com.jscheng.srich.editor.spanRender.NoteWordSpanRender;
 import com.jscheng.srich.model.Paragraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,12 +35,15 @@ public class NoteEditorRender {
     public static final char EndCodeChar = '\n';
     public static final String PlaceHoldChar = "*";
 
+    private HashMap<Integer, Integer> mNumMap;
+
     private List<NoteWordSpanRender> mWordSpanRenderList;
     private List<NoteLineSpanRender> mLineSpanRenderList;
 
     public NoteEditorRender(EditText editText) {
         mWordSpanRenderList = new ArrayList<>();
         mLineSpanRenderList = new ArrayList<>();
+        mNumMap = new HashMap<>();
 
         mWordSpanRenderList.add(new NoteBoldWordSpanRender());
         mWordSpanRenderList.add(new NoteItalicSpanRender());
@@ -53,12 +58,13 @@ public class NoteEditorRender {
         mLineSpanRenderList.add(new NoteNumLineSpanRender(editText));
         mLineSpanRenderList.add(new NoteCheckBoxLineSpanRender(editText));
         mLineSpanRenderList.add(new NoteUncheckBoxLineSpanRender(editText));
+
+        mLineSpanRenderList.add(new NoteIndentationSpanRender());
     }
 
     public void draw(EditText editText, List<Paragraph> paragraphs, int selectionStart, int selectionEnd) {
         int start = 0;
         int end = 0;
-        int num = 0;
         boolean isDirty = false;
         if (editText.getText() != null) {
             editText.getText().clear();
@@ -66,9 +72,11 @@ public class NoteEditorRender {
         if (!paragraphs.isEmpty()) {
             for (int i = 0; i < paragraphs.size() ; i++) {
                 Paragraph paragraph = paragraphs.get(i);
+                Paragraph lastParagraph = i > 0 ? paragraphs.get(i - 1) : null;
                 end = start + paragraph.getLength();
                 isDirty = isDirty || paragraph.isDirty();
-                num = paragraph.isNumList() ? num + 1 : 0;
+
+                int num = getNum(paragraph, lastParagraph);
                 drawParagraph(paragraph, start, num, editText);
                 if (i < paragraphs.size() - 1) {
                     drawEndCode(end, editText.getText());
@@ -111,4 +119,24 @@ public class NoteEditorRender {
         editable.insert(pos, EndCode);
     }
 
+    private int getNum(Paragraph paragraph, Paragraph lastParagraph) {
+        int num = 0;
+        if (lastParagraph == null) { // 首段落
+            mNumMap.clear();
+        }
+
+        if (paragraph.isNumList()) {
+            int indentation = paragraph.getIndentation();
+            if (lastParagraph != null && indentation > lastParagraph.getIndentation()) {
+                num = 0;
+            } else {
+                num = mNumMap.containsKey(indentation) ? mNumMap.get(indentation) : 0;
+            }
+            num += 1;
+            mNumMap.put(indentation, num);
+        } else if (!paragraph.isBulletList() || lastParagraph == null || paragraph.getIndentation() <= lastParagraph.getIndentation()) {
+            mNumMap.clear();
+        }
+        return num;
+    }
 }

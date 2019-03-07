@@ -76,12 +76,12 @@
             <TextView
                 android:id="@+id/edit_bar_indentation"
                 style="@style/NoteEditBarItemStyle"
-                android:text="减少缩进" />
+                android:text="增加缩进" />
 
             <TextView
                 android:id="@+id/edit_bar_reduce_indentation"
                 style="@style/NoteEditBarItemStyle"
-                android:text="增加缩进" />
+                android:text="减少缩进" />
 
 
             <TextView
