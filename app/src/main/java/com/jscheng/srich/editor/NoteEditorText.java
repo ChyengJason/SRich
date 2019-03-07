@@ -138,13 +138,28 @@ public class NoteEditorText extends AppCompatEditText {
             case android.R.id.copy:
                 String copyContent = mStyleManager.getSelectionText();
                 ClipboardUtil.copy(copyContent, getContext());
+                return true;
             default:
                 return super.onTextContextMenuItem(id);
         }
     }
 
+    boolean isTouchSpan = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isTouchSpan = onTouchSpan(event);
+                return isTouchSpan || super.onTouchEvent(event);
+            case MotionEvent.ACTION_UP:
+                return !isTouchSpan && super.onTouchEvent(event);
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private boolean onTouchSpan(MotionEvent event) {
         int x = (int)event.getX();
         int y = (int)event.getY();
         x -= getTotalPaddingLeft();
@@ -158,10 +173,10 @@ public class NoteEditorText extends AppCompatEditText {
         int off = layout.getOffsetForHorizontal(line, x);
 
         NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
-        if (spans.length > 0 && mStyleManager.onSpanTouched(spans[0], off)) {
+        if (spans.length > 0 && mStyleManager.onSpanTouched(off)) {
             return true;
         }
-        return super.onTouchEvent(event);
+        return false;
     }
 
     private class ReadingInputFilter implements InputFilter {

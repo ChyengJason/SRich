@@ -1,7 +1,5 @@
 package com.jscheng.srich.editor;
 import android.util.Log;
-
-import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
@@ -440,6 +438,9 @@ public class NoteEditorManager {
         paragraph.setLineStyle(lineStyle);
         paragraph.setDividingLine(false);
         paragraph.setImage(false);
+        if (paragraph.isCheckbox()) {
+            paragraph.setUnCheckbox(true);
+        }
         if (paragraph.isHeadStyle()) {
             paragraph.insertPlaceHolder();
         }
@@ -458,6 +459,10 @@ public class NoteEditorManager {
 
         mNote.getParagraphs().add(index, paragraph);
         return paragraph;
+    }
+
+    private Paragraph createImageParagraph(int index) {
+        return null;
     }
 
     public void setSeletion(int globalPos) {
@@ -516,14 +521,40 @@ public class NoteEditorManager {
 
     /**
      * checkbox uncheckbox image uri
-     * @param span
      * @param globalPos
      * @return
      */
-    public boolean onSpanTouched(NoteClickSpan span, int globalPos) {
-
+    public boolean onSpanTouched(int globalPos) {
+        Paragraph paragraph = getParagraph(globalPos);
+        if (getParagraphBegin(paragraph) == globalPos ){
+            return clickLineStyle(paragraph);
+        }
         return false;
     }
+
+    private boolean clickLineStyle(Paragraph paragraph) {
+        if (paragraph.isCheckbox()) {
+            return clickCheckBox(paragraph);
+        } else if (paragraph.isUnCheckbox()) {
+            return clickUncheckBox(paragraph);
+        }
+        return false;
+    }
+
+    private boolean clickCheckBox(Paragraph paragraph) {
+        paragraph.setCheckbox(false);
+        paragraph.setUnCheckbox(true);
+        requestDraw();
+        return true;
+    }
+
+    private boolean clickUncheckBox(Paragraph paragraph) {
+        paragraph.setUnCheckbox(false);
+        paragraph.setCheckbox(true);
+        requestDraw();
+        return true;
+    }
+
 
     public void requestDraw() {
         print();

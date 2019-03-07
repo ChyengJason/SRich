@@ -6,9 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
-import android.view.View;
 
 /**
  * Created By Chengjunsen on 2019/3/6

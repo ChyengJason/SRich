@@ -236,5 +236,6 @@ public class Paragraph {
         setBulletList(false);
         setNumList(false);
         setCheckbox(false);
+        setUnCheckbox(false);
     }
 }
