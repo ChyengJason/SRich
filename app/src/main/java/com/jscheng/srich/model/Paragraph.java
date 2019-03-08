@@ -237,6 +237,10 @@ public class Paragraph {
         return isBulletList() || isNumList() || isCheckbox() || isUnCheckbox();
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public void clearHeadStyle() {
         setBulletList(false);
         setNumList(false);

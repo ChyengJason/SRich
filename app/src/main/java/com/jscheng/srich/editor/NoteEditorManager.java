@@ -51,14 +51,15 @@ public class NoteEditorManager {
 
     public void commandImage(Uri uri, boolean draw) {
         int pos = mSelectionStart;
+        String url = uri.toString();
         // 获取段落
         Paragraph lastParagraph = getParagraph(pos);
         Paragraph newParagraph;
         if (lastParagraph == null) {
-            newParagraph = createImageParagraph(0);
+            newParagraph = createImageParagraph(0, url);
         }else {
             int index = getParagraphIndex(lastParagraph);
-            newParagraph = createImageParagraph(index + 1);
+            newParagraph = createImageParagraph(index + 1, url);
         }
         setSeletion(getParagraphEnd(newParagraph));
         if (draw) { requestDraw(); }

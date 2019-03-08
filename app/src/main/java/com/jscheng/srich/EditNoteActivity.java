@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorText;
+import com.jscheng.srich.utils.PermissionUtil;
 import com.jscheng.srich.widget.EditNoteToolbar;
 import com.jscheng.srich.widget.FloatEditButton;
 
@@ -17,6 +18,7 @@ import com.jscheng.srich.widget.FloatEditButton;
  */
 public class EditNoteActivity extends BaseActivity implements EditNotePresenter.EditNoteView {
     private final static int ACTION_PICK_CODE = 1;
+    private final static int PERMISSION_CODE = 2;
 
     private EditNoteToolbar mToolbar;
     private EditNotePresenter mPresenter;
@@ -40,6 +42,8 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mEditorBar = findViewById(R.id.edit_note_bar);
         mEditorBar.setEditorText(mEditorText);
         mEditorBar.hide();
+
+        requestPermission();
     }
 
     @Override
@@ -48,7 +52,6 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mToolbar.writingMode();
         mEditorBar.setVisibility(isEditorBarEnable ? View.VISIBLE : View.GONE);
         mToolbar.setFormatEnable(isEditorBarEnable);
-
     }
 
     @Override
@@ -95,5 +98,9 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void requestPermission() {
+        PermissionUtil.checkPermissionsAndRequest(this, PermissionUtil.STORAGE, PERMISSION_CODE, "请求访问SD卡权限被拒绝");
     }
 }

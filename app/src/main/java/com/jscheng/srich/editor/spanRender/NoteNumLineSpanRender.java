@@ -25,7 +25,7 @@ public class NoteNumLineSpanRender extends NoteLineSpanRender<NoteNumSpan> {
 
     @Override
     protected NoteNumSpan createSpan(int num) {
-        int textSize = DisplayUtil.dip2px(mView.getContext(), mTextDpSize);
+        int textSize = DisplayUtil.sp2px(mView.getContext(), mTextDpSize);
         return NoteNumSpan.create(textSize, num);
     }
 }

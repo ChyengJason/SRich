@@ -1,5 +1,8 @@
 package com.jscheng.srich.utils;
 
+import android.content.Context;
+import android.os.Environment;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -36,5 +39,16 @@ public class StorageUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getDiskCachePath(Context context){
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return cachePath;
     }
 }

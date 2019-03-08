@@ -7,6 +7,7 @@ import android.text.style.ImageSpan;
 import android.view.View;
 
 import com.jscheng.srich.R;
+import com.jscheng.srich.editor.NoteImagePool;
 import com.jscheng.srich.editor.spans.NoteImageSpan;
 import com.jscheng.srich.model.Paragraph;
 
@@ -22,14 +23,18 @@ public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
     }
 
     @Override
-    protected boolean isParagraphStyle(Paragraph paragraph) {
+    protected boolean isImageStyle(Paragraph paragraph) {
         return paragraph.isImage();
     }
 
     @Override
-    protected NoteImageSpan createSpan(int num) {
-        Bitmap bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_compose);
+    protected NoteImageSpan createImageSpan(String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
+        NoteImagePool.getInstance().loadUrl(mView, url);
+        Bitmap bitmap = NoteImagePool.getInstance().getCacheBitmap(mView, url);
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_compose);
+        }
         return new NoteImageSpan(bitmap, width);
     }
 }

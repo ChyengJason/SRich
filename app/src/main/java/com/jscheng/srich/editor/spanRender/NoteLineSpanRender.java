@@ -13,7 +13,7 @@ import com.jscheng.srich.model.Paragraph;
 public abstract class NoteLineSpanRender<T> {
 
     public void draw(int globalPos, int num, Paragraph paragraph, EditText editText) {
-        if (isParagraphStyle(paragraph)) {
+        if (isDividingStyle(paragraph)) {
             Editable editable = editText.getText();
             int start = globalPos;
             int end = globalPos + paragraph.getLength();
@@ -31,11 +31,17 @@ public abstract class NoteLineSpanRender<T> {
             int end = globalPos + paragraph.getLength();
             int level = paragraph.getIndentation();
             editable.setSpan(createSpan(level), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        } else if (isImageStyle(paragraph) && paragraph.isPlaceHolder()) {
+            Editable editable = editText.getText();
+            int start = globalPos;
+            int end = globalPos + paragraph.getLength();
+            String url = paragraph.getImageUrl();
+            editable.setSpan(createImageSpan(url), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 
-
-    protected boolean isParagraphStyle(Paragraph paragraph) {
+    protected boolean isDividingStyle(Paragraph paragraph) {
         return false;
     }
 
@@ -43,9 +49,11 @@ public abstract class NoteLineSpanRender<T> {
         return false;
     }
 
-    protected boolean isDentationStyle(Paragraph paragraph) {
-        return false;
-    }
+    protected boolean isDentationStyle(Paragraph paragraph) { return false; }
 
-    protected abstract T createSpan(int num);
+    protected boolean isImageStyle(Paragraph paragraph) { return false; }
+
+    protected T createSpan(int num) { return  null; }
+
+    protected T createImageSpan(String url) { return null; };
 }

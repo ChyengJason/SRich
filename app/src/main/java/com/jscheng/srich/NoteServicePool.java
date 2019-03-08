@@ -23,7 +23,7 @@ public class NoteServicePool {
 
     public static NoteServicePool getInstance() {
         if (mInstance == null) {
-            synchronized (mInstance) {
+            synchronized (NoteServicePool.class) {
                 if (mInstance == null) {
                     mInstance = new NoteServicePool();
                 }
