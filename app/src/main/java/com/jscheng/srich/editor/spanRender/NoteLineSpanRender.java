@@ -11,6 +11,7 @@ import com.jscheng.srich.model.Paragraph;
  * Created By Chengjunsen on 2019/3/4
  */
 public abstract class NoteLineSpanRender<T> {
+
     public void draw(int globalPos, int num, Paragraph paragraph, EditText editText) {
         if (isParagraphStyle(paragraph)) {
             Editable editable = editText.getText();

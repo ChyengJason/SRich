@@ -21,12 +21,24 @@ public class Paragraph {
 
     private boolean isDirty;
 
+    private String imageUrl;
+
     public Paragraph() {
         this.wordStyles = new LinkedList<>();
         this.words = new StringBuilder();
         this.lineStyle = 0;
         this.indentation = 0;
         this.isDirty = true;
+    }
+
+    @Override
+    public Paragraph clone() {
+        Paragraph paragraph = new Paragraph();
+        paragraph.words.append(words);
+        paragraph.wordStyles.addAll(wordStyles);
+        paragraph.lineStyle = lineStyle;
+        paragraph.indentation = indentation;
+        return paragraph;
     }
 
     public int getLength() {
@@ -178,6 +190,11 @@ public class Paragraph {
 
     public boolean isImage() {
         return Style.isLineStyle(lineStyle, Style.Image);
+    }
+
+    public void setImage(String url) {
+        imageUrl = url;
+        lineStyle = Style.setLineStyle(lineStyle, !url.isEmpty(), Style.Image);
     }
 
     public void setImage(boolean image) {

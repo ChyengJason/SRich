@@ -1,6 +1,9 @@
 package com.jscheng.srich;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -13,6 +16,7 @@ import com.jscheng.srich.widget.FloatEditButton;
  * Created By Chengjunsen on 2019/2/21
  */
 public class EditNoteActivity extends BaseActivity implements EditNotePresenter.EditNoteView {
+    private final static int ACTION_PICK_CODE = 1;
 
     private EditNoteToolbar mToolbar;
     private EditNotePresenter mPresenter;
@@ -71,4 +75,25 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mToolbar.setFormatEnable(isEnable);
     }
 
+    @Override
+    public void insertImage() {
+        requestLocalImage();
+    }
+
+    private void requestLocalImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK, null);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(intent, ACTION_PICK_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ACTION_PICK_CODE) {
+                Uri uri = data.getData();
+                mEditorText.getStyleManager().commandImage(uri, true);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

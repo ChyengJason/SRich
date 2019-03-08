@@ -1,4 +1,5 @@
 package com.jscheng.srich.editor;
+import android.net.Uri;
 import android.util.Log;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
@@ -46,6 +47,21 @@ public class NoteEditorManager {
                 listener.onStyleChange(start, end, options);
             }
         }
+    }
+
+    public void commandImage(Uri uri, boolean draw) {
+        int pos = mSelectionStart;
+        // 获取段落
+        Paragraph lastParagraph = getParagraph(pos);
+        Paragraph newParagraph;
+        if (lastParagraph == null) {
+            newParagraph = createImageParagraph(0);
+        }else {
+            int index = getParagraphIndex(lastParagraph);
+            newParagraph = createImageParagraph(index + 1);
+        }
+        setSeletion(getParagraphEnd(newParagraph));
+        if (draw) { requestDraw(); }
     }
 
     public void commandColor(boolean isSelected, boolean draw) {
@@ -222,11 +238,18 @@ public class NoteEditorManager {
             int newPos = getParagraphBegin(newParagraph);
             setSeletion(newPos);
         } else if (lastEndPos == mSelectionStart) {
-            // 直接创建新段落
-            newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
-            // 计算新的选择区
-            int newPos = getParagraphBeginWithHead(newParagraph);
-            setSeletion(newPos);
+            if (lastParagraph.isHeadStyle() && lastEndPos == lastBeginPos + 1) {
+                // 相当于删除样式
+                lastParagraph.clearHeadStyle();
+                lastParagraph.remove(0, 1);
+                setSeletion(lastBeginPos);
+            } else {
+                // 直接创建新段落
+                newParagraph = createParagraph(lastIndex + 1, newIndentation, newLineStyle);
+                // 计算新的选择区
+                int newPos = getParagraphBeginWithHead(newParagraph);
+                setSeletion(newPos);
+            }
         } else {
             // 分割成两部分
             int cutPos = pos - getParagraphBegin(lastParagraph);
@@ -548,8 +571,15 @@ public class NoteEditorManager {
         return paragraph;
     }
 
-    private Paragraph createImageParagraph(int index) {
-        return null;
+    private Paragraph createImageParagraph(int index, String url) {
+        Paragraph paragraph = new Paragraph();
+        paragraph.setDirty(true);
+        paragraph.setIndentation(0);
+        paragraph.setLineStyle(0);
+        paragraph.setImage(url);
+        paragraph.insertPlaceHolder();
+        mNote.getParagraphs().add(index, paragraph);
+        return paragraph;
     }
 
     public void setSeletion(int globalPos) {
@@ -613,10 +643,7 @@ public class NoteEditorManager {
      */
     public boolean onSpanTouched(int globalPos) {
         Paragraph paragraph = getParagraph(globalPos);
-        if (getParagraphBegin(paragraph) == globalPos ){
-            return clickLineStyle(paragraph);
-        }
-        return false;
+        return (getParagraphBegin(paragraph) == globalPos ) && clickLineStyle(paragraph);
     }
 
     private boolean clickLineStyle(Paragraph paragraph) {

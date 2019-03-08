@@ -23,7 +23,6 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
     private ImageView mAttachView;
     private ImageView mTickView;
     private EditNotePresenter mPresenter;
-    private boolean formatEnable;
 
     public EditNoteToolbar(Context context) {
         this(context, null);

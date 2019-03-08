@@ -9,6 +9,7 @@ import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteCheckBoxLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteDividingLineSpanRender;
+import com.jscheng.srich.editor.spanRender.NoteImageLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteIndentationSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteItalicSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteLineSpanRender;
@@ -53,6 +54,7 @@ public class NoteEditorRender {
         mWordSpanRenderList.add(new NoteSuperscriptSpanRender());
         mWordSpanRenderList.add(new NoteUnderlineSpanRender());
 
+        mLineSpanRenderList.add(new NoteImageLineSpanRender(editText));
         mLineSpanRenderList.add(new NoteDividingLineSpanRender(editText));
         mLineSpanRenderList.add(new NoteBulletLineSpanRender());
         mLineSpanRenderList.add(new NoteNumLineSpanRender(editText));

@@ -27,6 +27,7 @@ public class EditNotePresenter implements IPresenter {
         void readingMode();
         void finish();
         void setEditorbar(boolean isEnable);
+        void insertImage();
     }
 
     @Override
@@ -71,7 +72,7 @@ public class EditNotePresenter implements IPresenter {
     }
 
     public void tapAttach() {
-
+        mView.insertImage();
     }
 
     public void tapEditorBar(boolean isEnable) {
