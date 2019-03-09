@@ -30,7 +30,7 @@ public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
     @Override
     protected NoteImageSpan createImageSpan(String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
-        Bitmap bitmap = NoteImagePool.getInstance(mView.getContext()).getBitmap(mView.getContext(), url, width);
+        Bitmap bitmap = NoteImagePool.getInstance(mView.getContext()).getBitmap(url, width);
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_compose);
         }

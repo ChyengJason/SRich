@@ -27,7 +27,9 @@ public class EditNotePresenter implements IPresenter {
         void readingMode();
         void finish();
         void setEditorbar(boolean isEnable);
-        void insertImage();
+        void showFormatDialog();
+        void showAlbumDialog();
+        void showNetworkDialog();
     }
 
     @Override
@@ -45,6 +47,14 @@ public class EditNotePresenter implements IPresenter {
     @Override
     public void onLifecycleChanged(@NotNull LifecycleOwner owner, @NotNull Lifecycle.Event event) {
 
+    }
+
+    public void tapNetworkUrl() {
+        mView.showNetworkDialog();
+    }
+
+    public void tapAlbum() {
+        mView.showAlbumDialog();
     }
 
     public void tapEdit() {
@@ -72,7 +82,7 @@ public class EditNotePresenter implements IPresenter {
     }
 
     public void tapAttach() {
-        mView.insertImage();
+        mView.showFormatDialog();
     }
 
     public void tapEditorBar(boolean isEnable) {

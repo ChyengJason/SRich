@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:background="@drawable/editor_note_bottom_dialog_bg">
+
+    <TextView
+        android:id="@+id/dialog_album"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="从手机相册选择"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@android:color/background_dark"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/dialog_network"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="从网络加载"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@android:color/background_dark"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/dialog_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="取消"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@android:color/background_dark"/>
+
+</LinearLayout>

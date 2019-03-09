@@ -5,6 +5,8 @@ import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
+import com.jscheng.srich.utils.EditTextUtil;
+import com.jscheng.srich.utils.KeyboardUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,9 +52,13 @@ public class NoteEditorManager {
     }
 
     public void commandImage(Uri uri, boolean draw) {
-        int pos = mSelectionStart;
         String url = uri.toString();
-        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(mEditorText.getContext(), url);
+        commandImage(url, draw);
+    }
+
+    public void commandImage(String url, boolean draw) {
+        int pos = mSelectionStart;
+        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(url);
 
         // 获取段落
         Paragraph lastParagraph = getParagraph(pos);
@@ -639,39 +645,52 @@ public class NoteEditorManager {
         return Options.getSameStyle(indentation, lineStyle, wordStyles);
     }
 
-    /**
-     * checkbox uncheckbox image uri
-     * @param globalPos
-     * @return
-     */
-    public boolean onSpanTouched(int globalPos) {
+    public boolean onSpanTouchDown(int globalPos) {
         Paragraph paragraph = getParagraph(globalPos);
-        return (getParagraphBegin(paragraph) == globalPos ) && clickLineStyle(paragraph);
-    }
-
-    private boolean clickLineStyle(Paragraph paragraph) {
-        if (paragraph.isCheckbox()) {
-            return clickCheckBox(paragraph);
-        } else if (paragraph.isUnCheckbox()) {
-            return clickUncheckBox(paragraph);
+        if (getParagraphBegin(paragraph) == globalPos) {
+            if (paragraph.isImage()) {
+                return true;
+            } else if (paragraph.isCheckbox()) {
+                clickCheckBox(paragraph);
+                return true;
+            } else if (paragraph.isUnCheckbox()) {
+                clickUncheckBox(paragraph);
+                return true;
+            }
         }
         return false;
     }
 
-    private boolean clickCheckBox(Paragraph paragraph) {
+    public boolean onSpanTouchUp(int globalPos, long interval) {
+        Paragraph paragraph = getParagraph(globalPos);
+        if (getParagraphBegin(paragraph) == globalPos) {
+            if (paragraph.isImage()) {
+                clickImage(paragraph);
+                return true;
+            } else if (paragraph.isCheckbox()) {
+                return true;
+            } else if (paragraph.isUnCheckbox()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clickCheckBox(Paragraph paragraph) {
         paragraph.setCheckbox(false);
         paragraph.setUnCheckbox(true);
         requestDraw();
-        return true;
     }
 
-    private boolean clickUncheckBox(Paragraph paragraph) {
+    private void clickUncheckBox(Paragraph paragraph) {
         paragraph.setUnCheckbox(false);
         paragraph.setCheckbox(true);
         requestDraw();
-        return true;
     }
 
+    private void clickImage(Paragraph paragraph) {
+
+    }
 
     public void requestDraw() {
         print();

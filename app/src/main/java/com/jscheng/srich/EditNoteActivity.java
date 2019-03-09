@@ -9,7 +9,9 @@ import android.view.View;
 
 import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorText;
+import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
+import com.jscheng.srich.widget.EditNoteFormatDialog;
 import com.jscheng.srich.widget.EditNoteToolbar;
 import com.jscheng.srich.widget.FloatEditButton;
 
@@ -25,6 +27,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     private FloatEditButton mEditButton;
     private NoteEditorText mEditorText;
     private NoteEditorBar mEditorBar;
+    private EditNoteFormatDialog mFormatDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,14 +82,25 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     }
 
     @Override
-    public void insertImage() {
-        requestLocalImage();
+    public void showFormatDialog() {
+        if (mFormatDialog == null) {
+            mFormatDialog = new EditNoteFormatDialog(this, mPresenter);
+        }
+        KeyboardUtil.hideSoftInput(this, mEditorText);
+        mFormatDialog.show();
     }
 
-    private void requestLocalImage() {
+    @Override
+    public void showAlbumDialog() {
         Intent intent = new Intent(Intent.ACTION_PICK, null);
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(intent, ACTION_PICK_CODE);
+    }
+
+    @Override
+    public void showNetworkDialog() {
+        String url = "https://upload-images.jianshu.io/upload_images/7722639-621573aa9b77e25e.jpeg";
+        mEditorText.getStyleManager().commandImage(url, true);
     }
 
     @Override

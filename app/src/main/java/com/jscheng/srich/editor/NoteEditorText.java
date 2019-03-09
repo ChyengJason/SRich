@@ -3,9 +3,7 @@ package com.jscheng.srich.editor;
 import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.Layout;
-import android.text.Spanned;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -172,22 +170,41 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
         }
     }
 
-    boolean isTouchSpan = false;
+    long lastTouchTime = 0;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                isTouchSpan = onTouchSpan(event);
-                return isTouchSpan || super.onTouchEvent(event);
+                lastTouchTime = System.currentTimeMillis();
+                return onTouchDownSpan(event) || super.onTouchEvent(event);
             case MotionEvent.ACTION_UP:
-                return !isTouchSpan && super.onTouchEvent(event);
+                long interval = System.currentTimeMillis() - lastTouchTime;
+                return onTouchUpSpan(interval, event) || super.onTouchEvent(event);
             default:
                 break;
         }
         return super.onTouchEvent(event);
     }
 
-    private boolean onTouchSpan(MotionEvent event) {
+    private boolean onTouchDownSpan(MotionEvent event) {
+        int off = getPos(event);
+        NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
+        if (spans.length > 0 && mStyleManager.onSpanTouchDown(off)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean onTouchUpSpan(long interval, MotionEvent event) {
+        int off = getPos(event);
+        NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
+        if (spans.length > 0 && mStyleManager.onSpanTouchUp(off, interval)) {
+            return true;
+        }
+        return false;
+    }
+
+    private int getPos(MotionEvent event) {
         int x = (int)event.getX();
         int y = (int)event.getY();
         x -= getTotalPaddingLeft();
@@ -199,12 +216,7 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
         Layout layout = getLayout();
         int line = layout.getLineForVertical(y);
         int off = layout.getOffsetForHorizontal(line, x);
-
-        NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
-        if (spans.length > 0 && mStyleManager.onSpanTouched(off)) {
-            return true;
-        }
-        return false;
+        return off;
     }
 
     @Override

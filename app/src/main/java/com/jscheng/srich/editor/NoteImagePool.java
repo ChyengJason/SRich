@@ -1,7 +1,6 @@
 package com.jscheng.srich.editor;
 
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,25 +15,21 @@ import com.jscheng.srich.utils.StorageUtil;
 import com.jscheng.srich.utils.VersionUtil;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.BufferedSource;
-import okio.Okio;
 
 public class NoteImagePool {
     private static final String TAG = "NoteImagePool";
@@ -89,11 +84,15 @@ public class NoteImagePool {
 
     private static NoteImagePool instance;
 
-    public static NoteImagePool getInstance(Application application) {
+    private Context mContext;
+
+    private ExecutorService mThreadPool;
+
+    public static NoteImagePool getInstance(Context context) {
         if (instance == null) {
             synchronized (NoteImagePool.class) {
                 if (instance == null) {
-                    instance = new NoteImagePool(application);
+                    instance = new NoteImagePool(context);
                 }
             }
         }
@@ -101,9 +100,11 @@ public class NoteImagePool {
     }
 
     private NoteImagePool(Context context) {
+        mContext = context;
         mRequestingUrls = new ArrayList<>();
         mFailedUrls = new HashMap<>();
         mImageListeners = new ArrayList<>();
+        mThreadPool = Executors.newFixedThreadPool(2);
         mMainHandler = new Handler(Looper.getMainLooper());
 
         mMemoryCacheSize = (int)Runtime.getRuntime().maxMemory() / 8;
@@ -124,28 +125,23 @@ public class NoteImagePool {
         }
 
         mOkhttpCacheSize = 10 * 1024 * 1024;
-        File okhttpCacheFile = getDiskCacheDir(context, DiskLrcCacheDirName);
+        File okhttpCacheFile = getDiskCacheDir(context, OkhttpCacheDirName);
         mOkhttpClient = new OkHttpClient.Builder()
-                .cache(new Cache(okhttpCacheFile, mDiskCacheSize))
-                .addInterceptor(new LocalBitmapInterceptor(context))
-                .addInterceptor(new DiskCacheInterceptor(context))
+                .cache(new Cache(okhttpCacheFile, mOkhttpCacheSize))
                 .build();
     }
 
     public void loadBitmap(String url) {
         String key = instance.getKeyFromUrl(url);
-        if (isMemeryCacheBitmapExist(key)) {
+        if (isMemoryBitmap(key)) {
             return;
         }
-        if (isDiskLruBitmapExist(key)) {
-            return;
-        }
-        if (isContentUrl(url)) {
-            getLocalBitmap(context, url);
+        if (isLocalUrl(url)) {
+            submitLocalBitmap(url, key);
             return;
         }
         if (isHttpUrl(url)) {
-            getNetworkBitmap(url, key);
+            submitNetworkBitmap(url, key);
             return;
         }
     }
@@ -160,11 +156,10 @@ public class NoteImagePool {
         if (bitmap != null) {
             return bitmap;
         }
-        if (isContentUrl(url)) {
-            getLocalBitmap(context, url);
-        }
-        if (isHttpUrl(url)) {
-            getNetworkBitmap(url, key);
+        if (isLocalUrl(url)) {
+            submitLocalBitmap(url, key);
+        } else if (isHttpUrl(url)) {
+            submitNetworkBitmap(url, key);
         }
         return null;
     }
@@ -173,8 +168,19 @@ public class NoteImagePool {
         return mMemoryCache.get(key);
     }
 
-    private boolean isMemeryCacheBitmapExist(String key) {
-        return mMemoryCache.get(key) != null;
+    private boolean isMemoryBitmap(String key) {
+        try {
+            if (mMemoryCache.get(key) != null) {
+                return true;
+            }
+            DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+            if (snapshot != null && snapshot.getLength(0) > 0) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private Bitmap getDiskCacheBitmap(String key, int maxWidth) {
@@ -208,31 +214,21 @@ public class NoteImagePool {
         return null;
     }
 
-    private boolean isDiskLruBitmapExist(String key) {
-        try {
-            DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
-            if (snapshot != null && snapshot.getLength(0) > 0) {
-                return true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+    private boolean isLocalUrl(String url) {
+        return url.toLowerCase().startsWith("content");
     }
 
-    private void getLocalBitmap(Context context, String url) {
-        try {
+    private boolean isHttpUrl(String url) {
+        return url.toLowerCase().startsWith("http");
+    }
 
-
-            notifyImageListenersSuccess(url);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void submitLocalBitmap(String url, String key) {
+        if (url.toLowerCase().contains("content")) {
+            mThreadPool.submit(new SubmitLocalBitmapRunnalbe(url, key));
         }
     }
 
-    private void getNetworkBitmap(String url, String key) {
+    private void submitNetworkBitmap(final String url, final String key) {
         if (mRequestingUrls.contains(url)) {
             Log.e(TAG, "getNetworkBitmap: " + url + " is Requesting" );
         } else if (mFailedUrls.containsKey(key) && mFailedUrls.get(key) >= MaxUrlFailedTime){
@@ -243,7 +239,94 @@ public class NoteImagePool {
                     .url(url)
                     .build();
             Call call = mOkhttpClient.newCall(bitmapRequest);
-            call.enqueue(new NetworkBitmapCallback(url, key));
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    notifyImageListenersFailed(url, e.toString());
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    mThreadPool.submit(new SubmitDiskLruCacheRunnable(response.body().bytes(), url, key));
+                }
+            });
+        }
+    }
+
+    private class SubmitLocalBitmapRunnalbe implements Runnable {
+
+        private String url;
+        private String key;
+        public SubmitLocalBitmapRunnalbe (String url, String key) {
+            this.url = url;
+            this.key = key;
+        }
+        @Override
+        public void run() {
+            try {
+                Uri uri = Uri.parse(url);
+                InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+
+                BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+                decodeOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(inputStream, null, decodeOptions);
+
+                int actualWidth = decodeOptions.outWidth;
+                int actualHeight = decodeOptions.outHeight;
+                if (actualWidth <= 0 || actualHeight <= 0) {
+                    Log.e(TAG, "parseNetworkResponse: is not image");
+                    notifyImageListenersFailed(url, "it is not image");
+                } else {
+                    inputStream = mContext.getContentResolver().openInputStream(uri);
+                    DiskLruCache.Editor editor = mDiskCache.edit(key);
+                    OutputStream outputStream = editor.newOutputStream(0);
+                    byte[] data = new byte[1024];
+                    while(inputStream.read(data) != -1) {
+                        outputStream.write(data);
+                    }
+                    outputStream.close();
+                    editor.commit();
+                    mDiskCache.flush();
+                    notifyImageListenersSuccess(url);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class SubmitDiskLruCacheRunnable implements Runnable {
+        private byte[] data;
+        private String key;
+        private String url;
+
+        public SubmitDiskLruCacheRunnable(byte[] data, String url, String key) {
+            this.data = data;
+            this.url = url;
+            this.key = key;
+        }
+        @Override
+        public void run() {
+            BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+            decodeOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(data, 0, data.length, decodeOptions);
+            int actualWidth = decodeOptions.outWidth;
+            int actualHeight = decodeOptions.outHeight;
+            if (actualWidth <= 0 || actualHeight <= 0) {
+                Log.e(TAG, "parseNetworkResponse: is not image");
+                return;
+            }
+            try {
+                DiskLruCache.Editor editor = mDiskCache.edit(key);
+                OutputStream outputStream = null;
+                outputStream = editor.newOutputStream(0);
+                outputStream.write(data);
+                outputStream.close();
+                editor.commit();
+                mDiskCache.flush();
+                notifyImageListenersSuccess(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -257,28 +340,6 @@ public class NoteImagePool {
         return new File( cachePath + File.separator +uniqueName);
     }
 
-    private class NetworkBitmapCallback implements Callback{
-        private String url;
-        private String key;
-
-        public NetworkBitmapCallback(String url, String key) {
-            this.url = url;
-            this.key = key;
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            notifyImageListenersFailed(url, e.toString());
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-
-
-            notifyImageListenersSuccess(url);
-        }
-    }
-
     public void addImageListener(NoteImageListener listener) {
         mImageListeners.add(listener);
     }
@@ -287,16 +348,26 @@ public class NoteImagePool {
         mImageListeners.remove(listener);
     }
 
-    private void notifyImageListenersSuccess(String url) {
-        for (NoteImageListener listener: mImageListeners) {
-            listener.onNoteImageSuccess(url);
-        }
+    private void notifyImageListenersSuccess(final String url) {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (NoteImageListener listener: mImageListeners) {
+                    listener.onNoteImageSuccess(url);
+                }
+            }
+        });
     }
 
-    private void notifyImageListenersFailed(String url, String err) {
-        for (NoteImageListener listener: mImageListeners) {
-            listener.onNoteImageFailed(url, err);
-        }
+    private void notifyImageListenersFailed(final String url, final String err) {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (NoteImageListener listener: mImageListeners) {
+                    listener.onNoteImageFailed(url, err);
+                }
+            }
+        });
     }
 
     public interface NoteImageListener {
@@ -304,75 +375,4 @@ public class NoteImagePool {
         void onNoteImageFailed(String url, String err);
     }
 
-    private boolean isContentUrl(String url) {
-        return url.toLowerCase().startsWith("content");
-    }
-
-    private boolean isHttpUrl(String url) {
-        return url.toLowerCase().startsWith("http");
-    }
-
-    private class DiskCacheInterceptor implements Interceptor {
-        private Context context;
-
-        public DiskCacheInterceptor(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-            Response response = chain.proceed(request);
-
-            String url = request.url().toString();
-            String key = getKeyFromUrl(url);
-
-            if (response.isSuccessful()) {
-                byte[] data = response.body().bytes();
-                BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
-                decodeOptions.inJustDecodeBounds = true;
-                BitmapFactory.decodeByteArray(data, 0, data.length, decodeOptions);
-                int actualWidth = decodeOptions.outWidth;
-                int actualHeight = decodeOptions.outHeight;
-                if (actualWidth <= 0 || actualHeight <= 0) {
-                    Log.e(TAG, "parseNetworkResponse: is not image");
-                    response = new Response.Builder().code(404).build();
-                } else {
-                    DiskLruCache.Editor editor = mDiskCache.edit(key);
-                    OutputStream outputStream = editor.newOutputStream(0);
-                    outputStream.write(data);
-                    outputStream.close();
-                    editor.commit();
-                    mDiskCache.flush();
-                }
-            }
-            return response;
-        }
-    }
-
-    private class LocalBitmapInterceptor implements Interceptor {
-        private Context context;
-
-        public LocalBitmapInterceptor(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-            String scheme = request.url().scheme();
-            String url = request.url().toString();
-            Uri uri = Uri.parse(url);
-            if (scheme.equals("content")) {
-                InputStream inputStream = context.getContentResolver().openInputStream(uri);
-                BufferedSource source = Okio.buffer(Okio.source(inputStream));
-                MediaType mediaType = MediaType.parse("image/jpeg");
-                ResponseBody responseBody = ResponseBody.create(mediaType, 0, source);
-                Response response = new Response.Builder().body(responseBody).code(200).build();
-                return response;
-            } else {
-                return chain.proceed(request);
-            }
-        }
-    }
 }
