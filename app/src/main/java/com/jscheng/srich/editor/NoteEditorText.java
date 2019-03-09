@@ -19,7 +19,7 @@ import com.jscheng.srich.utils.OsUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText {
+public class NoteEditorText extends AppCompatEditText implements NoteImagePool.NoteImageListener{
     private static final String TAG = "NoteEditorText";
     private NoteEditorManager mStyleManager;
     private NoteEditorInputConnection mInputConnection;
@@ -119,6 +119,18 @@ public class NoteEditorText extends AppCompatEditText {
         }
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        NoteImagePool.getInstance(getContext()).addImageListener(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        NoteImagePool.getInstance(getContext()).removeImageListener(this);
+    }
+
     public NoteEditorManager getStyleManager() {
         return mStyleManager;
     }
@@ -193,5 +205,15 @@ public class NoteEditorText extends AppCompatEditText {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onNoteImageSuccess(String url) {
+        mStyleManager.requestDraw();
+    }
+
+    @Override
+    public void onNoteImageFailed(String url, String err) {
+
     }
 }

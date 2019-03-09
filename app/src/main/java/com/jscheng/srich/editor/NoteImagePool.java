@@ -1,111 +1,378 @@
 package com.jscheng.srich.editor;
 
+
+import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.view.View;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.data.DataFetcher;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.model.stream.HttpGlideUrlLoader;
-import com.bumptech.glide.request.FutureTarget;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.jscheng.srich.NoteServicePool;
-
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.util.LruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
+import com.jscheng.srich.utils.MdUtil;
+import com.jscheng.srich.utils.StorageUtil;
+import com.jscheng.srich.utils.VersionUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-/**
- * Created By Chengjunsen on 2019/3/8
- */
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.BufferedSource;
+import okio.Okio;
+
 public class NoteImagePool {
+    private static final String TAG = "NoteImagePool";
+    /**
+     * DiskLrcCache文件夹名字
+     */
+    private static final String DiskLrcCacheDirName = "image";
+    /**
+     * okhttp 文件名字
+     */
+    private static final String OkhttpCacheDirName = "okhttp";
+    /**
+     * okhttp 最大缓存空间
+     */
+    private static int mOkhttpCacheSize;
+    /**
+     * URL网络失败最大重试次数
+     */
+    private static final int MaxUrlFailedTime = 2;
+    /**
+     * 内存图片缓存
+     */
+    private LruCache<String, Bitmap> mMemoryCache;
+    /**
+     * 磁盘图片缓存
+     */
+    private DiskLruCache mDiskCache;
+    /**
+     * 最大内存缓存空间
+     */
+    private int mMemoryCacheSize;
+    /**
+     * 最大磁盘缓存空间
+     */
+    private int mDiskCacheSize;
+    /**
+     * 正在请求下载的url集合
+     */
+    private List<String> mRequestingUrls;
+    /**
+     * 失败的URL的key和失败次数
+     */
+    private HashMap<String, Integer> mFailedUrls;
+    /**
+     * 监听器
+     */
+    private List<NoteImageListener> mImageListeners;
 
-    private List<ImageLoaderListener> loaderListeners;
+    private OkHttpClient mOkhttpClient;
 
-    public static NoteImagePool mInstance;
+    private Handler mMainHandler;
 
-    public static NoteImagePool getInstance() {
-        if (mInstance == null) {
+    private static NoteImagePool instance;
+
+    public static NoteImagePool getInstance(Application application) {
+        if (instance == null) {
             synchronized (NoteImagePool.class) {
-                if (mInstance == null) {
-                    mInstance = new NoteImagePool();
+                if (instance == null) {
+                    instance = new NoteImagePool(application);
                 }
             }
         }
-        return mInstance;
+        return instance;
     }
 
-    private NoteImagePool() {
-        loaderListeners = new ArrayList<>();
-    }
+    private NoteImagePool(Context context) {
+        mRequestingUrls = new ArrayList<>();
+        mFailedUrls = new HashMap<>();
+        mImageListeners = new ArrayList<>();
+        mMainHandler = new Handler(Looper.getMainLooper());
 
-    public interface ImageLoaderListener {
-        void onBitmapReady(String url);
-        void onBitmapFailed(String url);
-    }
+        mMemoryCacheSize = (int)Runtime.getRuntime().maxMemory() / 8;
+        mMemoryCache = new LruCache<String, Bitmap>(mMemoryCacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
 
-    public void addLoaderListener(ImageLoaderListener loaderListener) {
-        this.loaderListeners.add(loaderListener);
-    }
-
-    public void removeLoaderListener(ImageLoaderListener loaderListener) {
-        this.loaderListeners.remove(loaderListener);
-    }
-
-    public String loadUrl(View view, final String url) {
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
-
-        Glide.with(view)
-                .asBitmap()
-                .apply(options)
-                .load(url)
-                .listener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        for (ImageLoaderListener loaderListener: loaderListeners) {
-                            loaderListener.onBitmapFailed(url);
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        for (ImageLoaderListener loaderListener: loaderListeners) {
-                            loaderListener.onBitmapReady(url);
-                        }
-                        return true;
-                    }
-                });
-        return url;
-    }
-
-    public Bitmap getCacheBitmap(View view, String url) {
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .onlyRetrieveFromCache(true);
-
-        FutureTarget<Bitmap> futureBitmap = Glide.with(view)
-                .asBitmap()
-                .apply(options)
-                .load(url)
-                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
-        Bitmap bitmap = null;
+        mDiskCacheSize = 10 * 1024 * 1024;
+        File diskCacheFile = getDiskCacheDir(context, DiskLrcCacheDirName);
+        int versionCode = VersionUtil.getVersionCode(context);
         try {
-            bitmap = futureBitmap.get();
-        } catch (InterruptedException | ExecutionException e) {
+            mDiskCache = DiskLruCache.open(diskCacheFile, versionCode, 1, mDiskCacheSize);
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return bitmap;
+        mOkhttpCacheSize = 10 * 1024 * 1024;
+        File okhttpCacheFile = getDiskCacheDir(context, DiskLrcCacheDirName);
+        mOkhttpClient = new OkHttpClient.Builder()
+                .cache(new Cache(okhttpCacheFile, mDiskCacheSize))
+                .addInterceptor(new LocalBitmapInterceptor(context))
+                .addInterceptor(new DiskCacheInterceptor(context))
+                .build();
+    }
+
+    public void loadBitmap(String url) {
+        String key = instance.getKeyFromUrl(url);
+        if (isMemeryCacheBitmapExist(key)) {
+            return;
+        }
+        if (isDiskLruBitmapExist(key)) {
+            return;
+        }
+        if (isContentUrl(url)) {
+            getLocalBitmap(context, url);
+            return;
+        }
+        if (isHttpUrl(url)) {
+            getNetworkBitmap(url, key);
+            return;
+        }
+    }
+
+    public Bitmap getBitmap(String url , int maxWidth) {
+        String key = instance.getKeyFromUrl(url);
+        Bitmap bitmap = getMemoryCacheBitmap(key);
+        if (bitmap != null) {
+            return bitmap;
+        }
+        bitmap = getDiskCacheBitmap(key, maxWidth);
+        if (bitmap != null) {
+            return bitmap;
+        }
+        if (isContentUrl(url)) {
+            getLocalBitmap(context, url);
+        }
+        if (isHttpUrl(url)) {
+            getNetworkBitmap(url, key);
+        }
+        return null;
+    }
+
+    private Bitmap getMemoryCacheBitmap(String key) {
+        return mMemoryCache.get(key);
+    }
+
+    private boolean isMemeryCacheBitmapExist(String key) {
+        return mMemoryCache.get(key) != null;
+    }
+
+    private Bitmap getDiskCacheBitmap(String key, int maxWidth) {
+        try {
+            DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+            if (snapshot != null) {
+                FileInputStream inputStream = (FileInputStream) snapshot.getInputStream(0);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(inputStream, null, options);
+                inputStream.close();
+                int bitmapWidth = options.outWidth;
+
+                snapshot = mDiskCache.get(key);
+                inputStream = (FileInputStream) snapshot.getInputStream(0);
+                options.inSampleSize = bitmapWidth > maxWidth ? Math.round((float)bitmapWidth/(float)maxWidth) : 1;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                options.inJustDecodeBounds = false;
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+                inputStream.close();
+                if (bitmap != null) {
+                    mMemoryCache.put(key, bitmap);
+                }
+                return bitmap;
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private boolean isDiskLruBitmapExist(String key) {
+        try {
+            DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+            if (snapshot != null && snapshot.getLength(0) > 0) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void getLocalBitmap(Context context, String url) {
+        try {
+
+
+            notifyImageListenersSuccess(url);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getNetworkBitmap(String url, String key) {
+        if (mRequestingUrls.contains(url)) {
+            Log.e(TAG, "getNetworkBitmap: " + url + " is Requesting" );
+        } else if (mFailedUrls.containsKey(key) && mFailedUrls.get(key) >= MaxUrlFailedTime){
+            Log.e(TAG, "getNetworkBitmap: " + url + " is max failed time" );
+        } else {
+            Request bitmapRequest = new Request.Builder()
+                    .get()
+                    .url(url)
+                    .build();
+            Call call = mOkhttpClient.newCall(bitmapRequest);
+            call.enqueue(new NetworkBitmapCallback(url, key));
+        }
+    }
+
+    private String getKeyFromUrl(String url) {
+        return MdUtil.encode(url);
+    }
+
+    private File getDiskCacheDir(Context context, String uniqueName){
+        String cachePath = StorageUtil.getDiskCachePath(context);
+        Log.e(TAG, "getDiskCacheDir: " + cachePath + File.separator +uniqueName);
+        return new File( cachePath + File.separator +uniqueName);
+    }
+
+    private class NetworkBitmapCallback implements Callback{
+        private String url;
+        private String key;
+
+        public NetworkBitmapCallback(String url, String key) {
+            this.url = url;
+            this.key = key;
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            notifyImageListenersFailed(url, e.toString());
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+
+
+            notifyImageListenersSuccess(url);
+        }
+    }
+
+    public void addImageListener(NoteImageListener listener) {
+        mImageListeners.add(listener);
+    }
+
+    public void removeImageListener(NoteImageListener listener) {
+        mImageListeners.remove(listener);
+    }
+
+    private void notifyImageListenersSuccess(String url) {
+        for (NoteImageListener listener: mImageListeners) {
+            listener.onNoteImageSuccess(url);
+        }
+    }
+
+    private void notifyImageListenersFailed(String url, String err) {
+        for (NoteImageListener listener: mImageListeners) {
+            listener.onNoteImageFailed(url, err);
+        }
+    }
+
+    public interface NoteImageListener {
+        void onNoteImageSuccess(String url);
+        void onNoteImageFailed(String url, String err);
+    }
+
+    private boolean isContentUrl(String url) {
+        return url.toLowerCase().startsWith("content");
+    }
+
+    private boolean isHttpUrl(String url) {
+        return url.toLowerCase().startsWith("http");
+    }
+
+    private class DiskCacheInterceptor implements Interceptor {
+        private Context context;
+
+        public DiskCacheInterceptor(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+
+            String url = request.url().toString();
+            String key = getKeyFromUrl(url);
+
+            if (response.isSuccessful()) {
+                byte[] data = response.body().bytes();
+                BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+                decodeOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeByteArray(data, 0, data.length, decodeOptions);
+                int actualWidth = decodeOptions.outWidth;
+                int actualHeight = decodeOptions.outHeight;
+                if (actualWidth <= 0 || actualHeight <= 0) {
+                    Log.e(TAG, "parseNetworkResponse: is not image");
+                    response = new Response.Builder().code(404).build();
+                } else {
+                    DiskLruCache.Editor editor = mDiskCache.edit(key);
+                    OutputStream outputStream = editor.newOutputStream(0);
+                    outputStream.write(data);
+                    outputStream.close();
+                    editor.commit();
+                    mDiskCache.flush();
+                }
+            }
+            return response;
+        }
+    }
+
+    private class LocalBitmapInterceptor implements Interceptor {
+        private Context context;
+
+        public LocalBitmapInterceptor(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            String scheme = request.url().scheme();
+            String url = request.url().toString();
+            Uri uri = Uri.parse(url);
+            if (scheme.equals("content")) {
+                InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                BufferedSource source = Okio.buffer(Okio.source(inputStream));
+                MediaType mediaType = MediaType.parse("image/jpeg");
+                ResponseBody responseBody = ResponseBody.create(mediaType, 0, source);
+                Response response = new Response.Builder().body(responseBody).code(200).build();
+                return response;
+            } else {
+                return chain.proceed(request);
+            }
+        }
     }
 }

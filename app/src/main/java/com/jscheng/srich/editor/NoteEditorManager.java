@@ -52,6 +52,8 @@ public class NoteEditorManager {
     public void commandImage(Uri uri, boolean draw) {
         int pos = mSelectionStart;
         String url = uri.toString();
+        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(mEditorText.getContext(), url);
+
         // 获取段落
         Paragraph lastParagraph = getParagraph(pos);
         Paragraph newParagraph;

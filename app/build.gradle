@@ -26,10 +26,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
     implementation 'com.squareup.okio:okio:2.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+    implementation 'com.jakewharton:disklrucache:2.0.2'
 }
