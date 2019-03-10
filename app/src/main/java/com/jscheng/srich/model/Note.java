@@ -7,7 +7,7 @@ import java.util.List;
  * Created By Chengjunsen on 2019/2/20
  */
 public class Note {
-    private int id;
+    private String id;
 
     private String title;
 
@@ -19,21 +19,32 @@ public class Note {
 
     private String summaryImageUrl;
 
+    private String localPath;
+
+    private boolean isDirty;
+
     private List<Paragraph> paragraphs;
 
     public Note() {
         paragraphs = new ArrayList<>();
+        isDirty = true;
     }
 
     public List<Paragraph> getParagraphs() {
         return paragraphs;
     }
 
-    public int getId() {
+    public void setParagraphs(List<Paragraph> paragraphs) {
+        if (paragraphs != null) {
+            this.paragraphs = paragraphs;
+        }
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -75,5 +86,21 @@ public class Note {
 
     public void setSummaryImageUrl(String summaryImageUrl) {
         this.summaryImageUrl = summaryImageUrl;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public boolean isDirty() {
+        return isDirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        isDirty = dirty;
     }
 }

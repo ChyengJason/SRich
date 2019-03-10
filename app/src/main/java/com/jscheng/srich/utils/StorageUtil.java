@@ -2,6 +2,7 @@ package com.jscheng.srich.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * Created By Chengjunsen on 2019/3/8
  */
 public class StorageUtil {
-
+    private static final String TAG = "StorageUtil";
     public static String readFile(String path) {
         BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
@@ -30,6 +31,10 @@ public class StorageUtil {
     }
 
     public static void overwiteFile(String path, String text) {
+        if (path == null && path.isEmpty()) {
+            Log.e(TAG, "overwiteFile: path is null");
+            return;
+        }
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(path));

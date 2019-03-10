@@ -11,9 +11,9 @@ public class RouterConfig {
     public final static String EditNoteActivityUri = "EditNoteActivity";
 
     public static void config() {
-        Router.addInterceptor(new UriAnalyzerInterceptor());
         Router.addInterceptor(new LogInterceptor());
         Router.addInterceptor(new ActivityInterceptor());
+        Router.addInterceptor(new UriAnalyzerInterceptor());
 
         Router.addUri(OutLineActivityUri, OutLinesActivity.class);
         Router.addUri(EditNoteActivityUri, EditNoteActivity.class);

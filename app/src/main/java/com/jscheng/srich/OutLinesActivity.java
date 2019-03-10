@@ -3,14 +3,13 @@ package com.jscheng.srich;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.jscheng.srich.model.Note;
-import com.jscheng.srich.route.Router;
-import com.jscheng.srich.route.RouterConfig;
 import com.jscheng.srich.utils.DateUtil;
 import com.jscheng.srich.widget.FloatNewButton;
 
@@ -19,7 +18,8 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/20
  */
-public class OutLinesActivity extends BaseActivity implements OutLinePresenter.OutLineView, View.OnClickListener {
+public class OutLinesActivity extends BaseActivity
+        implements OutLinePresenter.OutLineView, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
     private final static String TAG = "OutLinesActivity";
     private OutLinePresenter mPresenter = null;
     private RecyclerView mRecyclerView = null;
@@ -28,6 +28,7 @@ public class OutLinesActivity extends BaseActivity implements OutLinePresenter.O
     private LinearLayout mHeadDateLayout = null;
     private TextView mHeadDateText = null;
     private FloatNewButton mFloatButton = null;
+    private SwipeRefreshLayout mSwipeLayout = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +42,8 @@ public class OutLinesActivity extends BaseActivity implements OutLinePresenter.O
         this.mHeadDateText = mHeadDateLayout.findViewById(R.id.date_text);
         this.mFloatButton = findViewById(R.id.float_new_button);
         this.mFloatButton.setOnClickListener(this);
+        this.mSwipeLayout = findViewById(R.id.swipe_layout);
+        this.mSwipeLayout.setOnRefreshListener(this);
 
         this.mRecyclerView = findViewById(R.id.outline_recyclerview);
         this.mLayoutManager = new LinearLayoutManager(this,
@@ -53,11 +56,12 @@ public class OutLinesActivity extends BaseActivity implements OutLinePresenter.O
 
     @Override
     public void setData(List<Note> notes) {
+        mSwipeLayout.setRefreshing(false);
         mRecyclerAdapter.setData(notes);
     }
 
     private void tapNewButton() {
-        Router.with(this).route(RouterConfig.EditNoteActivityUri).go();
+        mPresenter.tapNew();
     }
 
     @Override
@@ -69,6 +73,11 @@ public class OutLinesActivity extends BaseActivity implements OutLinePresenter.O
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        mPresenter.reload();
     }
 
     private class ScrollChangeListener extends RecyclerView.OnScrollListener {

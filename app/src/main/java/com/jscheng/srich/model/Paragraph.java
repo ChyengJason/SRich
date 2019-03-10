@@ -128,10 +128,17 @@ public class Paragraph {
     }
 
     public void addWords(String words, List<Integer> wordStyles) {
-        if (words != null && wordStyles != null && !words.isEmpty() && !wordStyles.isEmpty()) {
-            this.words.append(words);
-            this.wordStyles.addAll(wordStyles);
+        if (words == null || wordStyles == null) {
+            return;
         }
+        if (words.isEmpty() || wordStyles.isEmpty()) {
+            return;
+        }
+        if (words.length() != wordStyles.size()) {
+            return;
+        }
+        this.words.append(words);
+        this.wordStyles.addAll(wordStyles);
     }
 
     public String getWords() {

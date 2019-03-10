@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorText;
+import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
 import com.jscheng.srich.widget.EditNoteFormatDialog;
@@ -33,7 +34,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editnote);
-        mPresenter = new EditNotePresenter();
+        mPresenter = new EditNotePresenter(getIntent());
         this.getLifecycle().addObserver(mPresenter);
         mEditButton = findViewById(R.id.float_edit_button);
         mEditButton.setPresenter(mPresenter);
@@ -50,16 +51,16 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     }
 
     @Override
-    public void writingMode(boolean isEditorBarEnable) {
-        mEditorText.writingMode();
+    public void writingMode(Note note, boolean isEditorBarEnable) {
+        mEditorText.writingMode(note);
         mToolbar.writingMode();
         mEditorBar.setVisibility(isEditorBarEnable ? View.VISIBLE : View.GONE);
         mToolbar.setFormatEnable(isEditorBarEnable);
     }
 
     @Override
-    public void readingMode() {
-        mEditorText.readingMode();
+    public void readingMode(Note note) {
+        mEditorText.readingMode(note);
         mToolbar.readingMode();
         mEditButton.show();
         mEditorBar.setVisibility(View.GONE);
@@ -67,7 +68,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
 
     @Override
     public void onBackPressed() {
-        mPresenter.pressBack();
+        mPresenter.tapBack();
     }
 
     @Override

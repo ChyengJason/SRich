@@ -5,9 +5,6 @@ import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
-import com.jscheng.srich.utils.EditTextUtil;
-import com.jscheng.srich.utils.KeyboardUtil;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +35,12 @@ public class NoteEditorManager {
         mEditorText = editorText;
     }
 
+    public void reset(Note note) {
+        mNote = note;
+        mSelectionStart = mSelectionEnd = 0;
+        requestDraw();
+    }
+
     public void addSelectionChangeListener(OnSelectionChangeListener listener) {
         mSelectionListeners.add(listener);
         notifySelectionChangeListener(mSelectionStart, mSelectionEnd, mOptions);
@@ -53,23 +56,12 @@ public class NoteEditorManager {
 
     public void commandImage(Uri uri, boolean draw) {
         String url = uri.toString();
-        commandImage(url, draw);
+        inputImage(url);
+        if (draw) { requestDraw(); }
     }
 
     public void commandImage(String url, boolean draw) {
-        int pos = mSelectionStart;
-        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(url);
-
-        // 获取段落
-        Paragraph lastParagraph = getParagraph(pos);
-        Paragraph newParagraph;
-        if (lastParagraph == null) {
-            newParagraph = createImageParagraph(0, url);
-        }else {
-            int index = getParagraphIndex(lastParagraph);
-            newParagraph = createImageParagraph(index + 1, url);
-        }
-        setSeletion(getParagraphEnd(newParagraph));
+        inputImage(url);
         if (draw) { requestDraw(); }
     }
 
@@ -347,6 +339,23 @@ public class NoteEditorManager {
         }
     }
 
+    private void inputImage(String url) {
+        int pos = mSelectionStart;
+        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(url);
+
+        // 获取段落
+        Paragraph lastParagraph = getParagraph(pos);
+        Paragraph newParagraph;
+        if (lastParagraph == null) {
+            newParagraph = createImageParagraph(0, url);
+        }else {
+            int index = getParagraphIndex(lastParagraph);
+            newParagraph = createImageParagraph(index + 1, url);
+        }
+        setSeletion(getParagraphEnd(newParagraph));
+        mNote.setDirty(true);
+    }
+
     private void inputNumList(boolean isSelected) {
         List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
         if (paragraphs.isEmpty()) {
@@ -367,6 +376,7 @@ public class NoteEditorManager {
                 }
             }
         }
+        mNote.setDirty(true);
     }
 
     private void inputUnCheckBox(boolean isSelected) {
@@ -390,6 +400,7 @@ public class NoteEditorManager {
                 }
             }
         }
+        mNote.setDirty(true);
     }
 
     private boolean applySelectionStyle(int start, int end, boolean isAppend, int flag) {
@@ -415,6 +426,7 @@ public class NoteEditorManager {
             }
             startPos = endPos + 1;
         }
+        mNote.setDirty(true);
         return true;
     }
 
@@ -425,6 +437,7 @@ public class NoteEditorManager {
             paragraph.setIndentation(indentation);
             paragraph.setDirty(true);
         }
+        mNote.setDirty(true);
     }
 
     private void applySelectionReduceIndentation(int start, int end) {
@@ -434,6 +447,7 @@ public class NoteEditorManager {
             paragraph.setIndentation(indentation);
             paragraph.setDirty(true);
         }
+        mNote.setDirty(true);
     }
 
     private void deleteSelection() {
@@ -484,6 +498,7 @@ public class NoteEditorManager {
             startPos = endPos + 1;
         }
         setSeletion(start);
+        mNote.setDirty(true);
     }
 
     private Paragraph getParagraph(int globalPos) {
@@ -564,6 +579,7 @@ public class NoteEditorManager {
             paragraph.insertPlaceHolder();
         }
         mNote.getParagraphs().add(index, paragraph);
+        mNote.setDirty(true);
         return paragraph;
     }
 
@@ -577,6 +593,7 @@ public class NoteEditorManager {
         paragraph.insertPlaceHolder();
 
         mNote.getParagraphs().add(index, paragraph);
+        mNote.setDirty(true);
         return paragraph;
     }
 
@@ -588,6 +605,7 @@ public class NoteEditorManager {
         paragraph.setImage(url);
         paragraph.insertPlaceHolder();
         mNote.getParagraphs().add(index, paragraph);
+        mNote.setDirty(true);
         return paragraph;
     }
 
@@ -666,7 +684,7 @@ public class NoteEditorManager {
         if (getParagraphBegin(paragraph) == globalPos) {
             if (paragraph.isImage()) {
                 clickImage(paragraph);
-                return true;
+                return false;
             } else if (paragraph.isCheckbox()) {
                 return true;
             } else if (paragraph.isUnCheckbox()) {
@@ -679,12 +697,14 @@ public class NoteEditorManager {
     private void clickCheckBox(Paragraph paragraph) {
         paragraph.setCheckbox(false);
         paragraph.setUnCheckbox(true);
+        mNote.setDirty(true);
         requestDraw();
     }
 
     private void clickUncheckBox(Paragraph paragraph) {
         paragraph.setUnCheckbox(false);
         paragraph.setCheckbox(true);
+        mNote.setDirty(true);
         requestDraw();
     }
 

@@ -1,21 +1,20 @@
 package com.jscheng.srich;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
-
+import android.content.Context;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
+import com.jscheng.srich.route.Router;
+import com.jscheng.srich.route.RouterConfig;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created By Chengjunsen on 2019/2/20
  */
-public class OutLinePresenter implements IPresenter {
+public class OutLinePresenter extends IPresenter {
     private OutLineView mView;
 
     public interface OutLineView extends IView {
@@ -25,7 +24,6 @@ public class OutLinePresenter implements IPresenter {
     @Override
     public void onCreate(@NotNull LifecycleOwner owner) {
         this.mView = (OutLineView) owner;
-        this.init();
     }
 
     @Override
@@ -34,22 +32,16 @@ public class OutLinePresenter implements IPresenter {
     }
 
     @Override
-    public void onLifecycleChanged(@NotNull LifecycleOwner owner, @NotNull Lifecycle.Event event) {
-
+    protected void onResume() {
+        this.reload();
     }
 
-    private void init() {
-        List<Note> datas = generalData();
-        this.mView.setData(datas);
+    public void reload() {
+        List<Note> notes = NoteFactory.getNotes((Context)mView);
+        this.mView.setData(notes);
     }
 
-    private List<Note> generalData() {
-        List<Note> notes = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            Note note = NoteBuilder.create().mtime(System.nanoTime()).title("note " + i).build();
-            notes.add(note);
-        }
-        return notes;
+    public void tapNew() {
+        Router.with((Context)mView).route(RouterConfig.EditNoteActivityUri).go();
     }
-
 }

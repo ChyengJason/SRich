@@ -34,6 +34,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter {
         mLayoutInfater = LayoutInflater.from(context);
         mLayoutManager = layoutManager;
         mNotes = new ArrayList();
+        mOutlines = new ArrayList<>();
     }
 
     public void setData(List<Note> notes) {
@@ -42,6 +43,14 @@ public class OutLinesAdapter extends RecyclerView.Adapter {
             this.mOutlines = OutLineFactory.build(mNotes);
         }
         notifyDataSetChanged();// 后续用DiffUtil优化
+    }
+
+    public void addData(List<Note> notes) {
+        if (notes != null && notes.size() >0 ) {
+            this.mNotes.addAll(notes);
+            this.mOutlines.addAll(OutLineFactory.build(notes));
+        }
+        notifyDataSetChanged();
     }
 
     public List<Note> getData() {
@@ -95,7 +104,13 @@ public class OutLinesAdapter extends RecyclerView.Adapter {
 
     private void bindNoteViewHolder(ItemNoteViewHolder noteViewHolder, OutLine outline) {
         String title = outline.getNote().getTitle();
+        String summary = outline.getNote().getSummary();
+        String summaryImageUrl = outline.getNote().getSummaryImageUrl();
+        String date = DateUtil.formatDate(outline.getNote().getModifyTime());
         noteViewHolder.titleText.setText(title);
+        noteViewHolder.weekText.setText(date);
+        noteViewHolder.summaryText.setText(summary);
+        noteViewHolder.summaryImage.setVisibility(View.GONE);
     }
 
     @Override
@@ -124,7 +139,10 @@ public class OutLinesAdapter extends RecyclerView.Adapter {
 
         public ItemNoteViewHolder(View itemView) {
             super(itemView);
+            weekText = itemView.findViewById(R.id.date_text);
             titleText = itemView.findViewById(R.id.title_text);
+            summaryText = itemView.findViewById(R.id.summary_text);
+            summaryImage = itemView.findViewById(R.id.summary_image_view);
         }
     }
 }

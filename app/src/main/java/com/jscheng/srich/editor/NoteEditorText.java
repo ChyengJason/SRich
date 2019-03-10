@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import com.jscheng.srich.editor.spans.NoteClickSpan;
+import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
@@ -54,7 +55,11 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
         this.setLetterSpacing(NoteEditorConfig.LetterSpacing);
         this.setLineSpacing(NoteEditorConfig.LineSpacing, 1f);
         this.setFocusableInTouchMode(true); // 触摸获得焦点
-        this.readingMode();
+
+        this.isReadMode = true;
+        this.setCursorVisible(false);
+        this.setSelected(false);
+        this.hideSoftKeyboard();
     }
 
     public void setCursorColor(int color) {
@@ -68,7 +73,8 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
     }
 
     // 写模式
-    public void writingMode() {
+    public void writingMode(Note note) {
+        this.mStyleManager.reset(note);
         this.isReadMode = false;
         this.setCursorVisible(true);
         this.setSelected(true);
@@ -78,7 +84,8 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
     }
 
     // 读模式
-    public void readingMode() {
+    public void readingMode(Note note) {
+        this.mStyleManager.reset(note);
         this.isReadMode = true;
         this.setCursorVisible(false);
         this.setSelected(false);
