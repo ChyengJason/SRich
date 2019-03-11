@@ -1,10 +1,11 @@
-package com.jscheng.srich;
+package com.jscheng.srich.edit_note;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.jscheng.srich.NoteFactory;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
@@ -15,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * Created By Chengjunsen on 2019/2/21
  */
 public class EditNotePresenter extends IPresenter {
-    private static final Mode DefaultMode = Mode.Reading;
-    private Mode mMode = DefaultMode;
+    private static final EditNoteMode DefaultMode = EditNoteMode.Reading;
+    private EditNoteMode mMode = DefaultMode;
     private EditNoteView mView;
     private boolean isEditorBarEnable;
     private Note mNote;
@@ -24,11 +25,6 @@ public class EditNotePresenter extends IPresenter {
 
     public EditNotePresenter(Intent intent) {
         mNoteid = intent.getStringExtra("id");
-    }
-
-    private enum Mode {
-        Writing,
-        Reading
     }
 
     public interface EditNoteView extends IView {
@@ -46,14 +42,18 @@ public class EditNotePresenter extends IPresenter {
         this.mView = (EditNoteView)owner;
         this.isEditorBarEnable = true;
         this.mNote = null;
-        if (mNoteid != null) {
-            mNote = NoteFactory.findNote((Context)mView, mNoteid);
+        this.initOrCreateNote(mNoteid);
+        this.readingMode();
+    }
+
+    private void initOrCreateNote(String noteid) {
+        if (noteid != null) {
+            mNote = NoteFactory.findNote((Context)mView, noteid);
             mNote = NoteFactory.parserParagraphs(mNote);
         }
         if (mNote == null) {
             mNote = NoteFactory.createNote((Context)mView);
         }
-        this.readingMode();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class EditNotePresenter extends IPresenter {
     }
 
     public void tapBack() {
-        if (mMode == Mode.Writing) {
+        if (mMode == EditNoteMode.Writing) {
             readingMode();
         } else {
             updateNote();
@@ -110,12 +110,12 @@ public class EditNotePresenter extends IPresenter {
 
     private void readingMode() {
         mView.readingMode(mNote);
-        mMode = Mode.Reading;
+        mMode = EditNoteMode.Reading;
     }
 
     private void writingMode() {
         mView.writingMode(mNote, isEditorBarEnable);
-        mMode = Mode.Writing;
+        mMode = EditNoteMode.Writing;
     }
 
     private void updateNote() {

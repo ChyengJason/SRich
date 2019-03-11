@@ -1,7 +1,9 @@
-package com.jscheng.srich;
+package com.jscheng.srich.outline;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
+
+import com.jscheng.srich.NoteFactory;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;

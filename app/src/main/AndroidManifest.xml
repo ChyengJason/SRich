@@ -18,11 +18,11 @@
         <activity android:name=".MainActivity">
         </activity>
 
-        <activity android:name=".EditNoteActivity"
+        <activity android:name=".edit_note.EditNoteActivity"
             android:windowSoftInputMode="stateHidden">
         </activity>
 
-        <activity android:name=".OutLinesActivity">
+        <activity android:name=".outline.OutLinesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

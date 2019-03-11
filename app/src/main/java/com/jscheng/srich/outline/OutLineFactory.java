@@ -1,4 +1,4 @@
-package com.jscheng.srich;
+package com.jscheng.srich.outline;
 
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;

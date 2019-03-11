@@ -15,6 +15,7 @@ import java.io.IOException;
  */
 public class StorageUtil {
     private static final String TAG = "StorageUtil";
+
     public static String readFile(String path) {
         BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
@@ -22,7 +23,7 @@ public class StorageUtil {
             String line;
             reader = new BufferedReader(new FileReader(path));
             while ((line = reader.readLine()) != null) {
-                content.append(line + "\n");
+                content.append(line);
             }
         } catch (IOException e) {
             e.printStackTrace();

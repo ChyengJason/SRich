@@ -2,6 +2,7 @@ package com.jscheng.srich.route;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import java.util.List;
 
@@ -12,14 +13,37 @@ public class RouterRequest {
     private Context context;
     private String uri;
     private boolean isJump;
+    private Bundle bundle;
 
     public RouterRequest(Context context) {
         this.context = context;
         this.isJump = false;
+        this.bundle = new Bundle();
     }
 
     public RouterRequest route(String uri) {
         this.uri = uri;
+        return this;
+    }
+
+    public RouterRequest intent(Intent intent) {
+        this.bundle = intent.getExtras();
+        return this;
+    }
+
+    public RouterRequest intent(String key, String what) {
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        this.bundle.putString(key, what);
+        return this;
+    }
+
+    public RouterRequest intent(Bundle bundle) {
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        this.bundle.putAll(bundle);
         return this;
     }
 
@@ -29,14 +53,12 @@ public class RouterRequest {
         return process().isDone();
     }
 
-    public Intent getIntent() {
+    public Bundle getBundle() {
         check();
-        this.isJump = false;
-        RouterResponse response = process();
-        if (response.isDone()) {
-            return response.getIntent();
+        if (bundle == null) {
+            bundle = new Bundle();
         }
-        return new Intent();
+        return bundle;
     }
 
     private RouterResponse process() {

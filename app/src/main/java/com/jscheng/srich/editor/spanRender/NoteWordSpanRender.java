@@ -6,7 +6,6 @@ import android.text.style.CharacterStyle;
 import android.widget.EditText;
 
 import com.jscheng.srich.model.Paragraph;
-import com.jscheng.srich.model.Style;
 
 import java.util.List;
 

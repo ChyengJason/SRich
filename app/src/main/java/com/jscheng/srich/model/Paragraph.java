@@ -149,6 +149,10 @@ public class Paragraph {
         return words.subSequence(start, end).toString();
     }
 
+    public String getWords(int start) {
+        return words.substring(start);
+    }
+
     public List<Integer> getWordStyles() {
         return wordStyles;
     }
@@ -183,6 +187,12 @@ public class Paragraph {
 
     @Override
     public String toString() {
+        if (isImage()) {
+            return "[img] " + getImageUrl();
+        }
+        if (isDividingLine()) {
+            return "[dividingline]";
+        }
         StringBuilder content = new StringBuilder(words);
         return content.toString();
     }

@@ -19,7 +19,7 @@ import com.jscheng.srich.model.Options;
  * Created By Chengjunsen on 2019/2/25
  */
 public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlobalLayoutListener,
-        View.OnClickListener, OnSelectionChangeListener{
+        View.OnClickListener, NoteEditorSelectionListener {
     private ImageView mForwardButton;
     private ImageView mBackwardButton;
     private TextView mBoldButton;
@@ -37,7 +37,7 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     private TextView mStrikethroughButton;
     private HorizontalScrollView mScollView;
 
-    private NoteEditorManager mStyleManager;
+    private INoteEditorManager mStyleManager;
 
     public NoteEditorBar(Context context) {
         super(context);

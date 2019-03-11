@@ -1,7 +1,7 @@
 package com.jscheng.srich.route;
 
-import com.jscheng.srich.EditNoteActivity;
-import com.jscheng.srich.OutLinesActivity;
+import com.jscheng.srich.edit_note.EditNoteActivity;
+import com.jscheng.srich.outline.OutLinesActivity;
 
 /**
  * Created By Chengjunsen on 2019/2/21

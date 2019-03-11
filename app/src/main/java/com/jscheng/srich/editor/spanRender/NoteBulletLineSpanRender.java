@@ -1,9 +1,6 @@
 package com.jscheng.srich.editor.spanRender;
 
-import android.view.View;
-
 import com.jscheng.srich.editor.spans.NoteBulletSpan;
-import com.jscheng.srich.editor.spans.NoteDividingLineSpan;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
 

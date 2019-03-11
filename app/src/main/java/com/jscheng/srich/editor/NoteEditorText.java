@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import com.jscheng.srich.editor.spans.NoteClickSpan;
+import com.jscheng.srich.image_loader.NoteImageListener;
+import com.jscheng.srich.image_loader.NoteImagePool;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
@@ -18,7 +20,7 @@ import com.jscheng.srich.utils.OsUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText implements NoteImagePool.NoteImageListener{
+public class NoteEditorText extends AppCompatEditText implements NoteImageListener {
     private static final String TAG = "NoteEditorText";
     private NoteEditorManager mStyleManager;
     private NoteEditorInputConnection mInputConnection;
@@ -136,7 +138,7 @@ public class NoteEditorText extends AppCompatEditText implements NoteImagePool.N
         NoteImagePool.getInstance(getContext()).removeImageListener(this);
     }
 
-    public NoteEditorManager getStyleManager() {
+    public INoteEditorManager getStyleManager() {
         return mStyleManager;
     }
 

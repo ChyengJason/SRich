@@ -1,8 +1,6 @@
 package com.jscheng.srich.editor.spans;
 
 import android.graphics.Typeface;
-import android.text.Editable;
-import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 
 /**

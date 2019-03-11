@@ -1,17 +1,14 @@
-package com.jscheng.srich.widget;
+package com.jscheng.srich.edit_note;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 
-import com.jscheng.srich.EditNotePresenter;
 import com.jscheng.srich.R;
 
 /**

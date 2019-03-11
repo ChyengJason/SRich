@@ -1,4 +1,4 @@
-package com.jscheng.srich.editor;
+package com.jscheng.srich.image_loader;
 
 
 import android.content.Context;
@@ -31,6 +31,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+// todo 拆分
 public class NoteImagePool {
     private static final String TAG = "NoteImagePool";
     /**
@@ -368,11 +369,6 @@ public class NoteImagePool {
                 }
             }
         });
-    }
-
-    public interface NoteImageListener {
-        void onNoteImageSuccess(String url);
-        void onNoteImageFailed(String url, String err);
     }
 
 }

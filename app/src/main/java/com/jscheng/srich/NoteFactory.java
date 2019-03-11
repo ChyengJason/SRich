@@ -1,13 +1,14 @@
 package com.jscheng.srich;
 import android.content.Context;
 
+import com.jscheng.srich.converter.decoder.ParagraphDecoder;
+import com.jscheng.srich.converter.encoder.ParagraphEncoder;
 import com.jscheng.srich.dao.NoteDao;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.utils.StorageUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +22,9 @@ public class NoteFactory {
         String localPath = note.getLocalPath();
         if (localPath != null && !localPath.isEmpty()) {
             String content = StorageUtil.readFile(localPath);
-            List<Paragraph> paragraphs = decodeParagraphs(content);
+            List<Paragraph> paragraphs = ParagraphDecoder.decode(content);
             note.setParagraphs(paragraphs);
+            note.setDirty(false);
         }
         return note;
     }
@@ -69,7 +71,7 @@ public class NoteFactory {
         NoteDao dao = new NoteDao(context);
         if (note.isDirty()) {
             String localPath = note.getLocalPath();
-            String conent = encodeParagraphs(note.getParagraphs());
+            String conent = ParagraphEncoder.encode(note.getParagraphs());
             String title = conent.length() > 10 ? conent.substring(0, 10) : conent;
             String summary = conent.length() > 50 ? conent.substring(title.length(), 50) : conent.substring(title.length());
             String summaryImage = summaryImageUrl(note.getParagraphs());
@@ -94,36 +96,21 @@ public class NoteFactory {
                 return paragraph.getImageUrl();
             }
         }
-        return new String();
-    }
-
-    private static List<Paragraph> decodeParagraphs(String content) {
-        List<Paragraph> paragraphs = new ArrayList<>();
-        for (String item: content.split("\n")) {
-            Paragraph paragraph = new Paragraph();
-            List<Integer> wordstyles = new ArrayList<>();
-            for (int i = 0; i < item.length(); i++) {
-                wordstyles.add(0);
-            }
-            paragraph.addWords(item, wordstyles);
-        }
-        return paragraphs;
-    }
-
-    private static String encodeParagraphs(List<Paragraph> paragraphs) {
-        StringBuilder content = new StringBuilder();
-        for (int i = 0; i < paragraphs.size() - 1; i++) {
-            Paragraph item = paragraphs.get(i);
-            content.append(item.getWords());
-            content.append("\n");
-        }
-        if (!paragraphs.isEmpty()) {
-            content.append(paragraphs.get(paragraphs.size() - 1).getWords());
-        }
-        return content.toString();
+        return "";
     }
 
     public static boolean isNoteNull(Note note) {
-        return note.getParagraphs() == null || note.getParagraphs().isEmpty();
+        if (note.getParagraphs() == null || note.getParagraphs().isEmpty()) {
+            return true;
+        }
+        for (Paragraph paragraph : note.getParagraphs()) {
+            if (paragraph.isDividingLine() || paragraph.isImage()) {
+                return false;
+            }
+            if (!paragraph.getWords().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

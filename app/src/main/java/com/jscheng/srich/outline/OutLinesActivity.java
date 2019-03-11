@@ -1,4 +1,4 @@
-package com.jscheng.srich;
+package com.jscheng.srich.outline;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,9 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.jscheng.srich.BaseActivity;
+import com.jscheng.srich.R;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.DateUtil;
-import com.jscheng.srich.widget.FloatNewButton;
 
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class OutLinesActivity extends BaseActivity
         this.mRecyclerView = findViewById(R.id.outline_recyclerview);
         this.mLayoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
-        this.mRecyclerAdapter = new OutLinesAdapter(this, mLayoutManager);
+        this.mRecyclerAdapter = new OutLinesAdapter(mRecyclerView, mLayoutManager);
         this.mRecyclerView.setLayoutManager(mLayoutManager);
         this.mRecyclerView.setAdapter(mRecyclerAdapter);
         this.mRecyclerView.addOnScrollListener(new ScrollChangeListener());

@@ -1,6 +1,5 @@
 package com.jscheng.srich.editor.spanRender;
 
-import com.jscheng.srich.editor.spans.NoteItalicSpan;
 import com.jscheng.srich.editor.spans.NoteStrikethroughSpan;
 import com.jscheng.srich.model.Style;
 

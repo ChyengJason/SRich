@@ -2,12 +2,10 @@ package com.jscheng.srich.editor.spanRender;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.text.style.ImageSpan;
 import android.view.View;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.editor.NoteImagePool;
+import com.jscheng.srich.image_loader.NoteImagePool;
 import com.jscheng.srich.editor.spans.NoteImageSpan;
 import com.jscheng.srich.model.Paragraph;
 

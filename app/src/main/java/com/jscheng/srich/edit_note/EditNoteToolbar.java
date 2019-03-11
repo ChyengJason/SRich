@@ -1,4 +1,4 @@
-package com.jscheng.srich.widget;
+package com.jscheng.srich.edit_note;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.jscheng.srich.EditNotePresenter;
 import com.jscheng.srich.R;
 
 /**

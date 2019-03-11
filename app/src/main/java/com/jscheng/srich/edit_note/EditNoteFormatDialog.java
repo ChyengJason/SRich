@@ -1,4 +1,4 @@
-package com.jscheng.srich.widget;
+package com.jscheng.srich.edit_note;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jscheng.srich.EditNotePresenter;
 import com.jscheng.srich.R;
 
 public class EditNoteFormatDialog extends Dialog implements View.OnClickListener{

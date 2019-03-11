@@ -3,13 +3,8 @@ package com.jscheng.srich.editor.spans;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
-import android.text.style.ReplacementSpan;
-
-import com.jscheng.srich.model.Paragraph;
 
 /**
  * Created By Chengjunsen on 2019/3/7

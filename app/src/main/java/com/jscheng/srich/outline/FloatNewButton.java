@@ -1,4 +1,4 @@
-package com.jscheng.srich.widget;
+package com.jscheng.srich.outline;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -14,9 +14,13 @@ import com.jscheng.srich.R;
  * Created By Chengjunsen on 2019/2/21
  */
 public class FloatNewButton extends android.support.v7.widget.AppCompatImageView implements View.OnClickListener{
+
     private static final String NameSpace = "http://schemas.android.com/apk/res/android";
+
     private OnClickListener mClickListener = null;
+
     private Animation mAnimation = null;
+
     public FloatNewButton(Context context) {
         this(context, null);
     }
@@ -39,9 +43,11 @@ public class FloatNewButton extends android.support.v7.widget.AppCompatImageView
             this.setScaleType(ScaleType.CENTER_CROP);
             this.setImageDrawable(defaultDrawable);
         }
+
         this.mAnimation = new RotateAnimation(0, 90,
                 Animation.RELATIVE_TO_SELF,0.5f,
                 Animation.RELATIVE_TO_SELF,0.5f);
+
         this.mAnimation.setDuration(500);
     }
 

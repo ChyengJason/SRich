@@ -1,4 +1,4 @@
-package com.jscheng.srich;
+package com.jscheng.srich.edit_note;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,14 +7,13 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import com.jscheng.srich.BaseActivity;
+import com.jscheng.srich.R;
 import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
-import com.jscheng.srich.widget.EditNoteFormatDialog;
-import com.jscheng.srich.widget.EditNoteToolbar;
-import com.jscheng.srich.widget.FloatEditButton;
 
 /**
  * Created By Chengjunsen on 2019/2/21

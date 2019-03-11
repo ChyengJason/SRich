@@ -3,6 +3,7 @@ package com.jscheng.srich.route;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 /**
  * Created By Chengjunsen on 2019/2/21
@@ -30,17 +31,16 @@ public class ActivityInterceptor implements RouterInterceptor {
     private RouterResponse doRequst(RouterRequest request, RouterResponse response) {
         Class activityCls = response.getCls();
         Context context = request.getContext();
-        response.setIntent(buildIntent(context, activityCls));
+        Bundle bundle = request.getBundle();
+        Intent intent = new Intent(context, activityCls);
+
+        response.setIntent(intent);
         response.setDone(true);
 
         if (request.isJump()) {
-            context.startActivity(buildIntent(context, activityCls));
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         }
         return response;
-    }
-
-    private Intent buildIntent(Context context, Class cls) {
-        Intent intent = new Intent(context, cls);
-        return intent;
     }
 }
