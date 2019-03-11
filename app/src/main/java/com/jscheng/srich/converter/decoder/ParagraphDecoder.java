@@ -35,7 +35,6 @@ public class ParagraphDecoder {
 
     private static boolean decodeParagraphStyle(Paragraph paragraph, String content) {
         if (content.startsWith(StyleCode.ImageBegin)) {
-            paragraph.setImage(true);
             String url = content.substring(StyleCode.ImageBegin.length(),
                     content.length() - StyleCode.ImageEnd.length());
             paragraph.setImage(url);

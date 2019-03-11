@@ -3,7 +3,6 @@ package com.jscheng.srich.editor.spanRender;
 import android.text.Editable;
 import android.text.Spanned;
 import android.widget.EditText;
-
 import com.jscheng.srich.editor.NoteEditorRender;
 import com.jscheng.srich.model.Paragraph;
 

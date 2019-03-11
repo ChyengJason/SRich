@@ -22,7 +22,7 @@ public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
 
     @Override
     protected boolean isImageStyle(Paragraph paragraph) {
-        return paragraph.isImage();
+       return paragraph.isImage();
     }
 
     @Override

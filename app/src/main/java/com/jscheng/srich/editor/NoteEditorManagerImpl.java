@@ -157,6 +157,7 @@ public class NoteEditorManagerImpl {
             int newPos = getParagraphBeginWithHead(newParagraph);
             setSeletion(newPos);
         }
+        mNote.setDirty(true);
     }
 
     public void inputParagraph(String content) {
@@ -189,6 +190,7 @@ public class NoteEditorManagerImpl {
 
         // 调整选择区
         setSeletion(pos + content.length());
+        mNote.setDirty(true);
     }
 
     public void inputDividingLine() {
@@ -206,6 +208,7 @@ public class NoteEditorManagerImpl {
         }
         pos = getParagraphEnd(dividingParagraph);
         setSeletion(pos);
+        mNote.setDirty(true);
     }
 
     public void inputBulletList(boolean isSelected) {
@@ -230,6 +233,7 @@ public class NoteEditorManagerImpl {
                 }
             }
         }
+        mNote.setDirty(true);
     }
 
     public void inputImage(String url) {
@@ -596,7 +600,7 @@ public class NoteEditorManagerImpl {
         Paragraph paragraph = getParagraph(globalPos);
         if (getParagraphBegin(paragraph) == globalPos) {
             if (paragraph.isImage()) {
-                return true;
+                return false;
             } else if (paragraph.isCheckbox()) {
                 clickCheckBox(paragraph);
                 return true;
@@ -613,7 +617,7 @@ public class NoteEditorManagerImpl {
         if (getParagraphBegin(paragraph) == globalPos) {
             if (paragraph.isImage()) {
                 clickImage(paragraph);
-                return true;
+                return false;
             } else if (paragraph.isCheckbox()) {
                 return true;
             } else if (paragraph.isUnCheckbox()) {
@@ -642,8 +646,13 @@ public class NoteEditorManagerImpl {
     }
 
     public void requestDraw() {
-        print();
-        mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
+        mEditorText.post(new Runnable() {
+            @Override
+            public void run() {
+                print();
+                mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
+            }
+        });
     }
 
     public void print() {

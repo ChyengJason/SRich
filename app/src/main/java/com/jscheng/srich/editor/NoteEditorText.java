@@ -45,9 +45,11 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         this.mInputConnection = new NoteEditorInputConnection(mStyleManager);
         this.setOverScrollMode(OVER_SCROLL_ALWAYS);
         this.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
+
         this.setInputType(EditorInfo.TYPE_CLASS_TEXT
                 | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
                 | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        this.setFocusableInTouchMode(true);
         this.setBackground(null);
         this.setHighlightColor(NoteEditorConfig.HighLightColor);
         this.setCursorColor(NoteEditorConfig.CursorColor);
@@ -56,12 +58,8 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         this.setTextSize(TypedValue.COMPLEX_UNIT_SP, NoteEditorConfig.TextSizeSp);
         this.setLetterSpacing(NoteEditorConfig.LetterSpacing);
         this.setLineSpacing(NoteEditorConfig.LineSpacing, 1f);
-        this.setFocusableInTouchMode(true); // 触摸获得焦点
 
-        this.isReadMode = true;
-        this.setCursorVisible(false);
-        this.setSelected(false);
-        this.hideSoftKeyboard();
+        this.readingMode();
     }
 
     public void setCursorColor(int color) {
@@ -74,9 +72,12 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         }
     }
 
-    // 写模式
-    public void writingMode(Note note) {
+    public void reset(Note note) {
         this.mStyleManager.reset(note);
+    }
+
+    // 写模式
+    public void writingMode() {
         this.isReadMode = false;
         this.setCursorVisible(true);
         this.setSelected(true);
@@ -86,8 +87,7 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     }
 
     // 读模式
-    public void readingMode(Note note) {
-        this.mStyleManager.reset(note);
+    public void readingMode() {
         this.isReadMode = true;
         this.setCursorVisible(false);
         this.setSelected(false);

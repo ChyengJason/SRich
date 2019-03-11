@@ -50,16 +50,21 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     }
 
     @Override
-    public void writingMode(Note note, boolean isEditorBarEnable) {
-        mEditorText.writingMode(note);
+    public void resetNote(Note note) {
+        mEditorText.reset(note);
+    }
+
+    @Override
+    public void writingMode(boolean isEditorBarEnable) {
+        mEditorText.writingMode();
         mToolbar.writingMode();
         mEditorBar.setVisibility(isEditorBarEnable ? View.VISIBLE : View.GONE);
         mToolbar.setFormatEnable(isEditorBarEnable);
     }
 
     @Override
-    public void readingMode(Note note) {
-        mEditorText.readingMode(note);
+    public void readingMode() {
+        mEditorText.readingMode();
         mToolbar.readingMode();
         mEditButton.show();
         mEditorBar.setVisibility(View.GONE);

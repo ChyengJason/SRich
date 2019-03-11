@@ -6,7 +6,7 @@
     <dimen name="outline_float_new_btn_size">50dp</dimen>
     <dimen name="edit_note_toolbar_btn_size">25dp</dimen>
     <dimen name="edit_note_toolbar_height">50dp</dimen>
-    <dimen name="editor_text_padding">10dp</dimen>
+    <dimen name="editor_text_padding">20dp</dimen>
     <dimen name="editor_text_padding_right">5dp</dimen>
     <dimen name="editor_bar_height">50dp</dimen>
     <dimen name="editor_bar_item_size">30dp</dimen>

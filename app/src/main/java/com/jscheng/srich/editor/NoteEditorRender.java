@@ -1,9 +1,13 @@
 package com.jscheng.srich.editor;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.Editable;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.EditText;
 
+import com.jscheng.srich.R;
 import com.jscheng.srich.editor.spanRender.NoteBackgroundSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
@@ -20,6 +24,7 @@ import com.jscheng.srich.editor.spanRender.NoteSuperscriptSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteUncheckBoxLineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteUnderlineSpanRender;
 import com.jscheng.srich.editor.spanRender.NoteWordSpanRender;
+import com.jscheng.srich.editor.spans.NoteImageSpan;
 import com.jscheng.srich.model.Paragraph;
 
 import java.util.ArrayList;

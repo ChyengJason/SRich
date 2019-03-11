@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.jscheng.srich.NoteFactory;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 
@@ -28,13 +29,14 @@ public class EditNotePresenter extends IPresenter {
     }
 
     public interface EditNoteView extends IView {
-        void writingMode(Note note, boolean isEditorBarEnable);
-        void readingMode(Note note);
+        void writingMode(boolean isEditorBarEnable);
+        void readingMode();
         void finish();
         void setEditorbar(boolean isEnable);
         void showFormatDialog();
         void showAlbumDialog();
         void showNetworkDialog();
+        void resetNote(Note note);
     }
 
     @Override
@@ -54,6 +56,7 @@ public class EditNotePresenter extends IPresenter {
         if (mNote == null) {
             mNote = NoteFactory.createNote((Context)mView);
         }
+        mView.resetNote(mNote);
     }
 
     @Override
@@ -109,12 +112,12 @@ public class EditNotePresenter extends IPresenter {
     }
 
     private void readingMode() {
-        mView.readingMode(mNote);
+        mView.readingMode();
         mMode = EditNoteMode.Reading;
     }
 
     private void writingMode() {
-        mView.writingMode(mNote, isEditorBarEnable);
+        mView.writingMode(isEditorBarEnable);
         mMode = EditNoteMode.Writing;
     }
 
