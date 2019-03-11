@@ -26,6 +26,7 @@ public class ParagraphEncoder {
         } else {
             encodeLineStyle(content, paragraph);
             encodeWordStyle(content, paragraph);
+            content.append(StyleCode.Paragraph);
         }
         return content.toString();
     }
