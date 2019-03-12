@@ -1,9 +1,9 @@
 package com.jscheng.srich.editor;
 
-import android.net.Uri;
 import android.util.Log;
 
-import com.jscheng.srich.image_loader.NoteImagePool;
+import com.jscheng.srich.image_loader.NetworkImagePool;
+import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
@@ -171,7 +171,7 @@ public class NoteEditorManagerImpl {
         Paragraph paragraph = getParagraph(pos);
         if (paragraph == null) {
             paragraph = createParagraph(0);
-        } else if (paragraph.isDividingLine() || paragraph.isImage()) {
+        } else if (paragraph.isParagraphStyle()) {
             int index = getParagraphIndex(paragraph);
             int paragraphBegin = getParagraphBegin(paragraph);
             if (paragraphBegin != pos) {
@@ -238,7 +238,7 @@ public class NoteEditorManagerImpl {
 
     public void inputImage(String url) {
         int pos = mSelectionStart;
-        NoteImagePool.getInstance(mEditorText.getContext()).loadBitmap(url);
+        NoteImageLoader.with(mEditorText.getContext()).loadBitmap(url);
 
         // 获取段落
         Paragraph lastParagraph = getParagraph(pos);
@@ -346,7 +346,7 @@ public class NoteEditorManagerImpl {
     public void applySelectionIndentation(int start, int end) {
         List<Paragraph> paragraphs = getParagraphs(start, end);
         for (Paragraph paragraph: paragraphs) {
-            if (paragraph.isDividingLine() || paragraph.isImage()) {
+            if (paragraph.isParagraphStyle()) {
                 continue;
             }
             int indentation = Math.min(3, paragraph.getIndentation() + 1);
@@ -365,7 +365,7 @@ public class NoteEditorManagerImpl {
     public void applySelectionReduceIndentation(int start, int end) {
         List<Paragraph> paragraphs = getParagraphs(start, end);
         for (Paragraph paragraph: paragraphs) {
-            if (paragraph.isDividingLine() || paragraph.isImage()) {
+            if (paragraph.isParagraphStyle()) {
                 continue;
             }
             int indentation = Math.max(0, paragraph.getIndentation() - 1);
@@ -409,6 +409,7 @@ public class NoteEditorManagerImpl {
                 item.remove(delParaStartPos, delParaEndPos);
                 if (delParaStartPos <= 0 && delParaEndPos >= 1) {
                     item.clearHeadStyle();
+                    item.clearParagraphStyle();
                 }
             } else if (start <= startPos && end >= endPos) { // middle paragraph
                 iter.remove();

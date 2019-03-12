@@ -11,7 +11,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NoteImagePool;
+import com.jscheng.srich.image_loader.NetworkImagePool;
+import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.EditTextUtil;
@@ -129,13 +130,13 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NoteImagePool.getInstance(getContext()).addImageListener(this);
+        NoteImageLoader.with(getContext()).addImageListener(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        NoteImagePool.getInstance(getContext()).removeImageListener(this);
+        NoteImageLoader.with(getContext()).removeImageListener(this);
     }
 
     public INoteEditorManager getStyleManager() {

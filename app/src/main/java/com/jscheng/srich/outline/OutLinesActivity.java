@@ -86,13 +86,17 @@ public class OutLinesActivity extends BaseActivity
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            long time = mRecyclerAdapter.getFirstVisibleDateTime();
-            if (time > 0) {
-                mHeadDateLayout.setVisibility(View.VISIBLE);
-                mHeadDateText.setText(DateUtil.formatDate(time));
-            } else {
-                mHeadDateText.setVisibility(View.INVISIBLE);
-            }
+            updateHeadDateLayout();
+        }
+    }
+
+    private void updateHeadDateLayout() {
+        long time = mRecyclerAdapter.getFirstVisibleDateTime();
+        if (time > 0) {
+            mHeadDateLayout.setVisibility(View.VISIBLE);
+            mHeadDateText.setText(DateUtil.formatDate(time));
+        } else {
+            mHeadDateLayout.setVisibility(View.INVISIBLE);
         }
     }
 }

@@ -15,7 +15,8 @@ import android.widget.TextView;
 
 import com.jscheng.srich.R;
 import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NoteImagePool;
+import com.jscheng.srich.image_loader.NetworkImagePool;
+import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
 import com.jscheng.srich.route.Router;
@@ -50,10 +51,9 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
     }
 
     public void setData(List<Note> notes) {
-        if (notes != null && notes.size() > 0) {
-            this.mNotes = notes;
-            this.mOutlines = OutLineFactory.build(mNotes);
-        }
+        this.mNotes.clear();
+        this.mNotes.addAll(notes);
+        this.mOutlines = OutLineFactory.build(mNotes);
         notifyDataSetChanged();// 后续用DiffUtil优化
     }
 
@@ -71,7 +71,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
 
     public long getFirstVisibleDateTime() {
         int position = mLayoutManager.findFirstVisibleItemPosition();
-        if (position >= 0) {
+        if (getItemCount() > 0 && position >= 0) {
             OutLine outLine = mOutlines.get(position);
             if (outLine.getType() == OutLine.Type.Date) {
                 return outLine.getTime();
@@ -125,15 +125,15 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
         if (TextUtils.isEmpty(summaryImageUrl)) {
             noteViewHolder.summaryImage.setVisibility(View.INVISIBLE);
         } else {
-            int width = noteViewHolder.summaryImage.getMeasuredWidth();
-            Bitmap bitmap = NoteImagePool.getInstance(mContext).getBitmap(summaryImageUrl, width);
-            if (bitmap != null) {
-                noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
-                noteViewHolder.summaryImage.setImageBitmap(bitmap);
-            } else {
-                noteViewHolder.summaryImage.setVisibility(View.INVISIBLE);
-                noteViewHolder.summaryImage.setTag(summaryImageUrl);
-            }
+//            int width = noteViewHolder.summaryImage.getMeasuredWidth();
+//            Bitmap bitmap = NoteImageLoader.with(mContext).getBitmap(summaryImageUrl, width);
+//            if (bitmap != null) {
+//                noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
+//                noteViewHolder.summaryImage.setImageBitmap(bitmap);
+//            } else {
+//                noteViewHolder.summaryImage.setVisibility(View.INVISIBLE);
+//                noteViewHolder.summaryImage.setTag(summaryImageUrl);
+//            }
         }
         noteViewHolder.contentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,7 +160,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
     public void onNoteImageSuccess(String url) {
         ImageView summaryImageView = mParentView.findViewWithTag(url);
         if (summaryImageView != null) {
-            Bitmap bitmap = NoteImagePool.getInstance(mContext).getBitmap(url, summaryImageView.getWidth());
+            Bitmap bitmap = NoteImageLoader.with(mContext).getBitmap(url, summaryImageView.getWidth());
             summaryImageView.setImageBitmap(bitmap);
         }
     }

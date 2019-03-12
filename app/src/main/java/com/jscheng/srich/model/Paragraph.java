@@ -254,6 +254,10 @@ public class Paragraph {
         return isBulletList() || isNumList() || isCheckbox() || isUnCheckbox();
     }
 
+    public boolean isParagraphStyle() {
+        return isImage() || isDividingLine();
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -263,5 +267,10 @@ public class Paragraph {
         setNumList(false);
         setCheckbox(false);
         setUnCheckbox(false);
+    }
+
+    public void clearParagraphStyle() {
+        setImage(false);
+        setDividingLine(false);
     }
 }

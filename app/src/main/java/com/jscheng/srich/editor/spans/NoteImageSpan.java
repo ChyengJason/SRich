@@ -47,9 +47,9 @@ public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan{
             Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             Rect destRect = new Rect(0, 0, (int)destWidth, (int)destHeight);
 
-            int transY = bottom - bitmap.getHeight();
+            int transY = (int) (bottom - destHeight);
             transY -= paint.getFontMetricsInt().descent;
-            int transX = (int)x + (mWidth - bitmap.getWidth())/2;
+            int transX = (int) (x + (mWidth - destWidth) / 2);
             canvas.translate(transX, transY);
             canvas.drawBitmap(bitmap, srcRect, destRect, paint);
             canvas.restore();

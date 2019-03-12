@@ -5,8 +5,9 @@ import android.graphics.BitmapFactory;
 import android.view.View;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.image_loader.NoteImagePool;
+import com.jscheng.srich.image_loader.NetworkImagePool;
 import com.jscheng.srich.editor.spans.NoteImageSpan;
+import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Paragraph;
 
 /**
@@ -28,7 +29,7 @@ public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
     @Override
     protected NoteImageSpan createImageSpan(String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
-        Bitmap bitmap = NoteImagePool.getInstance(mView.getContext()).getBitmap(url, width);
+        Bitmap bitmap = NoteImageLoader.with(mView.getContext()).getBitmap(url, width);
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_compose);
         }

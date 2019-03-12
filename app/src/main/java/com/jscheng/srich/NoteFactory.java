@@ -19,12 +19,14 @@ public class NoteFactory {
      * @param note
      */
     public static Note parserParagraphs(Note note) {
-        String localPath = note.getLocalPath();
-        if (localPath != null && !localPath.isEmpty()) {
-            String content = StorageUtil.readFile(localPath);
-            List<Paragraph> paragraphs = ParagraphDecoder.decode(content);
-            note.setParagraphs(paragraphs);
-            note.setDirty(false);
+        if (note != null) {
+            String localPath = note.getLocalPath();
+            if (localPath != null && !localPath.isEmpty()) {
+                String content = StorageUtil.readFile(localPath);
+                List<Paragraph> paragraphs = ParagraphDecoder.decode(content);
+                note.setParagraphs(paragraphs);
+                note.setDirty(false);
+            }
         }
         return note;
     }
@@ -40,11 +42,6 @@ public class NoteFactory {
         note.setModifyTime(time);
         note.setLocalPath(localPath);
         return note;
-    }
-
-    public static void addNote(Context context, Note note) {
-        NoteDao dao = new NoteDao(context);
-        dao.add(note);
     }
 
     public static void deleteNote(Context context, Note note) {
@@ -104,7 +101,7 @@ public class NoteFactory {
             return true;
         }
         for (Paragraph paragraph : note.getParagraphs()) {
-            if (paragraph.isDividingLine() || paragraph.isImage()) {
+            if (paragraph.isParagraphStyle()) {
                 return false;
             }
             if (!paragraph.getWords().isEmpty()) {
