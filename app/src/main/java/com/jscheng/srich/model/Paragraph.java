@@ -251,7 +251,7 @@ public class Paragraph {
     }
 
     public boolean isHeadStyle() {
-        return isBulletList() || isNumList() || isCheckbox() || isUnCheckbox();
+        return isBulletList() || isNumList() || isCheckbox() || isUnCheckbox() || getIndentation() > 0;
     }
 
     public boolean isParagraphStyle() {

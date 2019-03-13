@@ -1,4 +1,4 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render;
 
 import android.text.Editable;
 import android.text.Spanned;

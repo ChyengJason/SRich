@@ -1,5 +1,6 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.line_render;
 
+import com.jscheng.srich.editor.render.NoteLineSpanRender;
 import com.jscheng.srich.editor.spans.NoteIndentationSpan;
 import com.jscheng.srich.model.Paragraph;
 
@@ -9,12 +10,12 @@ import com.jscheng.srich.model.Paragraph;
 public class NoteIndentationSpanRender extends NoteLineSpanRender<NoteIndentationSpan> {
 
     @Override
-    protected boolean isDentationStyle(Paragraph paragraph) {
+    protected boolean isLineStyle(Paragraph paragraph) {
         return paragraph.getIndentation() > 0;
     }
 
     @Override
-    protected NoteIndentationSpan createSpan(int level) {
+    protected NoteIndentationSpan createSpan(int num, int level) {
         return NoteIndentationSpan.create(level);
     }
 }

@@ -14,12 +14,10 @@ import android.text.style.ReplacementSpan;
  */
 public class NoteDividingLineSpan extends ReplacementSpan implements AlignmentSpan {
 
-    private int mViewWidth;
     private int mlineWidth;
     private int mMargin;
 
     public NoteDividingLineSpan(int width) {
-        this.mViewWidth = width;
         this.mMargin = 50;
         this.mlineWidth = width - 2 * mMargin;
     }

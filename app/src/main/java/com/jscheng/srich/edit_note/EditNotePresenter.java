@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.jscheng.srich.NoteFactory;
 import com.jscheng.srich.model.Note;
-import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 
@@ -48,13 +47,17 @@ public class EditNotePresenter extends IPresenter {
         this.readingMode();
     }
 
+    /**
+     * todo 异步加载转圈
+     * @param noteid
+     */
     private void initOrCreateNote(String noteid) {
         if (noteid != null) {
             mNote = NoteFactory.findNote((Context)mView, noteid);
             mNote = NoteFactory.parserParagraphs(mNote);
         }
         if (mNote == null) {
-            mNote = NoteFactory.createNote((Context)mView);
+            mNote = NoteFactory.buildNote((Context)mView);
         }
         mView.resetNote(mNote);
     }

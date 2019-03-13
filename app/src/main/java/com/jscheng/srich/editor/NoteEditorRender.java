@@ -1,30 +1,25 @@
 package com.jscheng.srich.editor;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.Editable;
-import android.text.Spanned;
 import android.util.Log;
 import android.widget.EditText;
 
-import com.jscheng.srich.R;
-import com.jscheng.srich.editor.spanRender.NoteBackgroundSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteBoldWordSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteBulletLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteCheckBoxLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteDividingLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteImageLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteIndentationSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteItalicSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteNumLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteStrikethroughWordSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteSubscriptSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteSuperscriptSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteUncheckBoxLineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteUnderlineSpanRender;
-import com.jscheng.srich.editor.spanRender.NoteWordSpanRender;
-import com.jscheng.srich.editor.spans.NoteImageSpan;
+import com.jscheng.srich.editor.render.word_render.NoteBackgroundSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteBoldSpanRender;
+import com.jscheng.srich.editor.render.line_render.NoteBulletLineSpanRender;
+import com.jscheng.srich.editor.render.line_render.NoteCheckBoxSpanRender;
+import com.jscheng.srich.editor.render.paragraph_render.NoteDividingSpanRender;
+import com.jscheng.srich.editor.render.paragraph_render.NoteImageSpanRender;
+import com.jscheng.srich.editor.render.line_render.NoteIndentationSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteItalicSpanRender;
+import com.jscheng.srich.editor.render.NoteLineSpanRender;
+import com.jscheng.srich.editor.render.line_render.NoteNumSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteStrikethroughSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteSubscriptSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteSuperscriptSpanRender;
+import com.jscheng.srich.editor.render.line_render.NoteUncheckBoxSpanRender;
+import com.jscheng.srich.editor.render.word_render.NoteUnderlineSpanRender;
+import com.jscheng.srich.editor.render.NoteWordSpanRender;
 import com.jscheng.srich.model.Paragraph;
 
 import java.util.ArrayList;
@@ -51,20 +46,20 @@ public class NoteEditorRender {
         mLineSpanRenderList = new ArrayList<>();
         mNumMap = new HashMap<>();
 
-        mWordSpanRenderList.add(new NoteBoldWordSpanRender());
+        mWordSpanRenderList.add(new NoteBoldSpanRender());
         mWordSpanRenderList.add(new NoteItalicSpanRender());
         mWordSpanRenderList.add(new NoteBackgroundSpanRender());
-        mWordSpanRenderList.add(new NoteStrikethroughWordSpanRender());
+        mWordSpanRenderList.add(new NoteStrikethroughSpanRender());
         mWordSpanRenderList.add(new NoteSubscriptSpanRender());
         mWordSpanRenderList.add(new NoteSuperscriptSpanRender());
         mWordSpanRenderList.add(new NoteUnderlineSpanRender());
 
-        mLineSpanRenderList.add(new NoteImageLineSpanRender(editText));
-        mLineSpanRenderList.add(new NoteDividingLineSpanRender(editText));
+        mLineSpanRenderList.add(new NoteImageSpanRender(editText));
+        mLineSpanRenderList.add(new NoteDividingSpanRender(editText));
         mLineSpanRenderList.add(new NoteBulletLineSpanRender());
-        mLineSpanRenderList.add(new NoteNumLineSpanRender(editText));
-        mLineSpanRenderList.add(new NoteCheckBoxLineSpanRender(editText));
-        mLineSpanRenderList.add(new NoteUncheckBoxLineSpanRender(editText));
+        mLineSpanRenderList.add(new NoteNumSpanRender(editText));
+        mLineSpanRenderList.add(new NoteCheckBoxSpanRender(editText));
+        mLineSpanRenderList.add(new NoteUncheckBoxSpanRender(editText));
 
         mLineSpanRenderList.add(new NoteIndentationSpanRender());
     }
@@ -85,6 +80,7 @@ public class NoteEditorRender {
 
                 int num = getNum(paragraph, lastParagraph);
                 drawParagraph(paragraph, start, num, editText);
+
                 if (i < paragraphs.size() - 1) {
                     drawEndCode(end, editText.getText());
                 }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,14 +74,15 @@ public class NoteDao {
 
         Note note = null;
         if (cursor.moveToNext()) {
-            note = new Note();
-            note.setId(cursor.getString(0));
-            note.setTitle(cursor.getString(1));
-            note.setCreateTime(cursor.getLong(2));
-            note.setModifyTime(cursor.getLong(3));
-            note.setSummary(cursor.getString(4));
-            note.setSummaryImageUrl(cursor.getString(5));
-            note.setLocalPath(cursor.getString(6));
+            note = new NoteBuilder()
+                    .id(cursor.getString(0))
+                    .title(cursor.getString(1))
+                    .createtime(cursor.getLong(2))
+                    .motifytime(cursor.getLong(3))
+                    .summary(cursor.getString(4))
+                    .summaryImageUrl(cursor.getString(5))
+                    .localPath(cursor.getString(6))
+                    .build();
         }
         cursor.close();
         return note;
@@ -118,14 +121,16 @@ public class NoteDao {
                 null, null, null, limitString);
         List<Note> list = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
-            Note note = new Note();
-            note.setId(cursor.getString(0));
-            note.setTitle(cursor.getString(1));
-            note.setCreateTime(cursor.getLong(2));
-            note.setModifyTime(cursor.getLong(3));
-            note.setSummary(cursor.getString(4));
-            note.setSummaryImageUrl(cursor.getString(5));
-            note.setLocalPath(cursor.getString(6));
+            Note note = new NoteBuilder()
+                    .id(cursor.getString(0))
+                    .title(cursor.getString(1))
+                    .createtime(cursor.getLong(2))
+                    .motifytime(cursor.getLong(3))
+                    .summary(cursor.getString(4))
+                    .summaryImageUrl(cursor.getString(5))
+                    .localPath(cursor.getString(6))
+                    .build();
+
             list.add(note);
         }
         return list;
@@ -138,14 +143,16 @@ public class NoteDao {
                 null, null, null, null);
         List<Note> list = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
-            Note note = new Note();
-            note.setId(cursor.getString(0));
-            note.setTitle(cursor.getString(1));
-            note.setCreateTime(cursor.getLong(2));
-            note.setModifyTime(cursor.getLong(3));
-            note.setSummary(cursor.getString(4));
-            note.setSummaryImageUrl(cursor.getString(5));
-            note.setLocalPath(cursor.getString(6));
+            Note note = new NoteBuilder()
+                    .id(cursor.getString(0))
+                    .title(cursor.getString(1))
+                    .createtime(cursor.getLong(2))
+                    .motifytime(cursor.getLong(3))
+                    .summary(cursor.getString(4))
+                    .summaryImageUrl(cursor.getString(5))
+                    .localPath(cursor.getString(6))
+                    .build();
+
             list.add(note);
         }
         return list;

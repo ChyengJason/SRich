@@ -1,5 +1,6 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.line_render;
 
+import com.jscheng.srich.editor.render.NoteLineSpanRender;
 import com.jscheng.srich.editor.spans.NoteBulletSpan;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
@@ -14,11 +15,11 @@ public class NoteBulletLineSpanRender extends NoteLineSpanRender {
 
     @Override
     protected boolean isLineStyle(Paragraph paragraph) {
-        return Style.isLineStyle(paragraph.getLineStyle(), Style.BulletList);
+        return paragraph.isBulletList();
     }
 
     @Override
-    protected Object createSpan(int num) {
+    protected Object createSpan(int num, int level) {
         return NoteBulletSpan.create();
     }
 }

@@ -1,11 +1,11 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.paragraph_render;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.image_loader.NetworkImagePool;
+import com.jscheng.srich.editor.render.NoteLineSpanRender;
 import com.jscheng.srich.editor.spans.NoteImageSpan;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Paragraph;
@@ -13,11 +13,11 @@ import com.jscheng.srich.model.Paragraph;
 /**
  * Created By Chengjunsen on 2019/3/6
  */
-public class NoteImageLineSpanRender extends NoteLineSpanRender<NoteImageSpan>{
+public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
 
     private View mView;
 
-    public NoteImageLineSpanRender(View view) {
+    public NoteImageSpanRender(View view) {
         this.mView = view;
     }
 

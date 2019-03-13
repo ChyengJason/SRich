@@ -1,12 +1,13 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.word_render;
 
+import com.jscheng.srich.editor.render.NoteWordSpanRender;
 import com.jscheng.srich.editor.spans.NoteStrikethroughSpan;
 import com.jscheng.srich.model.Style;
 
 /**
  * Created By Chengjunsen on 2019/3/4
  */
-public class NoteStrikethroughWordSpanRender extends NoteWordSpanRender<NoteStrikethroughSpan> {
+public class NoteStrikethroughSpanRender extends NoteWordSpanRender<NoteStrikethroughSpan> {
 
     @Override
     protected NoteStrikethroughSpan createSpan() {

@@ -5,6 +5,7 @@ import com.jscheng.srich.converter.decoder.ParagraphDecoder;
 import com.jscheng.srich.converter.encoder.ParagraphEncoder;
 import com.jscheng.srich.dao.NoteDao;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteBuilder;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.utils.StorageUtil;
 
@@ -31,16 +32,17 @@ public class NoteFactory {
         return note;
     }
 
-    public static Note createNote(Context context) {
-        Note note = new Note();
+    public static Note buildNote(Context context) {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         long time = System.currentTimeMillis();
         String localPath = StorageUtil.getDiskCachePath(context) + File.separator + uuid + ".txt";
 
-        note.setId(uuid);
-        note.setCreateTime(time);
-        note.setModifyTime(time);
-        note.setLocalPath(localPath);
+        Note note = new NoteBuilder()
+                .id(uuid)
+                .createtime(time)
+                .motifytime(time)
+                .localPath(localPath)
+                .build();
         return note;
     }
 

@@ -2,11 +2,12 @@ package com.jscheng.srich.editor;
 
 import android.util.Log;
 
-import com.jscheng.srich.image_loader.NetworkImagePool;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteBuilder;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
+import com.jscheng.srich.model.ParagraphBuilder;
 import com.jscheng.srich.model.Style;
 
 import java.util.ArrayList;
@@ -28,14 +29,14 @@ public class NoteEditorManagerImpl {
     private int mSelectionEnd;
 
     public NoteEditorManagerImpl(NoteEditorText editorText) {
-        mNote = new Note();
+        mNote = new NoteBuilder().build();
         mRender = new NoteEditorRender(editorText);
         mOptions = new Options();
         mSelectionListeners = new ArrayList<>();
         mEditorText = editorText;
     }
 
-    public void reset(Note note) {
+    public void setNote(Note note) {
         mNote = note;
         mSelectionStart = mSelectionEnd = 0;
         requestDraw();
@@ -54,55 +55,61 @@ public class NoteEditorManagerImpl {
         }
     }
 
-    public void inputColor(boolean isSelected) {
+    public void inputColor(boolean isSelected, boolean draw) {
         mOptions.setColor(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.BackgroudColor);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.BackgroudColor);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputUnderline(boolean isSelected) {
+    public void inputUnderline(boolean isSelected, boolean draw) {
         mOptions.setUnderline(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.UnderLine);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.UnderLine);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputItalic(boolean isSelected) {
+    public void inputItalic(boolean isSelected, boolean draw) {
         mOptions.setItalic(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Italic);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Italic);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputBold(boolean isSelected) {
+    public void inputBold(boolean isSelected, boolean draw) {
         mOptions.setBold(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Bold);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Bold);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputSuperscript(boolean isSelected) {
+    public void inputSuperscript(boolean isSelected, boolean draw) {
         mOptions.setSuperScript(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SuperScript);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SuperScript);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputSubscript(boolean isSelected) {
+    public void inputSubscript(boolean isSelected, boolean draw) {
         mOptions.setSubScript(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SubScript);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SubScript);
+            if (draw) { requestDraw(); }
         }
     }
 
-    public void inputStrikeThrough(boolean isSelected) {
+    public void inputStrikeThrough(boolean isSelected, boolean draw) {
         mOptions.setStrikethrough(isSelected);
         if (mSelectionEnd > mSelectionStart) {
-            applySelectionStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Strikethrough);
+            applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Strikethrough);
+            if (draw) { requestDraw(); }
         }
     }
-
 
     public void inputEnter() {
         // 删除区间
@@ -310,16 +317,18 @@ public class NoteEditorManagerImpl {
         mNote.setDirty(true);
     }
 
-    public boolean applySelectionStyle(int start, int end, boolean isAppend, int flag) {
+    public boolean applySelectionWordStyle(int start, int end, boolean isAppend, int flag) {
         if (start == end) {
             return false;
         }
         int startPos = 0;
         int endPos = 0;
+
         for (Paragraph paragraph : mNote.getParagraphs()) {
             endPos = startPos + paragraph.getLength();
             int rangeLeft = Math.max(start, startPos);
             int rangeRight = Math.min(end, endPos);
+            // 有交集
             if (rangeLeft <= rangeRight) {
                 int rangeLeftPos = rangeLeft - startPos;
                 int rangeRightPos = rangeRight - startPos;
@@ -340,30 +349,33 @@ public class NoteEditorManagerImpl {
     public void inputIndentation() {
         int indentatin = Math.min(3, mOptions.getIndentation() + 1);
         mOptions.setIndentation(indentatin);
-        applySelectionIndentation(mSelectionStart, mSelectionEnd);
+        applySelectionIndentation();
     }
 
-    public void applySelectionIndentation(int start, int end) {
-        List<Paragraph> paragraphs = getParagraphs(start, end);
+    public void inputReduceIndentation() {
+        int indentatin = Math.min(0, mOptions.getIndentation() - 1);
+        mOptions.setIndentation(indentatin);
+        applySelectionReduceIndentation();
+    }
+
+    public void applySelectionIndentation() {
+        List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
         for (Paragraph paragraph: paragraphs) {
             if (paragraph.isParagraphStyle()) {
                 continue;
             }
             int indentation = Math.min(3, paragraph.getIndentation() + 1);
             paragraph.setIndentation(indentation);
+            if (paragraph.insertPlaceHolder()) {
+                setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+            }
             paragraph.setDirty(true);
         }
         mNote.setDirty(true);
     }
 
-    public void inputReduceIndentation() {
-        int indentatin = Math.min(0, mOptions.getIndentation() - 1);
-        mOptions.setIndentation(indentatin);
-        applySelectionReduceIndentation(mSelectionStart, mSelectionEnd);
-    }
-
-    public void applySelectionReduceIndentation(int start, int end) {
-        List<Paragraph> paragraphs = getParagraphs(start, end);
+    public void applySelectionReduceIndentation() {
+        List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
         for (Paragraph paragraph: paragraphs) {
             if (paragraph.isParagraphStyle()) {
                 continue;
@@ -371,6 +383,9 @@ public class NoteEditorManagerImpl {
             int indentation = Math.max(0, paragraph.getIndentation() - 1);
             paragraph.setIndentation(indentation);
             paragraph.setDirty(true);
+            if (indentation == 0 && paragraph.removePlaceHolder()) {
+                setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+            }
         }
         mNote.setDirty(true);
     }
@@ -399,24 +414,33 @@ public class NoteEditorManagerImpl {
         while (iter.hasNext()) {
             Paragraph item = iter.next();
             endPos = startPos + item.getLength();
-            if (start >= startPos && start <= endPos) { // first paragraph
+
+            int delParaStartPos = start - startPos;
+            int delParaEndPos = end - startPos;
+            if (delParaEndPos > item.getLength()) {
+                delParaEndPos = item.getLength();
+            }
+
+            if (start >= startPos && start <= endPos) {
+                // 第一段
                 firstParagraph = item;
-                int delParaStartPos = start - startPos;
-                int delParaEndPos = end - startPos;
-                if (delParaEndPos > item.getLength()) {
-                    delParaEndPos = item.getLength();
-                }
                 item.remove(delParaStartPos, delParaEndPos);
                 if (delParaStartPos <= 0 && delParaEndPos >= 1) {
                     item.clearHeadStyle();
                     item.clearParagraphStyle();
                 }
-            } else if (start <= startPos && end >= endPos) { // middle paragraph
+                item.setDirty(true);
+            } else if (start <= startPos && end >= endPos) {
+                // 中间段
                 iter.remove();
 
-            } else if (end >= startPos && end <= endPos) { // last paragraph
+            } else if (end >= startPos && end <= endPos) {
+                // 末尾段
                 int demainParaStartPos = end - startPos;
                 int demainParaEndPos = item.getLength();
+                if (item.isParagraphStyle()) {
+                    break;
+                }
                 if (item.isHeadStyle() && demainParaStartPos <= 0 && demainParaEndPos >= 1) {
                     item.clearHeadStyle();
                     demainParaStartPos += 1;
@@ -499,48 +523,32 @@ public class NoteEditorManagerImpl {
         return createParagraph(index, mOptions.getIndentation(), mOptions.getLineStyle());
     }
 
-    public Paragraph createParagraph(int index, int indenteation, int lineStyle) {
-        Paragraph paragraph = new Paragraph();
-        paragraph.setDirty(true);
-        paragraph.setIndentation(indenteation);
-        paragraph.setLineStyle(lineStyle);
-        paragraph.setDividingLine(false);
-        paragraph.setImage(false);
-        if (paragraph.isCheckbox()) {
-            paragraph.setUnCheckbox(true);
-        }
-        if (paragraph.isHeadStyle()) {
-            paragraph.insertPlaceHolder();
-        }
-        mNote.getParagraphs().add(index, paragraph);
-        mNote.setDirty(true);
-        return paragraph;
+    public Paragraph createParagraph(int index, int indentation, int lineStyle) {
+        Paragraph newParagraph = new ParagraphBuilder()
+                .lineStyle(lineStyle)
+                .indentation(indentation)
+                .image(false)
+                .dividingLine(false)
+                .build();
+        mNote.getParagraphs().add(index, newParagraph);
+        return newParagraph;
     }
 
     public Paragraph createDividingParagraph(int index) {
-        Paragraph paragraph = new Paragraph();
-        paragraph.setDirty(true);
-        paragraph.setLineStyle(mOptions.getLineStyle());
-        paragraph.setIndentation(0);
-        paragraph.setDividingLine(true);
-        paragraph.setImage(false);
-        paragraph.insertPlaceHolder();
-
-        mNote.getParagraphs().add(index, paragraph);
-        mNote.setDirty(true);
-        return paragraph;
+        Paragraph newParagraph = new ParagraphBuilder()
+                .dividingLine(true)
+                .image(false)
+                .build();
+        mNote.getParagraphs().add(index, newParagraph);
+        return newParagraph;
     }
 
     public Paragraph createImageParagraph(int index, String url) {
-        Paragraph paragraph = new Paragraph();
-        paragraph.setDirty(true);
-        paragraph.setIndentation(0);
-        paragraph.setLineStyle(0);
-        paragraph.setImage(url);
-        paragraph.insertPlaceHolder();
-        mNote.getParagraphs().add(index, paragraph);
-        mNote.setDirty(true);
-        return paragraph;
+        Paragraph newParagraph = new ParagraphBuilder()
+                .image(url)
+                .build();
+        mNote.getParagraphs().add(index, newParagraph);
+        return newParagraph;
     }
 
     public void setSeletion(int globalPos) {
@@ -581,6 +589,7 @@ public class NoteEditorManagerImpl {
                 int rangeLeftPos = rangeLeft - startPos;
                 int rangeRightPos = rangeRight - startPos;
                 Log.e(TAG, "detectStyle: " + rangeLeftPos + " -> " + rangeRightPos );
+
                 List<Integer> rangeWordStyles = paragraph.getWordStyles(rangeLeftPos, rangeRightPos);
                 wordStyles.addAll(rangeWordStyles);
                 if (lineStyle == -1) {
@@ -658,7 +667,8 @@ public class NoteEditorManagerImpl {
 
     public void print() {
         List<Paragraph> paragraphs = mNote.getParagraphs();
-        Log.e(TAG, " count: " + paragraphs.size() +
+        Log.e(TAG,
+                " count: " + paragraphs.size() +
                 " selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
         for (Paragraph paragraph: paragraphs) {
             int startPos = getParagraphBegin(paragraph);
@@ -670,4 +680,5 @@ public class NoteEditorManagerImpl {
     public String getSelectionText() {
         return "test \n test";
     }
+
 }

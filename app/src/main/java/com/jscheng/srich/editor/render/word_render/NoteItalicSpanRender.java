@@ -1,5 +1,6 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.word_render;
 
+import com.jscheng.srich.editor.render.NoteWordSpanRender;
 import com.jscheng.srich.editor.spans.NoteItalicSpan;
 import com.jscheng.srich.model.Style;
 

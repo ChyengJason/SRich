@@ -13,7 +13,7 @@ public class NoteEditorManager implements INoteEditorManager{
     }
 
     public void reset(Note note) {
-        mManagerImpl.reset(note);
+        mManagerImpl.setNote(note);
     }
 
     @Override
@@ -41,45 +41,37 @@ public class NoteEditorManager implements INoteEditorManager{
 
     @Override
     public void commandColor(boolean isSelected, boolean draw) {
-        mManagerImpl.inputColor(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputColor(isSelected, draw);
     }
 
     @Override
     public void commandUnderline(boolean isSelected, boolean draw) {
-        mManagerImpl.inputUnderline(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputUnderline(isSelected, draw);
     }
 
     @Override
     public void commandItalic(boolean isSelected, boolean draw) {
-        mManagerImpl.inputItalic(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputItalic(isSelected, draw);
     }
 
     @Override
     public void commandBold(boolean isSelected, boolean draw) {
-        mManagerImpl.inputBold(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputBold(isSelected, draw);
     }
 
     @Override
     public void commandSuperscript(boolean isSelected, boolean draw) {
-        mManagerImpl.inputSuperscript(isSelected);
-        if (draw) { requestDraw(); }
-
+        mManagerImpl.inputSuperscript(isSelected, draw);
     }
 
     @Override
     public void commandSubscript(boolean isSelected, boolean draw) {
-        mManagerImpl.inputSubscript(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputSubscript(isSelected, draw);
     }
 
     @Override
     public void commandStrikeThrough(boolean isSelected, boolean draw) {
-        mManagerImpl.inputStrikeThrough(isSelected);
-        if (draw) { requestDraw(); }
+        mManagerImpl.inputStrikeThrough(isSelected, draw);
     }
 
     @Override

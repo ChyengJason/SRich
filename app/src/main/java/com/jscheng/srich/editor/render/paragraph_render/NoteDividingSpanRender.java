@@ -1,7 +1,8 @@
-package com.jscheng.srich.editor.spanRender;
+package com.jscheng.srich.editor.render.paragraph_render;
 
 import android.view.View;
 
+import com.jscheng.srich.editor.render.NoteLineSpanRender;
 import com.jscheng.srich.editor.spans.NoteDividingLineSpan;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
@@ -9,20 +10,20 @@ import com.jscheng.srich.model.Style;
 /**
  * Created By Chengjunsen on 2019/3/4
  */
-public class NoteDividingLineSpanRender extends NoteLineSpanRender {
+public class NoteDividingSpanRender extends NoteLineSpanRender<NoteDividingLineSpan> {
     private View view;
 
-    public NoteDividingLineSpanRender(View view) {
+    public NoteDividingSpanRender(View view) {
         this.view = view;
     }
 
     @Override
-    protected boolean isDividingStyle(Paragraph paragraph) {
-        return Style.isLineStyle(paragraph.getLineStyle(), Style.DividingLine);
+    protected boolean isLineStyle(Paragraph paragraph) {
+        return paragraph.isDividingLine();
     }
 
     @Override
-    protected Object createSpan(int num) {
+    protected NoteDividingLineSpan createSpan(int num, int level) {
         int width = view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
         return NoteDividingLineSpan.create(width);
     }

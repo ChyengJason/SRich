@@ -28,7 +28,7 @@ public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan, Ali
     public NoteImageSpan(Bitmap bitmap, int width) {
         this.mBitmap = new WeakReference<>(bitmap);
         this.mViewWidth = width;
-        this.mVerticalMargin = 50;
+        this.mVerticalMargin = 60;
         this.mBitmapDestWidth = Math.min(bitmap.getWidth(), mViewWidth);
         this.mBitmapDestHeight = bitmap.getHeight() * (mBitmapDestWidth / (float) bitmap.getWidth());
     }
@@ -42,11 +42,11 @@ public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan, Ali
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
         Bitmap bitmap = mBitmap.get();
         if (fm != null && bitmap != null) {
-            fm.ascent = -bitmap.getHeight() - mVerticalMargin /2;
-            fm.descent = 0;
+                fm.ascent = (int) (-mBitmapDestHeight - mVerticalMargin);
+                fm.descent = 0;
 
-            fm.top = fm.ascent - mVerticalMargin / 2;
-            fm.bottom = 0;
+                fm.top = fm.ascent;
+                fm.bottom = 0;
         }
         return (int)mBitmapDestWidth;
     }
@@ -60,8 +60,7 @@ public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan, Ali
             Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             Rect destRect = new Rect(0, 0, (int)mBitmapDestWidth, (int)mBitmapDestHeight);
 
-            int transY = (int) (bottom - mBitmapDestHeight - mVerticalMargin);
-            transY -= paint.getFontMetricsInt().descent;
+            int transY = (int) (bottom - mBitmapDestHeight - mVerticalMargin/2);
             int transX = (int) x;
             canvas.translate(transX, transY);
             canvas.drawBitmap(bitmap, srcRect, destRect, paint);
