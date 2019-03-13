@@ -15,13 +15,13 @@ public class LocalImagePool extends AbstractImagePool {
 
     private Context mContext;
 
-    public LocalImagePool(Context context, IImagePoolListener listener) {
-        super(context, listener);
+    public LocalImagePool(NoteMemoryCache memoryCache, NoteDiskCache diskCache, Context context, IImagePoolListener listener) {
+        super(memoryCache, diskCache, listener);
         mContext = context;
     }
 
     @Override
-    protected void run(String url, String key) {
+    protected void submitTask(String url, String key) {
         try {
             Uri uri = Uri.parse(url);
             InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
@@ -30,5 +30,10 @@ public class LocalImagePool extends AbstractImagePool {
             e.printStackTrace();
             onLoadedFailed(key, url, e.toString());
         }
+    }
+
+    @Override
+    protected boolean isUrl(String url) {
+        return url.toLowerCase().startsWith("content");
     }
 }

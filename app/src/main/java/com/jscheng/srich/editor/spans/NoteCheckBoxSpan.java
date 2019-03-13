@@ -11,13 +11,13 @@ import android.text.style.ReplacementSpan;
 /**
  * Created By Chengjunsen on 2019/3/6
  */
-public class NoteCheckBoxLineSpan extends ReplacementSpan implements NoteClickSpan{
+public class NoteCheckBoxSpan extends ReplacementSpan implements NoteClickSpan{
     private Bitmap mBitmap;
     private int margin;
     private int width;
     private int heigth;
 
-    public NoteCheckBoxLineSpan(Bitmap bitmap) {
+    public NoteCheckBoxSpan(Bitmap bitmap) {
         width = 50;
         heigth = 50;
         mBitmap = bitmap;
@@ -42,7 +42,7 @@ public class NoteCheckBoxLineSpan extends ReplacementSpan implements NoteClickSp
         canvas.restore();
     }
 
-    public static NoteCheckBoxLineSpan create(Bitmap bitmap) {
-        return new NoteCheckBoxLineSpan(bitmap);
+    public static NoteCheckBoxSpan create(Bitmap bitmap) {
+        return new NoteCheckBoxSpan(bitmap);
     }
 }

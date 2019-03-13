@@ -3,12 +3,14 @@ package com.jscheng.srich.editor.spans;
 import android.graphics.Color;
 import android.text.style.BackgroundColorSpan;
 
+import com.jscheng.srich.editor.NoteEditorConfig;
+
 /**
  * Created By Chengjunsen on 2019/2/25
  */
 public class NoteBackgroundSpan extends BackgroundColorSpan{
 
-    private final static int color = Color.YELLOW;
+    private final static int color = NoteEditorConfig.HighLightColor;
 
     public NoteBackgroundSpan() {
         super(color);

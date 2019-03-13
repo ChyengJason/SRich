@@ -5,14 +5,14 @@ import android.graphics.BitmapFactory;
 import android.view.View;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.editor.spans.NoteCheckBoxLineSpan;
+import com.jscheng.srich.editor.spans.NoteCheckBoxSpan;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
 
 /**
  * Created By Chengjunsen on 2019/3/6
  */
-public class NoteUncheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBoxLineSpan> {
+public class NoteUncheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBoxSpan> {
 
     private View mView;
     private Bitmap mBitmap;
@@ -28,7 +28,7 @@ public class NoteUncheckBoxLineSpanRender extends NoteLineSpanRender<NoteCheckBo
     }
 
     @Override
-    protected NoteCheckBoxLineSpan createSpan(int num) {
-        return NoteCheckBoxLineSpan.create(mBitmap);
+    protected NoteCheckBoxSpan createSpan(int num) {
+        return NoteCheckBoxSpan.create(mBitmap);
     }
 }

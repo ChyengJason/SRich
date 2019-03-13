@@ -25,6 +25,14 @@ public class NoteImageLoader implements IImagePoolListener {
      * 网络加载库
      */
     private NetworkImagePool mHttpImagePool;
+    /**
+     * LrcCache
+     */
+    private NoteMemoryCache mMemoryCache;
+    /**
+     * DiskCache
+     */
+    private NoteDiskCache mDiskCache;
 
     private Handler mMainHandler;
 
@@ -44,12 +52,15 @@ public class NoteImageLoader implements IImagePoolListener {
     private NoteImageLoader(Context context) {
         mImageListeners = new ArrayList<>();
         mMainHandler = new Handler(Looper.getMainLooper());
-        mLocalImagePool = new LocalImagePool(context.getApplicationContext(), this);
-        mHttpImagePool = new NetworkImagePool(context.getApplicationContext(), this);
+        mDiskCache = new NoteDiskCache(context);
+        mMemoryCache = new NoteMemoryCache();
+
+        mLocalImagePool = new LocalImagePool(mMemoryCache, mDiskCache, context.getApplicationContext(), this);
+        mHttpImagePool = new NetworkImagePool(mMemoryCache, mDiskCache, context.getApplicationContext(), this);
     }
 
     public void loadBitmap(String url) {
-        String key = instance.getKeyFromUrl(url);
+        String key = getKeyFromUrl(url);
         if (isCacheBitmap(key)) {
             return;
         }
@@ -67,15 +78,15 @@ public class NoteImageLoader implements IImagePoolListener {
     }
 
     private Boolean isCacheBitmap(String key) {
-        return AbstractImagePool.isMemoryBitmap(key);
+        return mMemoryCache.isCache(key) && mDiskCache.isCache(key);
     }
 
     private Bitmap getCacheBitmap(String key, int maxWidth) {
-        Bitmap bitmap = AbstractImagePool.getMemoryCacheBitmap(key);
+        Bitmap bitmap = mMemoryCache.get(key);
         if (bitmap != null) {
             return bitmap;
         }
-        bitmap = AbstractImagePool.getDiskCacheBitmap(key, maxWidth);
+        bitmap = mDiskCache.get(key, maxWidth);
         if (bitmap != null) {
             return bitmap;
         }
@@ -83,19 +94,11 @@ public class NoteImageLoader implements IImagePoolListener {
     }
 
     private void asyncLoadBitmap(String url, String key) {
-        if (isLocalUrl(url)) {
+        if (mLocalImagePool.isUrl(url)) {
             mLocalImagePool.submit(url, key);
-        } else if (isHttpUrl(url)) {
+        } else if (mHttpImagePool.isUrl(url)) {
             mHttpImagePool.submit(url, key);
         }
-    }
-
-    private boolean isLocalUrl(String url) {
-        return url.toLowerCase().startsWith("content");
-    }
-
-    private boolean isHttpUrl(String url) {
-        return url.toLowerCase().startsWith("http");
     }
 
     private String getKeyFromUrl(String url) {
