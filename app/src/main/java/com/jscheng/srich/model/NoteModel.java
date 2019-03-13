@@ -1,22 +1,20 @@
-package com.jscheng.srich;
+package com.jscheng.srich.model;
 import android.content.Context;
+import android.util.Log;
 
 import com.jscheng.srich.converter.decoder.ParagraphDecoder;
 import com.jscheng.srich.converter.encoder.ParagraphEncoder;
 import com.jscheng.srich.dao.NoteDao;
-import com.jscheng.srich.model.Note;
-import com.jscheng.srich.model.NoteBuilder;
-import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.utils.StorageUtil;
 
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
-public class NoteFactory {
-
+public class NoteModel {
+    private static final String TAG = "NoteModel";
     /**
-     * parser note paragraphs
+     * TODO 异步加载
      * @param note
      */
     public static Note parserParagraphs(Note note) {
@@ -78,7 +76,7 @@ public class NoteFactory {
             note.setTitle(title);
             note.setSummary(summary);
             note.setSummaryImageUrl(summaryImage);
-
+            Log.e(TAG, "updateNote: " + conent);
             if (dao.find(note.getId()) != null) {
                 dao.update(note);
             } else {

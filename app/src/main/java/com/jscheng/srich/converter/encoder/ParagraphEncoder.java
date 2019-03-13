@@ -14,13 +14,12 @@ public class ParagraphEncoder {
     public static String encode(List<Paragraph> paragraphs) {
         StringBuilder content = new StringBuilder();
         for (Paragraph paragraph : paragraphs) {
-            content.append(encode(paragraph));
+            encode(content, paragraph);
         }
         return content.toString();
     }
 
-    public static String encode(Paragraph paragraph) {
-        StringBuilder content = new StringBuilder();
+    public static String encode(StringBuilder content, Paragraph paragraph) {
         if (encodeParagraphStyle(content, paragraph)) {
             content.append(StyleCode.Paragraph);
         } else {
@@ -61,9 +60,6 @@ public class ParagraphEncoder {
 
     private static void encodeWordStyle(StringBuilder stringBuilder, Paragraph paragraph) {
         int start = 0;
-        if (paragraph.isPlaceHolder()) {
-            start += 1;
-        }
 
         List<Integer> wordStyles = paragraph.getWordStyles();
         StringBuilder content = new StringBuilder();
@@ -82,11 +78,11 @@ public class ParagraphEncoder {
 
     private static void checkWordStyle(int wordStyle, int lastStyle, StringBuilder content) {
         checkWordStyle(wordStyle, lastStyle, Style.Bold, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
-        checkWordStyle(wordStyle, lastStyle, Style.Italic, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
-        checkWordStyle(wordStyle, lastStyle, Style.BackgroudColor, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
-        checkWordStyle(wordStyle, lastStyle, Style.SubScript, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
-        checkWordStyle(wordStyle, lastStyle, Style.SuperScript, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
-        checkWordStyle(wordStyle, lastStyle, Style.Strikethrough, StyleCode.BoldBegin, StyleCode.BoldEnd, content);
+        checkWordStyle(wordStyle, lastStyle, Style.Italic, StyleCode.ItalicBegin, StyleCode.ItalicEnd, content);
+        checkWordStyle(wordStyle, lastStyle, Style.BackgroudColor, StyleCode.BackgroudColorBegin, StyleCode.BackgroudColorEnd, content);
+        checkWordStyle(wordStyle, lastStyle, Style.SubScript, StyleCode.SubScriptBegin, StyleCode.SubScriptEnd, content);
+        checkWordStyle(wordStyle, lastStyle, Style.SuperScript, StyleCode.SuperScriptBegin, StyleCode.SubScriptBegin, content);
+        checkWordStyle(wordStyle, lastStyle, Style.Strikethrough, StyleCode.StrikethroughBegin, StyleCode.StrikethroughEnd, content);
     }
 
     private static void checkWordStyle(int currentWordStyle, int lastWordStyle,

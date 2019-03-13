@@ -1,4 +1,4 @@
-package com.jscheng.srich.editor.render.paragraph_render;
+package com.jscheng.srich.editor.render.line_render;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,12 +22,12 @@ public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
     }
 
     @Override
-    protected boolean isImageStyle(Paragraph paragraph) {
+    protected boolean isLineStyle(Paragraph paragraph) {
        return paragraph.isImage();
     }
 
     @Override
-    protected NoteImageSpan createImageSpan(String url) {
+    protected NoteImageSpan createSpan(int num, int level, String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
         Bitmap bitmap = NoteImageLoader.with(mView.getContext()).getBitmap(url, width);
         if (bitmap == null) {

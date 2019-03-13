@@ -19,7 +19,7 @@ public class NoteBulletLineSpanRender extends NoteLineSpanRender {
     }
 
     @Override
-    protected Object createSpan(int num, int level) {
+    protected Object createSpan(int num, int level, String url) {
         return NoteBulletSpan.create();
     }
 }

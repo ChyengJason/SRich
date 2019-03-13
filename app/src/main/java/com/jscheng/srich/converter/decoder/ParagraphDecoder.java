@@ -38,13 +38,11 @@ public class ParagraphDecoder {
             String url = content.substring(StyleCode.ImageBegin.length(),
                     content.length() - StyleCode.ImageEnd.length());
             paragraph.setImage(url);
-            paragraph.insertPlaceHolder();
             return true;
         }
 
         if (content.startsWith(StyleCode.DividingLine)) {
             paragraph.setDividingLine(true);
-            paragraph.insertPlaceHolder();
             return true;
         }
         return false;
@@ -60,22 +58,18 @@ public class ParagraphDecoder {
 
         if (content.startsWith(StyleCode.Bullet)) {
             paragraph.setBulletList(true);
-            paragraph.insertPlaceHolder();
             return content.substring(StyleCode.Bullet.length());
         }
         if (content.startsWith(StyleCode.NumList)) {
             paragraph.setNumList(true);
-            paragraph.insertPlaceHolder();
             return content.substring(StyleCode.NumList.length());
         }
         if (content.startsWith(StyleCode.CheckBox)) {
             paragraph.setCheckbox(true);
-            paragraph.insertPlaceHolder();
             return content.substring(StyleCode.CheckBox.length());
         }
         if (content.startsWith(StyleCode.UnCheckBox)) {
             paragraph.setUnCheckbox(true);
-            paragraph.insertPlaceHolder();
             return content.substring(StyleCode.UnCheckBox.length());
         }
         return content;

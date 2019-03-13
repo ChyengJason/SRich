@@ -12,11 +12,8 @@ import com.jscheng.srich.utils.DisplayUtil;
  * Created By Chengjunsen on 2019/3/6
  */
 public class NoteNumSpanRender extends NoteLineSpanRender<NoteNumSpan> {
-    private View mView;
-    private int mTextDpSize = 15;
 
-    public NoteNumSpanRender(View view){
-        mView = view;
+    public NoteNumSpanRender(){
     }
 
     @Override
@@ -25,8 +22,7 @@ public class NoteNumSpanRender extends NoteLineSpanRender<NoteNumSpan> {
     }
 
     @Override
-    protected NoteNumSpan createSpan(int num, int level) {
-        int textSize = DisplayUtil.sp2px(mView.getContext(), mTextDpSize);
-        return NoteNumSpan.create(textSize, num);
+    protected NoteNumSpan createSpan(int num, int level, String url) {
+        return NoteNumSpan.create(num);
     }
 }

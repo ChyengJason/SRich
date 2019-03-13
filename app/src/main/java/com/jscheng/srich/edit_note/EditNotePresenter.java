@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.jscheng.srich.NoteFactory;
+import com.jscheng.srich.model.NoteModel;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
@@ -53,11 +53,11 @@ public class EditNotePresenter extends IPresenter {
      */
     private void initOrCreateNote(String noteid) {
         if (noteid != null) {
-            mNote = NoteFactory.findNote((Context)mView, noteid);
-            mNote = NoteFactory.parserParagraphs(mNote);
+            mNote = NoteModel.findNote((Context)mView, noteid);
+            mNote = NoteModel.parserParagraphs(mNote);
         }
         if (mNote == null) {
-            mNote = NoteFactory.buildNote((Context)mView);
+            mNote = NoteModel.buildNote((Context)mView);
         }
         mView.resetNote(mNote);
     }
@@ -125,11 +125,11 @@ public class EditNotePresenter extends IPresenter {
     }
 
     private void updateNote() {
-        if (NoteFactory.isNoteNull(mNote)) {
-            NoteFactory.deleteNote((Context)mView, mNote);
+        if (NoteModel.isNoteNull(mNote)) {
+            NoteModel.deleteNote((Context)mView, mNote);
             Toast.makeText((Context) mView, "正在删除数据", Toast.LENGTH_SHORT).show();
         } else if (mNote.isDirty()) {
-            NoteFactory.updateNote((Context)mView, mNote);
+            NoteModel.updateNote((Context)mView, mNote);
             Toast.makeText((Context) mView, "正在保存数据", Toast.LENGTH_SHORT).show();
         }
     }

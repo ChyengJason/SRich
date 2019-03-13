@@ -1,4 +1,4 @@
-package com.jscheng.srich.editor.render.paragraph_render;
+package com.jscheng.srich.editor.render.line_render;
 
 import android.view.View;
 
@@ -23,7 +23,7 @@ public class NoteDividingSpanRender extends NoteLineSpanRender<NoteDividingLineS
     }
 
     @Override
-    protected NoteDividingLineSpan createSpan(int num, int level) {
+    protected NoteDividingLineSpan createSpan(int num, int level, String url) {
         int width = view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
         return NoteDividingLineSpan.create(width);
     }

@@ -229,15 +229,7 @@ public class NoteEditorManagerImpl {
         } else {
             for (Paragraph paragraph : paragraphs) {
                 paragraph.setBulletList(isSelected);
-                if (isSelected) {
-                    if (paragraph.insertPlaceHolder()) {
-                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-                    }
-                } else {
-                    if (paragraph.removePlaceHolder()) {
-                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
-                    }
-                }
+                checkPlaceHolder(paragraph);
             }
         }
         mNote.setDirty(true);
@@ -271,15 +263,7 @@ public class NoteEditorManagerImpl {
         } else {
             for (Paragraph paragraph : paragraphs) {
                 paragraph.setNumList(isSelected);
-                if (isSelected) {
-                    if (paragraph.insertPlaceHolder()) {
-                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-                    }
-                } else {
-                    if (paragraph.removePlaceHolder()) {
-                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
-                    }
-                }
+                checkPlaceHolder(paragraph);
             }
         }
         mNote.setDirty(true);
@@ -303,15 +287,7 @@ public class NoteEditorManagerImpl {
             for (Paragraph paragraph : paragraphs) {
                 paragraph.setUnCheckbox(isSelected);
                 paragraph.setCheckbox(false);
-                if (isSelected) {
-                    if (paragraph.insertPlaceHolder()) {
-                        setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-                    }
-                } else {
-                    if (paragraph.removePlaceHolder()) {
-                        setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
-                    }
-                }
+                checkPlaceHolder(paragraph);
             }
         }
         mNote.setDirty(true);
@@ -366,9 +342,7 @@ public class NoteEditorManagerImpl {
             }
             int indentation = Math.min(3, paragraph.getIndentation() + 1);
             paragraph.setIndentation(indentation);
-            if (paragraph.insertPlaceHolder()) {
-                setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-            }
+            checkPlaceHolder(paragraph);
             paragraph.setDirty(true);
         }
         mNote.setDirty(true);
@@ -383,9 +357,7 @@ public class NoteEditorManagerImpl {
             int indentation = Math.max(0, paragraph.getIndentation() - 1);
             paragraph.setIndentation(indentation);
             paragraph.setDirty(true);
-            if (indentation == 0 && paragraph.removePlaceHolder()) {
-                setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
-            }
+            checkPlaceHolder(paragraph);
         }
         mNote.setDirty(true);
     }
@@ -517,6 +489,14 @@ public class NoteEditorManagerImpl {
     public int getParagraphEnd(Paragraph aim) {
         int begin = getParagraphBegin(aim);
         return begin + aim.getLength();
+    }
+
+    private void checkPlaceHolder(Paragraph paragraph) {
+        if (paragraph.isHeadStyle() && paragraph.insertPlaceHolder()) {
+            setSeletion(mSelectionStart + 1, mSelectionEnd + 1);
+        } else if (!paragraph.isHeadStyle() && paragraph.removePlaceHolder()) {
+            setSeletion(mSelectionStart - 1, mSelectionEnd - 1);
+        }
     }
 
     public Paragraph createParagraph(int index) {
@@ -656,6 +636,7 @@ public class NoteEditorManagerImpl {
     }
 
     public void requestDraw() {
+        checkLastParagraph();
         mEditorText.post(new Runnable() {
             @Override
             public void run() {
@@ -663,6 +644,17 @@ public class NoteEditorManagerImpl {
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
             }
         });
+    }
+
+    /**
+     * 保证最后一段为空段落
+     */
+    private void checkLastParagraph() {
+        List<Paragraph> paragraphs = mNote.getParagraphs();
+        if (paragraphs.isEmpty() || !paragraphs.get(paragraphs.size() - 1).isNull()) {
+            Paragraph newParagraph = new ParagraphBuilder().build();
+            mNote.getParagraphs().add(newParagraph);
+        }
     }
 
     public void print() {

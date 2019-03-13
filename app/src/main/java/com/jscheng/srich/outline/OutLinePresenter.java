@@ -3,7 +3,7 @@ package com.jscheng.srich.outline;
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 
-import com.jscheng.srich.NoteFactory;
+import com.jscheng.srich.model.NoteModel;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
@@ -39,7 +39,7 @@ public class OutLinePresenter extends IPresenter {
     }
 
     public void reload() {
-        List<Note> notes = NoteFactory.getNotes((Context)mView);
+        List<Note> notes = NoteModel.getNotes((Context)mView);
         this.mView.setData(notes);
     }
 

@@ -15,7 +15,7 @@ public class NoteIndentationSpanRender extends NoteLineSpanRender<NoteIndentatio
     }
 
     @Override
-    protected NoteIndentationSpan createSpan(int num, int level) {
+    protected NoteIndentationSpan createSpan(int num, int level, String url) {
         return NoteIndentationSpan.create(level);
     }
 }

@@ -25,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="@dimen/editor_text_padding"
-            android:paddingRight="@dimen/editor_text_padding"
-            android:background="@android:color/holo_red_dark"/>
+            android:paddingRight="@dimen/editor_text_padding"/>
     </ScrollView>
 
     <com.jscheng.srich.editor.NoteEditorBar

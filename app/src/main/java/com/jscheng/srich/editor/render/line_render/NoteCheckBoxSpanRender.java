@@ -29,7 +29,7 @@ public class NoteCheckBoxSpanRender extends NoteLineSpanRender<NoteCheckBoxSpan>
     }
 
     @Override
-    protected NoteCheckBoxSpan createSpan(int num, int level) {
+    protected NoteCheckBoxSpan createSpan(int num, int level, String url) {
         return NoteCheckBoxSpan.create(mBitmap);
     }
 }

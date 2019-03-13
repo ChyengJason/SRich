@@ -11,13 +11,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NetworkImagePool;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.ClipboardUtil;
-import com.jscheng.srich.utils.EditTextUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
-import com.jscheng.srich.utils.OsUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
@@ -53,24 +50,12 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         this.setFocusableInTouchMode(true);
         this.setBackground(null);
         this.setHighlightColor(NoteEditorConfig.HighLightColor);
-        this.setCursorColor(NoteEditorConfig.CursorColor);
-        this.setHandlerColor(NoteEditorConfig.HandleColor);
         this.setSingleLine(false);
         this.setTextSize(TypedValue.COMPLEX_UNIT_SP, NoteEditorConfig.TextSizeSp);
         this.setLetterSpacing(NoteEditorConfig.LetterSpacing);
         this.setLineSpacing(NoteEditorConfig.LineSpacing, 1f);
 
         this.readingMode();
-    }
-
-    public void setCursorColor(int color) {
-        EditTextUtil.setEditTextCursorColor(this, color);
-    }
-
-    public void setHandlerColor(int color) {
-        if (!OsUtil.isMIUI()) { // MIUI会出现奇怪现象
-            EditTextUtil.setEditTextHandleColor(this, color);
-        }
     }
 
     public void reset(Note note) {
