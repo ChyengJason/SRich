@@ -4,6 +4,8 @@ import android.text.Editable;
 import android.text.Spanned;
 import android.text.style.LeadingMarginSpan;
 import android.widget.EditText;
+
+import com.jscheng.srich.editor.NoteEditorConfig;
 import com.jscheng.srich.editor.NoteEditorRender;
 import com.jscheng.srich.model.Paragraph;
 
@@ -25,7 +27,7 @@ public abstract class NoteLineSpanRender<T> {
             if (LeadingMarginSpan.class.isAssignableFrom(span.getClass())) {
                 end = globalPos + paragraph.getLength();
             } else {
-                end = globalPos + NoteEditorRender.PlaceHoldChar.length();
+                end = globalPos + NoteEditorConfig.PlaceHoldChar.length();
             }
             editable.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }

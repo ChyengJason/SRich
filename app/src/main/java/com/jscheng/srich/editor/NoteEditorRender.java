@@ -32,9 +32,6 @@ import java.util.List;
  */
 public class NoteEditorRender {
     private static final String TAG = "NoteEditorManager";
-    public static final String EndCode = "\n";
-    public static final char EndCodeChar = '\n';
-    public static final String PlaceHoldChar = "*"; // "\u200B";
 
     private HashMap<Integer, Integer> mNumMap;
 
@@ -119,7 +116,7 @@ public class NoteEditorRender {
     }
 
     private void drawEndCode(int pos, Editable editable) {
-        editable.insert(pos, EndCode);
+        editable.insert(pos, NoteEditorConfig.EndCode);
     }
 
     private int getNum(Paragraph paragraph, Paragraph lastParagraph) {

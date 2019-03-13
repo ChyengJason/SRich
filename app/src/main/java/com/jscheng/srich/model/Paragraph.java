@@ -1,5 +1,6 @@
 package com.jscheng.srich.model;
 
+import com.jscheng.srich.editor.NoteEditorConfig;
 import com.jscheng.srich.editor.NoteEditorRender;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class Paragraph {
     public boolean insertPlaceHolder() {
         setDirty(true);
         if (!isPlaceHolder()) {
-            words.insert(0, NoteEditorRender.PlaceHoldChar);
+            words.insert(0, NoteEditorConfig.PlaceHoldChar);
             wordStyles.add(0, 0);
             return true;
         }
@@ -100,7 +101,7 @@ public class Paragraph {
     }
 
     public boolean isPlaceHolder() {
-       return words.length() > 0 && words.substring(0, 1).equals(NoteEditorRender.PlaceHoldChar);
+       return words.length() > 0 && words.substring(0, 1).equals(NoteEditorConfig.PlaceHoldChar);
     }
 
     public void remove(int start, int end) {

@@ -13,6 +13,9 @@ import java.util.UUID;
 
 public class NoteModel {
     private static final String TAG = "NoteModel";
+    private static final int MAX_TITLE_LENGTH = 10;
+    private static final int MAX_SUMMARY_LENGTH = 30;
+
     /**
      * TODO 异步加载
      * @param note
@@ -65,18 +68,14 @@ public class NoteModel {
     }
 
     public static void updateNote(Context context, Note note) {
-        NoteDao dao = new NoteDao(context);
         if (note.isDirty()) {
-            String localPath = note.getLocalPath();
-            String conent = ParagraphEncoder.encode(note.getParagraphs());
-            String title = conent.length() > 10 ? conent.substring(0, 10) : conent;
-            String summary = conent.length() > 50 ? conent.substring(title.length(), 50) : conent.substring(title.length());
-            String summaryImage = summaryImageUrl(note.getParagraphs());
+            updateNoteProperity(note);
 
-            note.setTitle(title);
-            note.setSummary(summary);
-            note.setSummaryImageUrl(summaryImage);
+            NoteDao dao = new NoteDao(context);
+            String conent = ParagraphEncoder.encode(note.getParagraphs());
+            String localPath = note.getLocalPath();
             Log.e(TAG, "updateNote: " + conent);
+
             if (dao.find(note.getId()) != null) {
                 dao.update(note);
             } else {
@@ -87,13 +86,33 @@ public class NoteModel {
         }
     }
 
-    private static String summaryImageUrl(List<Paragraph> paragraphs) {
-        for (Paragraph paragraph : paragraphs) {
-            if (paragraph.isImage()) {
-                return paragraph.getImageUrl();
+    private static void updateNoteProperity(Note note) {
+        String title = "";
+        String summaryImage = "";
+        StringBuilder summary = new StringBuilder();
+
+        for (Paragraph paragraph : note.getParagraphs()) {
+            if (summaryImage.isEmpty() && paragraph.isImage()) {
+                summaryImage = paragraph.getImageUrl();
+            }
+            if (paragraph.getLength() > 0) {
+                String words = paragraph.getWords();
+                int len = words.length();
+                if (title.isEmpty()) {
+                    title = words.substring(0, Math.min(MAX_TITLE_LENGTH, len));
+                    words = words.substring(Math.min(MAX_TITLE_LENGTH, len));
+                }
+
+                len = words.length();
+                int summaryLackLen = MAX_SUMMARY_LENGTH - len;
+                if (summaryLackLen > 0) {
+                    summary.append(words.substring(0, Math.min(summaryLackLen, len)));
+                }
             }
         }
-        return "";
+        note.setTitle(title);
+        note.setSummary(summary.toString());
+        note.setSummaryImageUrl(summaryImage);
     }
 
     public static boolean isNoteNull(Note note) {

@@ -16,4 +16,10 @@ public class NoteEditorConfig {
     public static final float LetterSpacing = 0.01f;
 
     public static final int LineSpacing = 15;
+
+    public static final String EndCode = "\n";
+
+    public static final char EndCodeChar = '\n';
+
+    public static final String PlaceHoldChar = "\u200B";
 }

@@ -145,7 +145,7 @@ public class NoteEditorManager implements INoteEditorManager{
             StringBuilder contentNoEnter = new StringBuilder();
             for (int i = 0; i < content.length(); i++) {
                 char c = content.charAt(i);
-                if (c == NoteEditorRender.EndCodeChar) {
+                if (c == NoteEditorConfig.EndCodeChar) {
                     mManagerImpl.inputParagraph(contentNoEnter.toString());
                     mManagerImpl.inputEnter();
                     contentNoEnter.delete(0, contentNoEnter.length());
