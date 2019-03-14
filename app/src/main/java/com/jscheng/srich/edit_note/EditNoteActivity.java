@@ -14,6 +14,7 @@ import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
+import com.jscheng.srich.widget.CircularProgressView;
 
 /**
  * Created By Chengjunsen on 2019/2/21
@@ -28,6 +29,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     private NoteEditorText mEditorText;
     private NoteEditorBar mEditorBar;
     private EditNoteFormatDialog mFormatDialog;
+    private CircularProgressView mLoadingView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +39,9 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         this.getLifecycle().addObserver(mPresenter);
         mEditButton = findViewById(R.id.float_edit_button);
         mEditButton.setPresenter(mPresenter);
+
+        mLoadingView = findViewById(R.id.circular_progress);
+        mLoadingView.setVisibility(View.GONE);
 
         mEditorText = findViewById(R.id.edit_note_editor);
         mToolbar = findViewById(R.id.edit_note_toolbar);
@@ -50,8 +55,18 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     }
 
     @Override
-    public void resetNote(Note note) {
+    public void setNote(Note note) {
         mEditorText.reset(note);
+    }
+
+    @Override
+    public void showLoading() {
+        mLoadingView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        mLoadingView.setVisibility(View.GONE);
     }
 
     @Override
@@ -66,8 +81,18 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     public void readingMode() {
         mEditorText.readingMode();
         mToolbar.readingMode();
-        mEditButton.show();
+        mEditButton.setVisibility(View.VISIBLE);
         mEditorBar.setVisibility(View.GONE);
+        mLoadingView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void loadingMode() {
+        mEditorText.readingMode();
+        mToolbar.readingMode();
+        mEditButton.setVisibility(View.GONE);
+        mEditorBar.setVisibility(View.GONE);
+        mLoadingView.setVisibility(View.VISIBLE);
     }
 
     @Override

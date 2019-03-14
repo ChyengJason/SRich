@@ -89,16 +89,28 @@ public class NoteEditorManagerImpl {
 
     public void inputSuperscript(boolean isSelected, boolean draw) {
         mOptions.setSuperScript(isSelected);
+        if (isSelected) {
+            mOptions.setSubScript(false);
+        }
         if (mSelectionEnd > mSelectionStart) {
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SuperScript);
+            if (isSelected) {
+                applySelectionWordStyle(mSelectionStart, mSelectionEnd, false, Style.SubScript);
+            }
             if (draw) { requestDraw(); }
         }
     }
 
     public void inputSubscript(boolean isSelected, boolean draw) {
         mOptions.setSubScript(isSelected);
+        if (isSelected) {
+            mOptions.setSuperScript(false);
+        }
         if (mSelectionEnd > mSelectionStart) {
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SubScript);
+            if (isSelected) {
+                applySelectionWordStyle(mSelectionStart, mSelectionEnd, false, Style.SuperScript);
+            }
             if (draw) { requestDraw(); }
         }
     }

@@ -12,12 +12,17 @@ import com.jscheng.srich.mvp.IView;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 /**
  * Created By Chengjunsen on 2019/2/21
  */
 public class EditNotePresenter extends IPresenter {
-    private static final EditNoteMode DefaultMode = EditNoteMode.Reading;
-    private EditNoteMode mMode = DefaultMode;
+    private EditNoteMode mMode;
     private EditNoteView mView;
     private boolean isEditorBarEnable;
     private Note mNote;
@@ -30,12 +35,13 @@ public class EditNotePresenter extends IPresenter {
     public interface EditNoteView extends IView {
         void writingMode(boolean isEditorBarEnable);
         void readingMode();
+        void loadingMode();
         void finish();
         void setEditorbar(boolean isEnable);
         void showFormatDialog();
         void showAlbumDialog();
         void showNetworkDialog();
-        void resetNote(Note note);
+        void setNote(Note note);
     }
 
     @Override
@@ -43,14 +49,45 @@ public class EditNotePresenter extends IPresenter {
         this.mView = (EditNoteView)owner;
         this.isEditorBarEnable = true;
         this.mNote = null;
-        this.initOrCreateNote(mNoteid);
-        this.readingMode();
+        this.loadNote();
     }
 
-    /**
-     * todo 异步加载转圈
-     * @param noteid
-     */
+    private void loadNote() {
+        Observable.create(new ObservableOnSubscribe<Note>() {
+            @Override
+            public void subscribe(ObservableEmitter emitter) {
+                Note note = NoteModel.findNote((Context)mView, mNoteid);
+                if (note == null) {
+                    note = NoteModel.buildNote((Context)mView);
+                } else {
+                    NoteModel.parserParagraphs(note);
+                }
+                emitter.onNext(note);
+                emitter.onComplete();
+            }
+        }).subscribe(new Observer<Note>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                loadingMode();
+            }
+
+            @Override
+            public void onNext(Note note) {
+                mNote = note;
+                mView.setNote(mNote);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+                readingMode();
+            }
+        });
+    }
+
     private void initOrCreateNote(String noteid) {
         if (noteid != null) {
             mNote = NoteModel.findNote((Context)mView, noteid);
@@ -59,7 +96,8 @@ public class EditNotePresenter extends IPresenter {
         if (mNote == null) {
             mNote = NoteModel.buildNote((Context)mView);
         }
-        mView.resetNote(mNote);
+        mView.setNote(mNote);
+        this.readingMode();
     }
 
     @Override
@@ -114,14 +152,20 @@ public class EditNotePresenter extends IPresenter {
         mView.setEditorbar(isEditorBarEnable);
     }
 
+    private void loadingMode() {
+        mMode = EditNoteMode.Loading;
+        mView.loadingMode();
+
+    }
+
     private void readingMode() {
-        mView.readingMode();
         mMode = EditNoteMode.Reading;
+        mView.readingMode();
     }
 
     private void writingMode() {
-        mView.writingMode(isEditorBarEnable);
         mMode = EditNoteMode.Writing;
+        mView.writingMode(isEditorBarEnable);
     }
 
     private void updateNote() {

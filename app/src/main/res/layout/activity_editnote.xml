@@ -46,4 +46,17 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"/>
 
+    <com.jscheng.srich.widget.CircularProgressView
+        android:id="@+id/circular_progress"
+        android:layout_width="@dimen/circle_progress_size"
+        android:layout_height="@dimen/circle_progress_size"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true"
+        app:cpv_color="@color/circle_color"
+        android:visibility="gone"/>
+
 </android.support.constraint.ConstraintLayout>

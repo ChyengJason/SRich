@@ -13,5 +13,10 @@ public enum EditNoteMode {
     /**
      * 读模式
      */
-    Reading
+    Reading,
+
+    /**
+     * 加载
+     */
+    Loading
 }

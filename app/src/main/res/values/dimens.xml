@@ -12,4 +12,5 @@
     <dimen name="editor_bar_item_text_size">15sp</dimen>
     <dimen name="editor_bar_item_padding">3dp</dimen>
     <dimen name="note_edit_item_right_size">30dp</dimen>
+    <dimen name="circle_progress_size">80dp</dimen>
 </resources>
