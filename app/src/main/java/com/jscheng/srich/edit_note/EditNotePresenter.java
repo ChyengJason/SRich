@@ -16,7 +16,9 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created By Chengjunsen on 2019/2/21
@@ -42,6 +44,8 @@ public class EditNotePresenter extends IPresenter {
         void showAlbumDialog();
         void showNetworkDialog();
         void setNote(Note note);
+        void showLoading();
+        void hideLoading();
     }
 
     @Override
@@ -65,27 +69,29 @@ public class EditNotePresenter extends IPresenter {
                 emitter.onNext(note);
                 emitter.onComplete();
             }
-        }).subscribe(new Observer<Note>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                loadingMode();
-            }
+        }).subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Observer<Note>() {
+              @Override
+              public void onSubscribe(Disposable d) {
+                  loadingMode();
+              }
 
-            @Override
-            public void onNext(Note note) {
-                mNote = note;
-                mView.setNote(mNote);
-            }
+              @Override
+              public void onNext(Note note) {
+                  mNote = note;
+                  mView.setNote(mNote);
+              }
 
-            @Override
-            public void onError(Throwable e) {
-            }
+              @Override
+              public void onError(Throwable e) {
+              }
 
-            @Override
-            public void onComplete() {
-                readingMode();
-            }
-        });
+              @Override
+              public void onComplete() {
+                  readingMode();
+              }
+          });
     }
 
     private void initOrCreateNote(String noteid) {

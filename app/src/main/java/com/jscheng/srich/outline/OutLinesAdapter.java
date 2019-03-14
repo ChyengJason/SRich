@@ -121,20 +121,20 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
         String date = DateUtil.formatDate(outline.getNote().getModifyTime());
         noteViewHolder.titleText.setText(title);
         noteViewHolder.weekText.setText(date);
-        noteViewHolder.summaryText.setText(summary);
-        if (TextUtils.isEmpty(summaryImageUrl)) {
-            noteViewHolder.summaryImage.setVisibility(View.INVISIBLE);
+        if (TextUtils.isEmpty(summary)) {
+            noteViewHolder.summaryText.setVisibility(View.GONE);
         } else {
-//            int width = noteViewHolder.summaryImage.getMeasuredWidth();
-//            Bitmap bitmap = NoteImageLoader.with(mContext).getBitmap(summaryImageUrl, width);
-//            if (bitmap != null) {
-//                noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
-//                noteViewHolder.summaryImage.setImageBitmap(bitmap);
-//            } else {
-//                noteViewHolder.summaryImage.setVisibility(View.INVISIBLE);
-//                noteViewHolder.summaryImage.setTag(summaryImageUrl);
-//            }
+            noteViewHolder.summaryText.setVisibility(View.VISIBLE);
+            noteViewHolder.summaryText.setText(summary);
         }
+
+        if (TextUtils.isEmpty(summaryImageUrl)) {
+            noteViewHolder.summaryImage.setVisibility(View.GONE );
+        } else {
+            noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
+            noteViewHolder.summaryImage.setImageResource(R.mipmap.ic_compose);
+        }
+
         noteViewHolder.contentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#01A92D</color>
+    <color name="colorPrimaryDark">#01A92D</color>
+    <color name="colorAccent">#01A92D</color>
     <color name="editor_bar_item_text_color">#FFF</color>
-    <color name="editor_bar_item_selected_text_color">#129F3C</color>
+    <color name="editor_bar_item_selected_text_color">#01A92D</color>
     <color name="editor_bar_backgroud_color">#414141</color>
-    <color name="editor_high_color">#7fc7e2</color>
-    <color name="circle_color">#129F3C</color>
+    <color name="editor_high_color">#f5f595</color>
+    <color name="circle_color">#01A92D</color>
+    <color name="outline_text_color">#5A5A5A</color>
+    <color name="outline_title_text_color">#000</color>
+    <color name="outline_item_title_text_color">#5A5A5A</color>
+    <color name="outline_item_summary_text_color">#5A5A5A</color>
+    <color name="outline_date_text_color">#5A5A5A</color>
+    <color name="outline_toolbar_background">#F8F8F8</color>
+    <color name="outline_background">#FFFFFF</color>
+    <color name="outline_line_color">#EBEBEB</color>
+    <color name="outline_item_date_text_color">#9b9b9b</color>
 </resources>

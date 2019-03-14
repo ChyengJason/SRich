@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.AppBarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/collapsing_tool_bar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/outline_toolbar_height"
+    android:background="@color/outline_toolbar_background">
+
+    <android.support.design.widget.CollapsingToolbarLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        app:expandedTitleTextAppearance="@style/OutlineToolbarText"
+        app:collapsedTitleTextAppearance="@style/OutlineToolbarText">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/outline_toolbar_small_height"
+            app:layout_collapseMode="pin"
+            app:title="@string/note_outline_title"
+            app:layout_scrollFlags="scroll"/>
+
+    </android.support.design.widget.CollapsingToolbarLayout>
+
+
+</android.support.design.widget.AppBarLayout>

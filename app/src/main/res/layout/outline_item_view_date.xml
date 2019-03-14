@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="@dimen/outline_item_date_height"
     android:layout_width="match_parent"
-    android:background="@color/colorAccent">
+    android:background="@color/outline_background">
 
     <TextView
         android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/outline_item_margin_horizon"
+        android:layout_marginRight="@dimen/outline_item_margin_horizon"
+        android:text="@string/note_outline_title"
+        android:textColor="@color/outline_date_text_color"
+        android:textSize="@dimen/outline_item_date_text_size"/>
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        android:layout_height="1dp"
+        android:background="@color/outline_line_color"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/outline_item_margin_horizon"
+        android:layout_marginRight="@dimen/outline_item_margin_horizon"/>
+</RelativeLayout>

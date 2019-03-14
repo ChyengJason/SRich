@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jscheng.srich.BaseActivity;
@@ -27,7 +28,7 @@ public class OutLinesActivity extends BaseActivity
     private RecyclerView mRecyclerView = null;
     private LinearLayoutManager mLayoutManager = null;
     private OutLinesAdapter mRecyclerAdapter = null;
-    private LinearLayout mHeadDateLayout = null;
+    private RelativeLayout mHeadDateLayout = null;
     private TextView mHeadDateText = null;
     private FloatNewButton mFloatButton = null;
     private SwipeRefreshLayout mSwipeLayout = null;

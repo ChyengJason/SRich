@@ -34,4 +34,9 @@
         <item name="android:windowEnterAnimation">@anim/edit_note_bottom_in_anim</item>
         <item name="android:windowExitAnimation">@anim/edit_note_bottom_out_anim</item>
     </style>
+
+    <style name="OutlineToolbarText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/outline_text_color</item>
+    </style>
 </resources>

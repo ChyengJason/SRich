@@ -13,6 +13,13 @@ import com.jscheng.srich.route.RouterConfig;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created By Chengjunsen on 2019/2/20
  */
@@ -39,8 +46,20 @@ public class OutLinePresenter extends IPresenter {
     }
 
     public void reload() {
-        List<Note> notes = NoteModel.getNotes((Context)mView);
-        this.mView.setData(notes);
+        Observable.create(new ObservableOnSubscribe<List<Note>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<Note>> emitter) throws Exception {
+                List<Note> notes = NoteModel.getNotes((Context)mView);
+                emitter.onNext(notes);
+            }
+        }).subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Consumer<List<Note>>() {
+            @Override
+            public void accept(List<Note> notes) throws Exception {
+                mView.setData(notes);
+            }
+        });
     }
 
     public void tapNew() {
