@@ -89,14 +89,25 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     }
 
     private void hideSoftKeyboard() {
-        clearFocus();
-        KeyboardUtil.configSoftInput(this, false);
-        KeyboardUtil.hideSoftInput(getContext(), this);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                clearFocus();
+                KeyboardUtil.configSoftInput(NoteEditorText.this, false);
+                KeyboardUtil.hideSoftInput(getContext(), NoteEditorText.this);
+            }
+        });
     }
 
     private void showSoftKeyboard() {
-        KeyboardUtil.configSoftInput(this, true);
-        KeyboardUtil.showSoftInput(getContext(), this);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtil.configSoftInput(NoteEditorText.this, true);
+                KeyboardUtil.showSoftInput(getContext(), NoteEditorText.this);
+                requestFocus();
+            }
+        });
     }
 
     @Override
