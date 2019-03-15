@@ -173,11 +173,7 @@ public class NoteEditorManager implements INoteEditorManager{
         mManagerImpl.onSelectionChanged(selStart, selEnd);
     }
 
-    public boolean onSpanTouchUp(int off, long interval) {
-        return mManagerImpl.onSpanTouchUp(off, interval);
-    }
-
-    public boolean onSpanTouchDown(int off) {
-        return mManagerImpl.onSpanTouchDown(off);
+    public boolean onSpanTouchUp(int off) {
+        return mManagerImpl.onSpanTouchUp(off);
     }
 }

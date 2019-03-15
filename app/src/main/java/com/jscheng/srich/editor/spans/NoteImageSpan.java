@@ -1,36 +1,24 @@
 package com.jscheng.srich.editor.spans;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.text.style.AlignmentSpan;
 import android.text.style.ImageSpan;
-import android.text.style.LeadingMarginSpan;
-import android.text.style.ReplacementSpan;
-import android.util.Size;
-
-import java.lang.ref.WeakReference;
-
 /**
  * Created By Chengjunsen on 2019/3/6
+ * implements AlignmentSpan
  */
-public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan, AlignmentSpan{
+public class NoteImageSpan extends ImageSpan implements AlignmentSpan, NoteClickSpan{
 
-    private WeakReference<Bitmap> mBitmap;
-    private int mViewWidth;
-    private int mVerticalMargin;
-    private float mBitmapDestWidth;
-    private float mBitmapDestHeight;
+    private int margin = 30;
 
-    public NoteImageSpan(Bitmap bitmap, int width) {
-        this.mBitmap = new WeakReference<>(bitmap);
-        this.mViewWidth = width;
-        this.mVerticalMargin = 30;
-        this.mBitmapDestWidth = Math.min(bitmap.getWidth(), mViewWidth);
-        this.mBitmapDestHeight = bitmap.getHeight() * (mBitmapDestWidth / (float) bitmap.getWidth());
+    public NoteImageSpan(Drawable drawable) {
+        super(drawable, ALIGN_BASELINE);
     }
 
     @Override
@@ -39,32 +27,37 @@ public class NoteImageSpan extends ReplacementSpan implements NoteClickSpan, Ali
     }
 
     @Override
-    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-        Bitmap bitmap = mBitmap.get();
-        if (fm != null && bitmap != null) {
-                fm.ascent = (int) (-mBitmapDestHeight - mVerticalMargin * 2);
-                fm.descent = 0;
+    public int getSize(@NonNull Paint paint, CharSequence text,
+                       @IntRange(from = 0) int start, @IntRange(from = 0) int end,
+                       @Nullable Paint.FontMetricsInt fm) {
+        Drawable d = getDrawable();
+        Rect rect = d.getBounds();
 
-                fm.top = fm.ascent;
-                fm.bottom = 0;
+        if (fm != null) {
+            fm.ascent = -rect.bottom - margin * 2;
+            fm.descent = 0;
+
+            fm.top = fm.ascent;
+            fm.bottom = 0;
         }
-        return (int)mBitmapDestWidth;
+
+        return rect.right;
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-        Bitmap bitmap = mBitmap.get();
-        if (bitmap != null) {
-            canvas.save();
+    public void draw(@NonNull Canvas canvas, CharSequence text,
+                     @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x,
+                     int top, int y, int bottom, @NonNull Paint paint) {
+        Drawable b = getDrawable();
+        canvas.save();
 
-            Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            Rect destRect = new Rect(0, 0, (int)mBitmapDestWidth, (int)mBitmapDestHeight);
-
-            int transY = (int) (bottom - mBitmapDestHeight - mVerticalMargin);
-            int transX = (int) x;
-            canvas.translate(transX, transY);
-            canvas.drawBitmap(bitmap, srcRect, destRect, paint);
-            canvas.restore();
+        int transY = bottom - b.getBounds().bottom - margin;
+        if (mVerticalAlignment == ALIGN_BASELINE) {
+            transY -= paint.getFontMetricsInt().descent;
         }
+
+        canvas.translate(x, transY);
+        b.draw(canvas);
+        canvas.restore();
     }
 }

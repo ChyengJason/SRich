@@ -1,6 +1,7 @@
 package com.jscheng.srich.editor;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Layout;
@@ -165,35 +166,29 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         }
     }
 
-    long lastTouchTime = 0;
+    float lastX = 0;
+    float lastY = 0;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                lastTouchTime = System.currentTimeMillis();
-                return onTouchDownSpan(event) || super.onTouchEvent(event);
+                lastX = event.getX();
+                lastY = event.getY();
+                return super.onTouchEvent(event);
             case MotionEvent.ACTION_UP:
-                long interval = System.currentTimeMillis() - lastTouchTime;
-                return onTouchUpSpan(interval, event) || super.onTouchEvent(event);
+                return onTouchUpSpan(event) || super.onTouchEvent(event);
             default:
                 break;
         }
         return super.onTouchEvent(event);
     }
 
-    private boolean onTouchDownSpan(MotionEvent event) {
+    private boolean onTouchUpSpan(MotionEvent event) {
+        float deltaX = Math.abs(event.getX() - lastX);
+        float deltaY = Math.abs(event.getY() - lastY);
         int off = getPos(event);
         NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
-        if (spans.length > 0 && mStyleManager.onSpanTouchDown(off)) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean onTouchUpSpan(long interval, MotionEvent event) {
-        int off = getPos(event);
-        NoteClickSpan[] spans = getText().getSpans(off, off, NoteClickSpan.class);
-        if (spans.length > 0 && mStyleManager.onSpanTouchUp(off, interval)) {
+        if (deltaX < 10 && deltaY < 10 && spans.length > 0 && mStyleManager.onSpanTouchUp(off)) {
             return true;
         }
         return false;

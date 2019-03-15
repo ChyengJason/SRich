@@ -620,9 +620,10 @@ public class NoteEditorManagerImpl {
         return Options.getSameStyle(indentation, lineStyle, wordStyles);
     }
 
-    public boolean onSpanTouchDown(int globalPos) {
+    public boolean onSpanTouchUp(int globalPos) {
         Paragraph paragraph = getParagraph(globalPos);
-        if (getParagraphBegin(paragraph) == globalPos) {
+        int begin = getParagraphBegin(paragraph);
+        if ( globalPos <= begin + 1) {
             if (paragraph.isImage()) {
                 clickImage(paragraph);
                 return false;
@@ -631,20 +632,6 @@ public class NoteEditorManagerImpl {
                 return true;
             } else if (paragraph.isUnCheckbox()) {
                 clickUncheckBox(paragraph);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean onSpanTouchUp(int globalPos, long interval) {
-        Paragraph paragraph = getParagraph(globalPos);
-        if (getParagraphBegin(paragraph) == globalPos) {
-            if (paragraph.isImage()) {
-                return false;
-            } else if (paragraph.isCheckbox()) {
-                return true;
-            } else if (paragraph.isUnCheckbox()) {
                 return true;
             }
         }
@@ -671,13 +658,13 @@ public class NoteEditorManagerImpl {
 
     public void requestDraw() {
         checkLastParagraph();
-        mEditorText.post(new Runnable() {
-            @Override
-            public void run() {
+//        mEditorText.post(new Runnable() {
+//            @Override
+//            public void run() {
                 print();
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
-            }
-        });
+//            }
+//        });
     }
 
     /**

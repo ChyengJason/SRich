@@ -146,11 +146,13 @@ public class EditNotePresenter extends IPresenter {
 
 
     public void tapImage(List<String> urls, int index) {
-        Router.with((Context) mView)
-                .intent("urls", urls)
-                .intent("index", index)
-                .route(RouterConfig.ImagePreviewActivityUri)
-                .go();
+        if (mMode == EditNoteMode.Reading) {
+            Router.with((Context) mView)
+                    .intent("urls", urls)
+                    .intent("index", index)
+                    .route(RouterConfig.ImagePreviewActivityUri)
+                    .go();
+        }
     }
 
     public void tapAttach() {

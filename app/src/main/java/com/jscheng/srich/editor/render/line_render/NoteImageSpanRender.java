@@ -2,6 +2,8 @@ package com.jscheng.srich.editor.render.line_render;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.jscheng.srich.R;
@@ -15,6 +17,7 @@ import com.jscheng.srich.model.Paragraph;
  */
 public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
 
+    private int margin = 50;
     private View mView;
 
     public NoteImageSpanRender(View view) {
@@ -30,9 +33,13 @@ public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
     protected NoteImageSpan createSpan(int num, int level, String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
         Bitmap bitmap = NoteImageLoader.with(mView.getContext()).getBitmap(url, width);
-        if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_note_edit_loading);
+        Drawable drawable;
+        if (bitmap != null) {
+            drawable = new BitmapDrawable(mView.getResources(), bitmap);
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        } else {
+            drawable = mView.getResources().getDrawable(R.mipmap.ic_note_edit_loading);
         }
-        return new NoteImageSpan(bitmap, width);
+        return new NoteImageSpan(drawable);
     }
 }
