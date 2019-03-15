@@ -35,20 +35,20 @@ public class NetworkImagePool extends AbstractImagePool {
 
     @Override
     protected void submitTask(String url, String key) {
-            try {
-                Request bitmapRequest = new Request.Builder().get().url(url).build();
-                Call call = mOkhttpClient.newCall(bitmapRequest);
-                Response response = call.execute();
-                if (response.isSuccessful()) {
-                    InputStream inputStream = response.body().byteStream();
-                    onLoadedSuccess(inputStream, key, url);
-                } else {
-                    onLoadedFailed(key, url, response.message());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                onLoadedFailed(key, url, e.toString());
+        try {
+            Request bitmapRequest = new Request.Builder().get().url(url).build();
+            Call call = mOkhttpClient.newCall(bitmapRequest);
+            Response response = call.execute();
+            if (response.isSuccessful()) {
+                InputStream inputStream = response.body().byteStream();
+                onLoadedSuccess(inputStream, key, url);
+            } else {
+                onLoadedFailed(key, url, response.message());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            onLoadedFailed(key, url, e.toString());
+        }
     }
 
     @Override

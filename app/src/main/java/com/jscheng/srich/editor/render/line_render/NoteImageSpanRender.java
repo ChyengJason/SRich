@@ -36,9 +36,10 @@ public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
         Drawable drawable;
         if (bitmap != null) {
             drawable = new BitmapDrawable(mView.getResources(), bitmap);
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            drawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
         } else {
             drawable = mView.getResources().getDrawable(R.mipmap.ic_note_edit_loading);
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         }
         return new NoteImageSpan(drawable);
     }

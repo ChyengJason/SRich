@@ -17,7 +17,9 @@ import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
 import com.jscheng.srich.widget.CircularProgressView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created By Chengjunsen on 2019/2/21
@@ -136,7 +138,15 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
 
     @Override
     public void showNetworkDialog() {
-        String url = "https://upload-images.jianshu.io/upload_images/7722639-621573aa9b77e25e.jpeg";
+        List<String> urls = new ArrayList<>();
+        urls.add("https://upload-images.jianshu.io/upload_images/7722639-621573aa9b77e25e.jpeg");
+        urls.add("https://upload-images.jianshu.io/upload_images/5185243-17b362f03fada750.png");
+        urls.add("https://upload-images.jianshu.io/upload_images/851787-05da829df447c9a4.jpg");
+        urls.add("https://upload-images.jianshu.io/upload_images/5279191-ffd9e07ef242457d.png");
+        urls.add("https://upload-images.jianshu.io/upload_images/1781119-076ca4fe67b6cf5e.jpg");
+
+        Random random = new Random();
+        String url = urls.get(random.nextInt(urls.size()));
         mEditorText.getStyleManager().commandImage(url, true);
     }
 

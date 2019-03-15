@@ -631,7 +631,8 @@ public class NoteEditorManagerImpl {
                 clickUncheckBox(paragraph);
                 return true;
             }
-        } else if ( globalPos <= begin + 1) {
+        }
+        if ( globalPos <= begin + 1) {
             if (paragraph.isImage()) {
                 clickImage(paragraph);
                 return false;

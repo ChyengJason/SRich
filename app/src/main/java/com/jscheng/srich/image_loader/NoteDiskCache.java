@@ -61,10 +61,12 @@ public class NoteDiskCache {
                 FileInputStream inputStream = (FileInputStream) snapshot.getInputStream(0);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
                 BitmapFactory.decodeStream(inputStream, null, options);
-                inputStream.close();
+                options.inJustDecodeBounds = false;
                 int bitmapWidth = options.outWidth;
                 int bitmapHeight = options.outHeight;
+                inputStream.close();
                 return new Size(bitmapWidth, bitmapHeight);
             }
         } catch (IOException e) {

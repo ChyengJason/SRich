@@ -20,7 +20,7 @@ public class NoteImageLoader implements IImagePoolListener {
     /**
      * 监听器
      */
-    private CopyOnWriteArrayList<NoteImageListener> mImageListeners;
+    private static CopyOnWriteArrayList<NoteImageListener> mImageListeners;
     /**
      * 本地加载库
      */
@@ -63,9 +63,9 @@ public class NoteImageLoader implements IImagePoolListener {
         mHttpImagePool = new NetworkImagePool(mMemoryCache, mDiskCache, context.getApplicationContext(), this);
     }
 
-    public void getBitmap(Context context, String url, final ImageView imageView) {
+    public void getBitmap(String url, final ImageView imageView) {
         String key = getKeyFromUrl(url);
-        NoteImageTarget target = new NoteImageTarget(context, imageView, url, key);
+        NoteImageTarget target = new NoteImageTarget(imageView, url, key);
         if (isCacheBitmap(key)) {
             target.onNoteImageSuccess(url);
         } else {
@@ -99,7 +99,7 @@ public class NoteImageLoader implements IImagePoolListener {
     }
 
     private Boolean isCacheBitmap(String key) {
-        return mMemoryCache.isCache(key) && mDiskCache.isCache(key);
+        return mMemoryCache.isCache(key) || mDiskCache.isCache(key);
     }
 
     private Bitmap getCacheBitmap(String key, int maxWidth) {
@@ -109,6 +109,7 @@ public class NoteImageLoader implements IImagePoolListener {
         }
         bitmap = mDiskCache.get(key, maxWidth);
         if (bitmap != null) {
+            mMemoryCache.put(key, bitmap);
             return bitmap;
         }
         return null;
@@ -126,11 +127,11 @@ public class NoteImageLoader implements IImagePoolListener {
         return MdUtil.encode(url);
     }
 
-    public void addImageListener(NoteImageListener listener) {
+    public static void addImageListener(NoteImageListener listener) {
         mImageListeners.add(listener);
     }
 
-    public void removeImageListener(NoteImageListener listener) {
+    public static void removeImageListener(NoteImageListener listener) {
         mImageListeners.remove(listener);
     }
 
