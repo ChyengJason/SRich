@@ -16,11 +16,7 @@ public class NoteModel {
     private static final int MAX_TITLE_LENGTH = 10;
     private static final int MAX_SUMMARY_LENGTH = 30;
 
-    /**
-     * TODO 异步加载
-     * @param note
-     */
-    public static Note parserParagraphs(Note note) {
+    public static Note openNote(Note note) {
         if (note != null) {
             String localPath = note.getLocalPath();
             if (localPath != null && !localPath.isEmpty()) {
@@ -33,7 +29,7 @@ public class NoteModel {
         return note;
     }
 
-    public static Note buildNote(Context context) {
+    public static Note createNote(Context context) {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         long time = System.currentTimeMillis();
         String localPath = StorageUtil.getDiskCachePath(context) + File.separator + uuid + ".txt";

@@ -13,19 +13,23 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/outline_item_margin_vertical"
+        android:layout_marginBottom="@dimen/outline_item_margin_vertical"/>
 
     <LinearLayout
-        android:layout_alignParentRight="@id/summary_image_view"
+        android:layout_toLeftOf="@id/summary_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/outline_item_margin_vertical"
+        android:layout_marginBottom="@dimen/outline_item_margin_vertical">
+
         <TextView
             android:id="@+id/date_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/outline_item_margin_vertical"
             android:textSize="@dimen/outline_item_date_text_size"
             android:textColor="@color/outline_item_date_text_color"
             android:text="@string/app_name"/>
@@ -60,7 +64,6 @@
         android:id="@+id/cut_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/outline_item_margin_vertical"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"

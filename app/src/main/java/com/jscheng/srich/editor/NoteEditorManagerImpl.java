@@ -649,13 +649,13 @@ public class NoteEditorManagerImpl {
 
     public void requestDraw() {
         checkLastParagraph();
-        mEditorText.post(new Runnable() {
-            @Override
-            public void run() {
-                print();
+//        mEditorText.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                print();
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
-            }
-        });
+//            }
+//        });
     }
 
     /**
@@ -671,7 +671,7 @@ public class NoteEditorManagerImpl {
 
     public void print() {
         List<Paragraph> paragraphs = mNote.getParagraphs();
-        Log.e(TAG,
+        Log.d(TAG,
                 " count: " + paragraphs.size() +
                 " selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
         for (Paragraph paragraph: paragraphs) {

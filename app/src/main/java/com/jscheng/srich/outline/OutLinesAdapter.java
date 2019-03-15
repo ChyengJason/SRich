@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jscheng.srich.R;
@@ -183,7 +184,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
         public TextView titleText;
         public TextView summaryText;
         public ImageView summaryImage;
-        public ConstraintLayout contentLayout;
+        public RelativeLayout contentLayout;
 
         public ItemNoteViewHolder(View itemView) {
             super(itemView);

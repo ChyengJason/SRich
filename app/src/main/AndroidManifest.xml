@@ -18,7 +18,7 @@
         <activity android:name=".MainActivity">
         </activity>
 
-        <activity android:name=".edit_note.EditNoteActivity"
+        <activity android:name=".note_edit.EditNoteActivity"
             android:windowSoftInputMode="stateHidden">
         </activity>
 

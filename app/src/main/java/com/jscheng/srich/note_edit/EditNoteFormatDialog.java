@@ -1,4 +1,4 @@
-package com.jscheng.srich.edit_note;
+package com.jscheng.srich.note_edit;
 
 import android.app.Dialog;
 import android.content.Context;

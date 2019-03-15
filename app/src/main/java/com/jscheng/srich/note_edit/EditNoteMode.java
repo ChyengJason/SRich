@@ -1,4 +1,4 @@
-package com.jscheng.srich.edit_note;
+package com.jscheng.srich.note_edit;
 
 /**
  * Created By Chengjunsen on 2019/3/11

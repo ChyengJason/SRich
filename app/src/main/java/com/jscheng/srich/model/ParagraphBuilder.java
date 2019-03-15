@@ -1,6 +1,6 @@
 package com.jscheng.srich.model;
 
-/**
+import java.util.List; /**
  * Created By Chengjunsen on 2019/3/13
  */
 public class ParagraphBuilder {
@@ -45,8 +45,33 @@ public class ParagraphBuilder {
         return this;
     }
 
-    public ParagraphBuilder image(boolean isImage) {
-        paragraph.setImage(isImage);
+    public ParagraphBuilder image(boolean b) {
+        paragraph.setImage(b);
+        return this;
+    }
+
+    public ParagraphBuilder bullet(boolean b) {
+        paragraph.setBulletList(b);
+        return this;
+    }
+
+    public ParagraphBuilder addWords(String words, List<Integer> wordStyles) {
+        paragraph.addWords(words, wordStyles);
+        return this;
+    }
+
+    public ParagraphBuilder numList(boolean b) {
+        paragraph.setNumList(b);
+        return this;
+    }
+
+    public ParagraphBuilder uncheckBox(boolean b) {
+        paragraph.setUnCheckbox(b);
+        return this;
+    }
+
+    public ParagraphBuilder checkbox(boolean b) {
+        paragraph.setCheckbox(b);
         return this;
     }
 }

@@ -18,7 +18,7 @@ public class NoteEditorInputConnection extends InputConnectionWrapper {
 
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
-        Log.e(TAG, "commitText: " + newCursorPosition + " count: " + text.length() + " -> " + text);
+        Log.d(TAG, "commitText: " + newCursorPosition + " count: " + text.length() + " -> " + text);
         if (text.length() == 0) {
             mStyleManager.commandDelete(true);
         } else {

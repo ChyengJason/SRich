@@ -1,4 +1,4 @@
-package com.jscheng.srich.edit_note;
+package com.jscheng.srich.note_edit;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
@@ -62,9 +62,9 @@ public class EditNotePresenter extends IPresenter {
             public void subscribe(ObservableEmitter emitter) {
                 Note note = NoteModel.findNote((Context)mView, mNoteid);
                 if (note == null) {
-                    note = NoteModel.buildNote((Context)mView);
+                    note = NoteModel.createNote((Context)mView);
                 } else {
-                    NoteModel.parserParagraphs(note);
+                    NoteModel.openNote(note);
                 }
                 emitter.onNext(note);
                 emitter.onComplete();
@@ -97,10 +97,10 @@ public class EditNotePresenter extends IPresenter {
     private void initOrCreateNote(String noteid) {
         if (noteid != null) {
             mNote = NoteModel.findNote((Context)mView, noteid);
-            mNote = NoteModel.parserParagraphs(mNote);
+            mNote = NoteModel.openNote(mNote);
         }
         if (mNote == null) {
-            mNote = NoteModel.buildNote((Context)mView);
+            mNote = NoteModel.createNote((Context)mView);
         }
         mView.setNote(mNote);
         this.readingMode();

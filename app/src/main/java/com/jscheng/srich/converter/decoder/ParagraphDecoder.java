@@ -1,6 +1,7 @@
 package com.jscheng.srich.converter.decoder;
 
 import com.jscheng.srich.model.Paragraph;
+import com.jscheng.srich.model.ParagraphBuilder;
 import com.jscheng.srich.model.Style;
 import com.jscheng.srich.model.StyleCode;
 
@@ -16,66 +17,64 @@ public class ParagraphDecoder {
         String[] contents = rowContent.split(StyleCode.Paragraph);
         List<Paragraph> paragraphs = new ArrayList<>();
         for (String content : contents) {
-            Paragraph paragraph = decodeParagraph(content);
-            paragraph.setDirty(false);
-            paragraphs.add(paragraph);
+            ParagraphBuilder paragraphBuilder = new ParagraphBuilder();
+            decodeParagraph(content, paragraphBuilder);
+            paragraphs.add(paragraphBuilder.build());
         }
         return paragraphs;
     }
 
-    private static Paragraph decodeParagraph(String content) {
-        Paragraph paragraph = new Paragraph();
-        if (decodeParagraphStyle(paragraph, content)) {
-            return paragraph;
+    private static void decodeParagraph(String content, ParagraphBuilder builder) {
+        if (decodeParagraphStyle(builder, content)) {
+            return;
         }
-        content = decodeLineStyle(paragraph, content);
-        decodeWordStyle(paragraph, content);
-        return paragraph;
+        content = decodeLineStyle(builder, content);
+        decodeWordStyle(builder, content);
     }
 
-    private static boolean decodeParagraphStyle(Paragraph paragraph, String content) {
+    private static boolean decodeParagraphStyle(ParagraphBuilder builder, String content) {
         if (content.startsWith(StyleCode.ImageBegin)) {
             String url = content.substring(StyleCode.ImageBegin.length(),
                     content.length() - StyleCode.ImageEnd.length());
-            paragraph.setImage(url);
+            builder.image(url);
             return true;
         }
 
         if (content.startsWith(StyleCode.DividingLine)) {
-            paragraph.setDividingLine(true);
+            builder.dividingLine(true);
             return true;
         }
         return false;
     }
 
-    private static String decodeLineStyle(Paragraph paragraph, String content) {
+    private static String decodeLineStyle(ParagraphBuilder builder, String content) {
         int indentation = 0;
         while (content.startsWith(StyleCode.Indentation)) {
             indentation++;
             content = content.substring(StyleCode.Indentation.length());
         }
-        paragraph.setIndentation(indentation);
+        builder.indentation(indentation);
 
         if (content.startsWith(StyleCode.Bullet)) {
-            paragraph.setBulletList(true);
+            builder.bullet(true);
             return content.substring(StyleCode.Bullet.length());
         }
         if (content.startsWith(StyleCode.NumList)) {
-            paragraph.setNumList(true);
+            builder.numList(true);
             return content.substring(StyleCode.NumList.length());
         }
         if (content.startsWith(StyleCode.CheckBox)) {
-            paragraph.setCheckbox(true);
+            builder.checkbox(true);
             return content.substring(StyleCode.CheckBox.length());
         }
         if (content.startsWith(StyleCode.UnCheckBox)) {
-            paragraph.setUnCheckbox(true);
+            builder.uncheckBox(true);
             return content.substring(StyleCode.UnCheckBox.length());
         }
         return content;
     }
 
-    private static void decodeWordStyle(Paragraph paragraph, String content) {
+    private static void decodeWordStyle(ParagraphBuilder builder, String content) {
         WordStyleNode node = new WordStyleNode(0, content);
         List<WordStyleNode> childs = node.splitStyle(StyleCode.BoldBegin, StyleCode.BoldEnd, Style.Bold);
         childs = node.splitStyle(childs, StyleCode.ItalicBegin, StyleCode.ItalicEnd, Style.Italic);
@@ -91,7 +90,7 @@ public class ParagraphDecoder {
             for (int i = 0; i < words.length(); i++) {
                 wordStyles.add(child.getStyle());
             }
-            paragraph.addWords(words, wordStyles);
+            builder.addWords(words, wordStyles);
         }
     }
 

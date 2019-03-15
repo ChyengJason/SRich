@@ -1,6 +1,6 @@
 package com.jscheng.srich.editor;
 
-import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -65,9 +65,8 @@ public class NoteEditorRender {
         int start = 0;
         int end = 0;
         boolean isDirty = false;
-        if (editText.getText() != null) {
-            editText.getText().clear();
-        }
+        SpannableStringBuilder spannableBuilder = new SpannableStringBuilder();
+
         if (!paragraphs.isEmpty()) {
             for (int i = 0; i < paragraphs.size() ; i++) {
                 Paragraph paragraph = paragraphs.get(i);
@@ -76,47 +75,47 @@ public class NoteEditorRender {
                 isDirty = isDirty || paragraph.isDirty();
 
                 int num = getNum(paragraph, lastParagraph);
-                drawParagraph(paragraph, start, num, editText);
+                drawParagraph(paragraph, start, num, spannableBuilder);
 
                 if (i < paragraphs.size() - 1) {
-                    drawEndCode(end, editText.getText());
+                    drawEndCode(end, spannableBuilder);
                 }
                 start = end + 1;
             }
         }
+        editText.setText(spannableBuilder);
         editText.setSelection(selectionStart, selectionEnd);
     }
 
-    private void drawParagraph(Paragraph paragraph, int globalPos, int num, EditText text) {
+    private void drawParagraph(Paragraph paragraph, int globalPos, int num, SpannableStringBuilder builder) {
         int pos = globalPos;
-        drawWords(paragraph, pos, text);
-        drawLineStyle(paragraph, pos, num, text);
-        drawCodeStyle(paragraph, pos, text);
+        drawWords(paragraph, pos, builder);
+        drawLineStyle(paragraph, pos, num, builder);
+        drawCodeStyle(paragraph, pos, builder);
         paragraph.setDirty(false);
     }
 
-    private void drawWords(Paragraph paragraph, int pos, EditText text) {
+    private void drawWords(Paragraph paragraph, int pos, SpannableStringBuilder builder) {
         Log.e(TAG, "drawWords: " + pos + " " + paragraph.getWords());
-        Editable editable = text.getText();
         if (paragraph.getLength() > 0) {
-            editable.insert(pos, paragraph.getWords());
+            builder.insert(pos, paragraph.getWords());
         }
     }
 
-    private void drawLineStyle(Paragraph paragraph, int pos, int num, EditText text) {
+    private void drawLineStyle(Paragraph paragraph, int pos, int num, SpannableStringBuilder builder) {
         for (NoteLineSpanRender spanRender: mLineSpanRenderList) {
-            spanRender.draw(pos, num, paragraph, text);
+            spanRender.draw(pos, num, paragraph, builder);
         }
     }
 
-    private void drawCodeStyle(Paragraph paragraph, int pos, EditText text) {
+    private void drawCodeStyle(Paragraph paragraph, int pos, SpannableStringBuilder builder) {
         for (NoteWordSpanRender wordSpanRender: mWordSpanRenderList) {
-            wordSpanRender.draw(pos, paragraph, text);
+            wordSpanRender.draw(pos, paragraph, builder);
         }
     }
 
-    private void drawEndCode(int pos, Editable editable) {
-        editable.insert(pos, NoteEditorConfig.EndCode);
+    private void drawEndCode(int pos, SpannableStringBuilder builder) {
+        builder.insert(pos, NoteEditorConfig.EndCode);
     }
 
     private int getNum(Paragraph paragraph, Paragraph lastParagraph) {
