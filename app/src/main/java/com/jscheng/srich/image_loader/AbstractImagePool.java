@@ -85,8 +85,14 @@ public abstract class AbstractImagePool {
     protected void onLoadedFailed(String key, String url, String err) {
         mRequestingUrls.remove(url);
         Integer time = mFailedUrls.get(key);
-        mFailedUrls.put(key, time == null ? 1 : time + 1);
-        mListener.loadedFailed(url, key, err);
+        time = time == null ? 1 : time + 1;
+        mFailedUrls.put(key, time);
+        // retry
+        if (time >= MaxUrlFailedTime) {
+            mListener.loadedFailed(url, key, err);
+        } else {
+            submit(url, key);
+        }
     }
 
     protected abstract void submitTask(String url, String key);
