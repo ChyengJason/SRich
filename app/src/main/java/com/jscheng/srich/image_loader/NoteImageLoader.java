@@ -4,9 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+
 import com.jscheng.srich.utils.MdUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created By Chengjunsen on 2019/3/11
@@ -16,7 +20,7 @@ public class NoteImageLoader implements IImagePoolListener {
     /**
      * 监听器
      */
-    private List<NoteImageListener> mImageListeners;
+    private CopyOnWriteArrayList<NoteImageListener> mImageListeners;
     /**
      * 本地加载库
      */
@@ -50,13 +54,23 @@ public class NoteImageLoader implements IImagePoolListener {
     }
 
     private NoteImageLoader(Context context) {
-        mImageListeners = new ArrayList<>();
+        mImageListeners = new CopyOnWriteArrayList<>();
         mMainHandler = new Handler(Looper.getMainLooper());
         mDiskCache = new NoteDiskCache(context);
         mMemoryCache = new NoteMemoryCache();
 
         mLocalImagePool = new LocalImagePool(mMemoryCache, mDiskCache, context.getApplicationContext(), this);
         mHttpImagePool = new NetworkImagePool(mMemoryCache, mDiskCache, context.getApplicationContext(), this);
+    }
+
+    public void getBitmap(Context context, String url, final ImageView imageView) {
+        String key = getKeyFromUrl(url);
+        NoteImageTarget target = new NoteImageTarget(context, imageView, url, key);
+        if (isCacheBitmap(key)) {
+            target.onNoteImageSuccess(url);
+        } else {
+            asyncLoadBitmap(url, key);
+        }
     }
 
     public void loadBitmap(String url) {

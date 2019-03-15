@@ -21,7 +21,7 @@ public class LocalImagePool extends AbstractImagePool {
     }
 
     @Override
-    protected void submitTask(String url, String key) {
+    protected synchronized void submitTask(String url, String key) {
         try {
             Uri uri = Uri.parse(url);
             InputStream inputStream = mContext.getContentResolver().openInputStream(uri);

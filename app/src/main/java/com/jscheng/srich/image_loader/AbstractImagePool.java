@@ -60,11 +60,9 @@ public abstract class AbstractImagePool {
         mExecutors.submit(new Runnable() {
             @Override
             public void run() {
-                if (mRequestingUrls.contains(url)) {
-                    mListener.loadedFailed(key, url, "it is requesting");
-                } else if (mFailedUrls.containsKey(key) && mFailedUrls.get(key) >= MaxUrlFailedTime){
+                if (mFailedUrls.containsKey(key) && mFailedUrls.get(key) >= MaxUrlFailedTime){
                     mListener.loadedFailed(key, url, "it is out of max failed time");
-                } else {
+                } else if (!mRequestingUrls.contains(url)) {
                     mRequestingUrls.add(url);
                     submitTask(url, key);
                 }
