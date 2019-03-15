@@ -70,6 +70,7 @@ public class NoteModel {
             NoteDao dao = new NoteDao(context);
             String conent = ParagraphEncoder.encode(note.getParagraphs());
             String localPath = note.getLocalPath();
+
             Log.e(TAG, "updateNote: " + conent);
 
             if (dao.find(note.getId()) != null) {
@@ -109,6 +110,7 @@ public class NoteModel {
         note.setTitle(title);
         note.setSummary(summary.toString());
         note.setSummaryImageUrl(summaryImage);
+        note.setModifyTime(System.currentTimeMillis());
     }
 
     public static boolean isNoteNull(Note note) {

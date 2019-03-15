@@ -623,16 +623,18 @@ public class NoteEditorManagerImpl {
     public boolean onSpanTouchUp(int globalPos) {
         Paragraph paragraph = getParagraph(globalPos);
         int begin = getParagraphBegin(paragraph);
-        if ( globalPos <= begin + 1) {
-            if (paragraph.isImage()) {
-                clickImage(paragraph);
-                return false;
-            } else if (paragraph.isCheckbox()) {
+        if (globalPos == begin) {
+            if (paragraph.isCheckbox()) {
                 clickCheckBox(paragraph);
                 return true;
             } else if (paragraph.isUnCheckbox()) {
                 clickUncheckBox(paragraph);
                 return true;
+            }
+        } else if ( globalPos <= begin + 1) {
+            if (paragraph.isImage()) {
+                clickImage(paragraph);
+                return false;
             }
         }
         return false;
@@ -658,13 +660,13 @@ public class NoteEditorManagerImpl {
 
     public void requestDraw() {
         checkLastParagraph();
-//        mEditorText.post(new Runnable() {
-//            @Override
-//            public void run() {
+        mEditorText.post(new Runnable() {
+            @Override
+            public void run() {
                 print();
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
-//            }
-//        });
+            }
+        });
     }
 
     /**

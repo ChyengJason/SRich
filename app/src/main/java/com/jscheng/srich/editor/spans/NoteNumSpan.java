@@ -3,17 +3,14 @@ package com.jscheng.srich.editor.spans;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.LeadingMarginSpan;
-import android.text.style.ReplacementSpan;
 
 /**
  * Created By Chengjunsen on 2019/3/6
  */
-public class NoteNumSpan implements LeadingMarginSpan.LeadingMarginSpan2 {
+public class NoteNumSpan implements LeadingMarginSpan {
     private int mNum;
     private int mMargin = 15;
     private int mWidth = 40;
@@ -45,10 +42,5 @@ public class NoteNumSpan implements LeadingMarginSpan.LeadingMarginSpan2 {
             canvas.restore();
             paint.setStyle(style);
         }
-    }
-
-    @Override
-    public int getLeadingMarginLineCount() {
-        return 0;
     }
 }

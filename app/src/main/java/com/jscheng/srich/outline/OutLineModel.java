@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class OutLineFactory {
+public class OutLineModel {
 
     public static List<OutLine> build(List<Note> notes) {
         List<OutLine> outLines = new ArrayList<>();

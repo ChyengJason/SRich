@@ -3,7 +3,6 @@ package com.jscheng.srich.outline;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.jscheng.srich.R;
 import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NetworkImagePool;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
@@ -54,14 +52,14 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
     public void setData(List<Note> notes) {
         this.mNotes.clear();
         this.mNotes.addAll(notes);
-        this.mOutlines = OutLineFactory.build(mNotes);
+        this.mOutlines = OutLineModel.build(mNotes);
         notifyDataSetChanged();// 后续用DiffUtil优化
     }
 
     public void addData(List<Note> notes) {
         if (notes != null && notes.size() >0 ) {
             this.mNotes.addAll(notes);
-            this.mOutlines.addAll(OutLineFactory.build(notes));
+            this.mOutlines.addAll(OutLineModel.build(notes));
         }
         notifyDataSetChanged();
     }

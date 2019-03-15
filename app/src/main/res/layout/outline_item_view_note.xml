@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/outline_item_margin_horizon"
-    android:paddingRight="@dimen/outline_item_margin_horizon">
+    android:paddingRight="@dimen/outline_item_margin_horizon"
+    android:background="@color/outline_background">
 
     <ImageView
         android:id="@+id/summary_image_view"

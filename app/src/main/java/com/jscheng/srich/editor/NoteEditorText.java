@@ -176,7 +176,10 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
                 lastY = event.getY();
                 return super.onTouchEvent(event);
             case MotionEvent.ACTION_UP:
-                return onTouchUpSpan(event) || super.onTouchEvent(event);
+                if (onTouchUpSpan(event) && !isReadMode) {
+                    return true;
+                }
+                return super.onTouchEvent(event);
             default:
                 break;
         }
