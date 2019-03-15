@@ -23,6 +23,7 @@ public class NoteEditorManagerImpl {
     private Note mNote;
     private Options mOptions;
     private List<NoteEditorSelectionListener> mSelectionListeners;
+    private List<NoteEditorClickListener> mClickListeners;
     private NoteEditorText mEditorText;
     private NoteEditorRender mRender;
     private int mSelectionStart;
@@ -33,6 +34,7 @@ public class NoteEditorManagerImpl {
         mRender = new NoteEditorRender(editorText);
         mOptions = new Options();
         mSelectionListeners = new ArrayList<>();
+        mClickListeners = new ArrayList<>();
         mEditorText = editorText;
     }
 
@@ -47,11 +49,31 @@ public class NoteEditorManagerImpl {
         notifySelectionChangeListener(mSelectionStart, mSelectionEnd, mOptions);
     }
 
-    public void notifySelectionChangeListener(int start, int end, Options options) {
+    private void notifySelectionChangeListener(int start, int end, Options options) {
         if (mSelectionListeners != null) {
             for (NoteEditorSelectionListener listener : mSelectionListeners) {
                 listener.onStyleChange(start, end, options);
             }
+        }
+    }
+
+    public void addClickListener(NoteEditorClickListener listener) {
+        mClickListeners.add(listener);
+    }
+
+    private void notifyClickImageListener(Paragraph paragraph) {
+        int index = 0;
+        List<String> list = new ArrayList<>();
+        for (Paragraph item : mNote.getParagraphs()) {
+            if (item.isImage()) {
+                list.add(item.getImageUrl());
+                if (item == paragraph) {
+                    index = list.size() - 1;
+                }
+            }
+        }
+        for (NoteEditorClickListener listener: mClickListeners) {
+            listener.onClickImage(list, index);
         }
     }
 
@@ -602,6 +624,7 @@ public class NoteEditorManagerImpl {
         Paragraph paragraph = getParagraph(globalPos);
         if (getParagraphBegin(paragraph) == globalPos) {
             if (paragraph.isImage()) {
+                clickImage(paragraph);
                 return false;
             } else if (paragraph.isCheckbox()) {
                 clickCheckBox(paragraph);
@@ -618,7 +641,6 @@ public class NoteEditorManagerImpl {
         Paragraph paragraph = getParagraph(globalPos);
         if (getParagraphBegin(paragraph) == globalPos) {
             if (paragraph.isImage()) {
-                clickImage(paragraph);
                 return false;
             } else if (paragraph.isCheckbox()) {
                 return true;
@@ -644,18 +666,18 @@ public class NoteEditorManagerImpl {
     }
 
     public void clickImage(Paragraph paragraph) {
-
+        notifyClickImageListener(paragraph);
     }
 
     public void requestDraw() {
         checkLastParagraph();
-//        mEditorText.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                print();
+        mEditorText.post(new Runnable() {
+            @Override
+            public void run() {
+                print();
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
-//            }
-//        });
+            }
+        });
     }
 
     /**
@@ -684,5 +706,4 @@ public class NoteEditorManagerImpl {
     public String getSelectionText() {
         return "test \n test";
     }
-
 }

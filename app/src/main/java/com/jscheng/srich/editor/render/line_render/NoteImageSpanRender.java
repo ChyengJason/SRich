@@ -31,7 +31,7 @@ public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
         Bitmap bitmap = NoteImageLoader.with(mView.getContext()).getBitmap(url, width);
         if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_compose);
+            bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_note_edit_loading);
         }
         return new NoteImageSpan(bitmap, width);
     }

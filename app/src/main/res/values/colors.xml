@@ -17,4 +17,5 @@
     <color name="outline_background">#FFFFFF</color>
     <color name="outline_line_color">#EBEBEB</color>
     <color name="outline_item_date_text_color">#9b9b9b</color>
+    <color name="image_preview_background_color">#000</color>
 </resources>

@@ -2,7 +2,7 @@ package com.jscheng.srich.converter.encoder;
 
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.Style;
-import com.jscheng.srich.model.StyleCode;
+import com.jscheng.srich.converter.StyleCode;
 
 import java.util.List;
 

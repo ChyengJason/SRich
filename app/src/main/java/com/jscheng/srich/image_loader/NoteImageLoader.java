@@ -67,7 +67,14 @@ public class NoteImageLoader implements IImagePoolListener {
         asyncLoadBitmap(url, key);
     }
 
+    public Bitmap getBitmap(String url) {
+        return getBitmap(url, 0);
+    }
+
     public Bitmap getBitmap(String url, int maxWidth) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
         String key = getKeyFromUrl(url);
         Bitmap bitmap = getCacheBitmap(key, maxWidth);
         if (bitmap != null) {

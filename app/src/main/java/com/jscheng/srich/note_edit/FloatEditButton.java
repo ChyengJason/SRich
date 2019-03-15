@@ -36,7 +36,7 @@ public class FloatEditButton extends android.support.v7.widget.AppCompatImageVie
         this.setClickable(true);
         super.setOnClickListener(this);
         if (src == 0) {
-            Drawable defaultDrawable =context.getResources().getDrawable(R.mipmap.ic_note_edit_edit, null);
+            Drawable defaultDrawable = context.getResources().getDrawable(R.mipmap.ic_note_edit_edit, null);
             this.setScaleType(ScaleType.CENTER_CROP);
             this.setImageDrawable(defaultDrawable);
         }
@@ -49,38 +49,15 @@ public class FloatEditButton extends android.support.v7.widget.AppCompatImageVie
     @Override
     public void onClick(final View v) {
         checkPresenter();
-        AnimationSet animationSet = getHideAniamtion();
-        this.startAnimation(animationSet);
-        animationSet.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) { }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                setVisibility(GONE);
-                mPresenter.tapEdit();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) { }
-        });
+        mPresenter.tapEdit();
     }
 
     public void show() {
-        AnimationSet animationSet = getShowAniamtion();
-        this.startAnimation(animationSet);
-        animationSet.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) { }
+        setVisibility(VISIBLE);
+    }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                setVisibility(VISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) { }
-        });
+    public void hide() {
+        setVisibility(GONE);
     }
 
     private AnimationSet getHideAniamtion() {

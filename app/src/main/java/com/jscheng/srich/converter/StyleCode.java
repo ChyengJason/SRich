@@ -1,4 +1,4 @@
-package com.jscheng.srich.model;
+package com.jscheng.srich.converter;
 
 /**
  * Created By Chengjunsen on 2019/3/11

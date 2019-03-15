@@ -53,5 +53,7 @@ public interface INoteEditorManager {
 
     void addSelectionChangeListener(NoteEditorSelectionListener listener);
 
+    void addClickListener(NoteEditorClickListener listener);
+
     void requestDraw();
 }

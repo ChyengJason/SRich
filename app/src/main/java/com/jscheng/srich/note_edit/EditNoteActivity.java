@@ -10,16 +10,19 @@ import android.view.View;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
 import com.jscheng.srich.editor.NoteEditorBar;
+import com.jscheng.srich.editor.NoteEditorClickListener;
 import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
 import com.jscheng.srich.widget.CircularProgressView;
 
+import java.util.List;
+
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class EditNoteActivity extends BaseActivity implements EditNotePresenter.EditNoteView {
+public class EditNoteActivity extends BaseActivity implements EditNotePresenter.EditNoteView, NoteEditorClickListener {
     private final static int ACTION_PICK_CODE = 1;
     private final static int PERMISSION_CODE = 2;
 
@@ -44,6 +47,8 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mLoadingView.setVisibility(View.GONE);
 
         mEditorText = findViewById(R.id.edit_note_editor);
+        mEditorText.getStyleManager().addClickListener(this);
+
         mToolbar = findViewById(R.id.edit_note_toolbar);
         mToolbar.setPresenter(mPresenter);
 
@@ -75,13 +80,15 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         mToolbar.writingMode();
         mEditorBar.setVisibility(isEditorBarEnable ? View.VISIBLE : View.GONE);
         mToolbar.setFormatEnable(isEditorBarEnable);
+        mEditButton.hide();
+        mLoadingView.setVisibility(View.GONE);
     }
 
     @Override
     public void readingMode() {
         mEditorText.readingMode();
         mToolbar.readingMode();
-        mEditButton.setVisibility(View.VISIBLE);
+        mEditButton.show();
         mEditorBar.setVisibility(View.GONE);
         mLoadingView.setVisibility(View.GONE);
     }
@@ -146,5 +153,10 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
 
     private void requestPermission() {
         PermissionUtil.checkPermissionsAndRequest(this, PermissionUtil.STORAGE, PERMISSION_CODE, "请求访问SD卡权限被拒绝");
+    }
+
+    @Override
+    public void onClickImage(List<String> urls, int index) {
+        mPresenter.tapImage(urls, index);
     }
 }

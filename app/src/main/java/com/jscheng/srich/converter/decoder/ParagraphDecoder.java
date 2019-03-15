@@ -3,7 +3,7 @@ package com.jscheng.srich.converter.decoder;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.ParagraphBuilder;
 import com.jscheng.srich.model.Style;
-import com.jscheng.srich.model.StyleCode;
+import com.jscheng.srich.converter.StyleCode;
 
 import java.util.ArrayList;
 import java.util.List;

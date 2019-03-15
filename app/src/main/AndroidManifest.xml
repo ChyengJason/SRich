@@ -29,6 +29,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".image_preview.ImagePreviewActivity">
+        </activity>
+
     </application>
 
 </manifest>

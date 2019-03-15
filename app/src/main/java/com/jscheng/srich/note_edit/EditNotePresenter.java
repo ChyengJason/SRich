@@ -4,14 +4,14 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-
 import com.jscheng.srich.model.NoteModel;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
-
+import com.jscheng.srich.route.Router;
+import com.jscheng.srich.route.RouterConfig;
 import org.jetbrains.annotations.NotNull;
-
+import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -29,6 +29,7 @@ public class EditNotePresenter extends IPresenter {
     private boolean isEditorBarEnable;
     private Note mNote;
     private String mNoteid;
+    private boolean isNewNote;
 
     public EditNotePresenter(Intent intent) {
         mNoteid = intent.getStringExtra("id");
@@ -52,34 +53,36 @@ public class EditNotePresenter extends IPresenter {
     public void onCreate(@NotNull LifecycleOwner owner) {
         this.mView = (EditNoteView)owner;
         this.isEditorBarEnable = true;
+        this.isNewNote = false;
         this.mNote = null;
         this.loadNote();
     }
 
     private void loadNote() {
-        Observable.create(new ObservableOnSubscribe<Note>() {
+        Observable.create(new ObservableOnSubscribe<Boolean>() {
             @Override
             public void subscribe(ObservableEmitter emitter) {
-                Note note = NoteModel.findNote((Context)mView, mNoteid);
-                if (note == null) {
-                    note = NoteModel.createNote((Context)mView);
+                mNote = NoteModel.findNote((Context)mView, mNoteid);
+                if (mNote == null) {
+                    mNote = NoteModel.createNote((Context)mView);
+                    emitter.onNext(true);
                 } else {
-                    NoteModel.openNote(note);
+                    NoteModel.openNote(mNote);
+                    emitter.onNext(false);
                 }
-                emitter.onNext(note);
                 emitter.onComplete();
             }
         }).subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new Observer<Note>() {
+          .subscribe(new Observer<Boolean>() {
               @Override
               public void onSubscribe(Disposable d) {
                   loadingMode();
               }
 
               @Override
-              public void onNext(Note note) {
-                  mNote = note;
+              public void onNext(Boolean isNew) {
+                  isNewNote = isNew;
                   mView.setNote(mNote);
               }
 
@@ -89,21 +92,13 @@ public class EditNotePresenter extends IPresenter {
 
               @Override
               public void onComplete() {
-                  readingMode();
+                  if (isNewNote) {
+                      writingMode();
+                  } else {
+                      readingMode();
+                  }
               }
           });
-    }
-
-    private void initOrCreateNote(String noteid) {
-        if (noteid != null) {
-            mNote = NoteModel.findNote((Context)mView, noteid);
-            mNote = NoteModel.openNote(mNote);
-        }
-        if (mNote == null) {
-            mNote = NoteModel.createNote((Context)mView);
-        }
-        mView.setNote(mNote);
-        this.readingMode();
     }
 
     @Override
@@ -149,6 +144,15 @@ public class EditNotePresenter extends IPresenter {
 
     }
 
+
+    public void tapImage(List<String> urls, int index) {
+        Router.with((Context) mView)
+                .intent("urls", urls)
+                .intent("index", index)
+                .route(RouterConfig.ImagePreviewActivityUri)
+                .go();
+    }
+
     public void tapAttach() {
         mView.showFormatDialog();
     }
@@ -177,7 +181,9 @@ public class EditNotePresenter extends IPresenter {
     private void updateNote() {
         if (NoteModel.isNoteNull(mNote)) {
             NoteModel.deleteNote((Context)mView, mNote);
-            Toast.makeText((Context) mView, "正在删除数据", Toast.LENGTH_SHORT).show();
+            if (!isNewNote) {
+                Toast.makeText((Context) mView, "正在删除数据", Toast.LENGTH_SHORT).show();
+            }
         } else if (mNote.isDirty()) {
             NoteModel.updateNote((Context)mView, mNote);
             Toast.makeText((Context) mView, "正在保存数据", Toast.LENGTH_SHORT).show();

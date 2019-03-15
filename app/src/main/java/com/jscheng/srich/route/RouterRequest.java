@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,14 @@ public class RouterRequest {
         return this;
     }
 
+    public RouterRequest intent(String key, int what) {
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        this.bundle.putInt(key, what);
+        return this;
+    }
+
     public RouterRequest intent(String key, String what) {
         if (bundle == null) {
             bundle = new Bundle();
@@ -38,6 +47,15 @@ public class RouterRequest {
         this.bundle.putString(key, what);
         return this;
     }
+
+    public RouterRequest intent(String key, List<String> what) {
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        this.bundle.putStringArrayList(key, new ArrayList(what));
+        return this;
+    }
+
 
     public RouterRequest intent(Bundle bundle) {
         if (bundle == null) {

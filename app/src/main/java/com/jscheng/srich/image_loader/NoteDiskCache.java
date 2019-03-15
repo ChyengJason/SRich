@@ -91,6 +91,10 @@ public class NoteDiskCache {
         }
     }
 
+    public Bitmap get(String key) {
+        return get(key, 0);
+    }
+
     public Bitmap get(String key, int maxWidth) {
         try {
             Size actualSize = getSize(key);

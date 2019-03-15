@@ -22,6 +22,11 @@ public class NoteEditorManager implements INoteEditorManager{
     }
 
     @Override
+    public void addClickListener(NoteEditorClickListener listener) {
+        mManagerImpl.addClickListener(listener);
+    }
+
+    @Override
     public void requestDraw() {
         mManagerImpl.requestDraw();
     }

@@ -133,7 +133,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
             noteViewHolder.summaryImage.setVisibility(View.GONE );
         } else {
             noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
-            noteViewHolder.summaryImage.setImageResource(R.mipmap.ic_compose);
+            noteViewHolder.summaryImage.setImageResource(R.mipmap.ic_note_edit_loading);
         }
 
         noteViewHolder.contentLayout.setOnClickListener(new View.OnClickListener() {
