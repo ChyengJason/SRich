@@ -7,10 +7,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.jscheng.annotations.Route;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
 import com.jscheng.srich.model.Note;
@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/20
  */
+@Route("outline")
 public class OutLinesActivity extends BaseActivity
         implements OutLinePresenter.OutLineView, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
     private final static String TAG = "OutLinesActivity";
@@ -51,7 +52,7 @@ public class OutLinesActivity extends BaseActivity
         this.mRecyclerView = findViewById(R.id.outline_recyclerview);
         this.mLayoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
-        this.mRecyclerAdapter = new OutLinesAdapter(mRecyclerView, mLayoutManager);
+        this.mRecyclerAdapter = new OutLinesAdapter(mPresenter, mRecyclerView, mLayoutManager);
         this.mRecyclerView.setLayoutManager(mLayoutManager);
         this.mRecyclerView.setAdapter(mRecyclerAdapter);
         this.mRecyclerView.addOnScrollListener(new ScrollChangeListener());

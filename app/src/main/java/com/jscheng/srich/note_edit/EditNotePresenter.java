@@ -9,7 +9,6 @@ import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 import com.jscheng.srich.route.Router;
-import com.jscheng.srich.route.RouterConfig;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import io.reactivex.Observable;
@@ -150,7 +149,7 @@ public class EditNotePresenter extends IPresenter {
             Router.with((Context) mView)
                     .intent("urls", urls)
                     .intent("index", index)
-                    .route(RouterConfig.ImagePreviewActivityUri)
+                    .route("imagePreview")
                     .go();
         }
     }

@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import com.jscheng.annotations.Route;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
 import com.jscheng.srich.editor.NoteEditorBar;
@@ -24,6 +25,7 @@ import java.util.Random;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
+@Route("editnote")
 public class EditNoteActivity extends BaseActivity implements EditNotePresenter.EditNoteView, NoteEditorClickListener {
     private final static int ACTION_PICK_CODE = 1;
     private final static int PERMISSION_CODE = 2;

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.WindowManager;
 
+import com.jscheng.annotations.Route;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
 import com.jscheng.srich.image_loader.NoteImageLoader;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/3/15
  */
+@Route("imagePreview")
 public class ImagePreviewActivity extends BaseActivity {
 
     PinchImageView mImageView;

@@ -9,6 +9,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions{
+            annotationProcessorOptions.includeCompileClasspath = true
+        }
     }
     buildTypes {
         release {
@@ -34,4 +37,6 @@ dependencies {
     implementation 'com.jakewharton:disklrucache:2.0.2'
     implementation "io.reactivex.rxjava2:rxjava:2.2.7"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation project(':annotation')
+    annotationProcessor project(':processor')
 }

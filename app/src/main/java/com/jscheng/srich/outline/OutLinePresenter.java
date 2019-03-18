@@ -8,7 +8,6 @@ import com.jscheng.srich.model.Note;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 import com.jscheng.srich.route.Router;
-import com.jscheng.srich.route.RouterConfig;
 
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
@@ -63,6 +62,10 @@ public class OutLinePresenter extends IPresenter {
     }
 
     public void tapNew() {
-        Router.with((Context)mView).route(RouterConfig.EditNoteActivityUri).go();
+        Router.with((Context)mView).route("editnote").go();
+    }
+
+    public void tapNote(String id) {
+        Router.with((Context)mView).route("editnote").intent("id", id).go();
     }
 }

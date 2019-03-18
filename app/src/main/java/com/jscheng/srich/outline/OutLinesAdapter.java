@@ -18,8 +18,6 @@ import com.jscheng.srich.image_loader.NoteImageListener;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
-import com.jscheng.srich.route.Router;
-import com.jscheng.srich.route.RouterConfig;
 import com.jscheng.srich.utils.DateUtil;
 
 import java.util.ArrayList;
@@ -39,14 +37,16 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
     private LinearLayoutManager mLayoutManager;
     private Context mContext;
     private View mParentView;
+    private OutLinePresenter mPresenter;
 
-    public OutLinesAdapter(View parentView, LinearLayoutManager layoutManager) {
+    public OutLinesAdapter(OutLinePresenter presenter, View parentView, LinearLayoutManager layoutManager) {
         mParentView = parentView;
         mContext = parentView.getContext();
         mLayoutInfater = LayoutInflater.from(mContext);
         mLayoutManager = layoutManager;
         mNotes = new ArrayList();
         mOutlines = new ArrayList<>();
+        mPresenter = presenter;
     }
 
     public void setData(List<Note> notes) {
@@ -137,10 +137,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
         noteViewHolder.contentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Router.with(mContext)
-                        .route(RouterConfig.EditNoteActivityUri)
-                        .intent("id", outline.getNote().getId())
-                        .go();
+                mPresenter.tapNote(outline.getNote().getId());
             }
         });
     }
