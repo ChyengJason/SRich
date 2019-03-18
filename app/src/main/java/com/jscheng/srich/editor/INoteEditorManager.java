@@ -2,7 +2,8 @@ package com.jscheng.srich.editor;
 
 import android.net.Uri;
 
-import com.jscheng.srich.model.Options;
+import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteSnap;
 
 /**
  * Created By Chengjunsen on 2019/3/11
@@ -51,9 +52,17 @@ public interface INoteEditorManager {
 
     void commandInput(CharSequence content, boolean draw);
 
+    NoteSnap commandRetroke();
+
+    NoteSnap commandRecover();
+
     void addSelectionChangeListener(NoteEditorSelectionListener listener);
+
+    void removeSelectionChangeListener(NoteEditorSelectionListener listener);
 
     void addClickListener(NoteEditorClickListener listener);
 
     void requestDraw();
+
+    void apply(Note mNote, int selectionStart, int selectionEnd);
 }

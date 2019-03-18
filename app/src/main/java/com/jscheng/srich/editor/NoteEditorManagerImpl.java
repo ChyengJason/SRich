@@ -5,10 +5,12 @@ import android.util.Log;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.NoteBuilder;
+import com.jscheng.srich.model.NoteSnap;
 import com.jscheng.srich.model.Options;
 import com.jscheng.srich.model.Paragraph;
 import com.jscheng.srich.model.ParagraphBuilder;
 import com.jscheng.srich.model.Style;
+import com.jscheng.srich.revoke.NoteRevocationManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,6 +28,7 @@ public class NoteEditorManagerImpl {
     private List<NoteEditorClickListener> mClickListeners;
     private NoteEditorText mEditorText;
     private NoteEditorRender mRender;
+    private NoteRevocationManager mRevocationManager;
     private int mSelectionStart;
     private int mSelectionEnd;
 
@@ -36,17 +39,38 @@ public class NoteEditorManagerImpl {
         mSelectionListeners = new ArrayList<>();
         mClickListeners = new ArrayList<>();
         mEditorText = editorText;
+        mRevocationManager = new NoteRevocationManager();
     }
 
-    public void setNote(Note note) {
+    public void apply(Note note) {
         mNote = note;
         mSelectionStart = mSelectionEnd = 0;
         requestDraw();
     }
 
+    public void apply(NoteSnap noteSnap) {
+        mNote.setParagraphs(noteSnap.getParagraphs());
+        mSelectionStart = noteSnap.getSelectionStart();
+        mSelectionEnd = noteSnap.getSelectionEnd();
+        requestDraw();
+    }
+
+    public void apply(Note note, int selectionStart, int selectionEnd) {
+        mNote = note;
+        mSelectionStart = selectionStart;
+        mSelectionEnd = selectionEnd;
+        requestDraw();
+    }
+
     public void addSelectionChangeListener(NoteEditorSelectionListener listener) {
-        mSelectionListeners.add(listener);
+        if (!mSelectionListeners.contains(listener)) {
+            mSelectionListeners.add(listener);
+        }
         notifySelectionChangeListener(mSelectionStart, mSelectionEnd, mOptions);
+    }
+
+    public void removeSelectionChangeListener(NoteEditorSelectionListener listener) {
+        mSelectionListeners.remove(listener);
     }
 
     private void notifySelectionChangeListener(int start, int end, Options options) {
@@ -80,32 +104,40 @@ public class NoteEditorManagerImpl {
     public void inputColor(boolean isSelected, boolean draw) {
         mOptions.setColor(isSelected);
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.BackgroudColor);
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
     public void inputUnderline(boolean isSelected, boolean draw) {
         mOptions.setUnderline(isSelected);
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.UnderLine);
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
     public void inputItalic(boolean isSelected, boolean draw) {
         mOptions.setItalic(isSelected);
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Italic);
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
     public void inputBold(boolean isSelected, boolean draw) {
         mOptions.setBold(isSelected);
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Bold);
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
@@ -115,11 +147,13 @@ public class NoteEditorManagerImpl {
             mOptions.setSubScript(false);
         }
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SuperScript);
             if (isSelected) {
                 applySelectionWordStyle(mSelectionStart, mSelectionEnd, false, Style.SubScript);
             }
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
@@ -129,23 +163,28 @@ public class NoteEditorManagerImpl {
             mOptions.setSuperScript(false);
         }
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.SubScript);
             if (isSelected) {
                 applySelectionWordStyle(mSelectionStart, mSelectionEnd, false, Style.SuperScript);
             }
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
     public void inputStrikeThrough(boolean isSelected, boolean draw) {
         mOptions.setStrikethrough(isSelected);
         if (mSelectionEnd > mSelectionStart) {
+            beginRetrokeAction(false);
             applySelectionWordStyle(mSelectionStart, mSelectionEnd, isSelected, Style.Strikethrough);
             if (draw) { requestDraw(); }
+            endRetrokeAction();
         }
     }
 
     public void inputEnter() {
+        beginRetrokeAction(false);
         // 删除区间
         deleteSelection(mSelectionStart, mSelectionEnd);
 
@@ -199,9 +238,11 @@ public class NoteEditorManagerImpl {
             setSeletion(newPos);
         }
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputParagraph(String content) {
+        beginRetrokeAction(false);
         Log.e(TAG, "inputParagraph: " + content );
         if (content.isEmpty()) { return; }
         // 删除区间
@@ -232,9 +273,11 @@ public class NoteEditorManagerImpl {
         // 调整选择区
         setSeletion(pos + content.length());
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputDividingLine() {
+        beginRetrokeAction(false);
         // 删除区间
         deleteSelection(mSelectionStart, mSelectionEnd);
 
@@ -250,9 +293,11 @@ public class NoteEditorManagerImpl {
         pos = getParagraphEnd(dividingParagraph);
         setSeletion(pos);
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputBulletList(boolean isSelected) {
+        beginRetrokeAction(false);
         mOptions.setBulletList(isSelected);
 
         List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
@@ -267,9 +312,11 @@ public class NoteEditorManagerImpl {
             }
         }
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputImage(String url) {
+        beginRetrokeAction(false);
         int pos = mSelectionStart;
         NoteImageLoader.with(mEditorText.getContext()).loadBitmap(url);
 
@@ -284,9 +331,11 @@ public class NoteEditorManagerImpl {
         }
         setSeletion(getParagraphEnd(newParagraph));
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputNumList(boolean isSelected) {
+        beginRetrokeAction(false);
         mOptions.setNumList(isSelected);
 
         List<Paragraph> paragraphs = getParagraphs(mSelectionStart, mSelectionEnd);
@@ -301,9 +350,11 @@ public class NoteEditorManagerImpl {
             }
         }
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
     public void inputUnCheckBox(boolean isSelected) {
+        beginRetrokeAction(false);
         if (isSelected) {
             mOptions.setUnCheckBox(true);
             mOptions.setCheckBox(false);
@@ -325,9 +376,18 @@ public class NoteEditorManagerImpl {
             }
         }
         mNote.setDirty(true);
+        endRetrokeAction();
     }
 
-    public boolean applySelectionWordStyle(int start, int end, boolean isAppend, int flag) {
+    public void inputIndentation() {
+        beginRetrokeAction(false);
+        int indentatin = Math.min(3, mOptions.getIndentation() + 1);
+        mOptions.setIndentation(indentatin);
+        applySelectionIndentation();
+        endRetrokeAction();
+    }
+
+    private boolean applySelectionWordStyle(int start, int end, boolean isAppend, int flag) {
         if (start == end) {
             return false;
         }
@@ -356,16 +416,12 @@ public class NoteEditorManagerImpl {
         return true;
     }
 
-    public void inputIndentation() {
-        int indentatin = Math.min(3, mOptions.getIndentation() + 1);
-        mOptions.setIndentation(indentatin);
-        applySelectionIndentation();
-    }
-
     public void inputReduceIndentation() {
+        beginRetrokeAction(false);
         int indentatin = Math.min(0, mOptions.getIndentation() - 1);
         mOptions.setIndentation(indentatin);
         applySelectionReduceIndentation();
+        endRetrokeAction();
     }
 
     public void applySelectionIndentation() {
@@ -396,19 +452,31 @@ public class NoteEditorManagerImpl {
         mNote.setDirty(true);
     }
 
-    public void deleteSelection() {
-        if (mSelectionStart == mSelectionEnd) {
-            deleteSelection(mSelectionStart - 1, mSelectionStart);
-        } else {
+    public void inputDeleteSelection() {
+        if (mSelectionStart < mSelectionEnd) {
+            beginRetrokeAction(false);
             deleteSelection(mSelectionStart, mSelectionEnd);
+            endRetrokeAction();
         }
     }
 
-    public void deleteSelection(int num) {
-        deleteSelection(mSelectionStart - num, mSelectionStart);
+    public void inputDeleteSelection(int num) {
+        if (mSelectionStart >= num) {
+            beginRetrokeAction(num == 1);
+            deleteSelection(mSelectionStart - num, mSelectionStart);
+            endRetrokeAction();
+        }
     }
 
-    public void deleteSelection(int start, int end) {
+    public void inputDelete() {
+        if (mSelectionStart >= 1) {
+            beginRetrokeAction(true);
+            deleteSelection(mSelectionStart - 1, mSelectionStart);
+            endRetrokeAction();
+        }
+    }
+
+    private void deleteSelection(int start, int end) {
         if (start < 0 || start >= end) {
             return;
         }
@@ -465,7 +533,7 @@ public class NoteEditorManagerImpl {
         mNote.setDirty(true);
     }
 
-    public Paragraph getParagraph(int globalPos) {
+    private Paragraph getParagraph(int globalPos) {
         int startPos = 0;
         int endPos;
         for (Paragraph paragraph : mNote.getParagraphs()) {
@@ -478,7 +546,7 @@ public class NoteEditorManagerImpl {
         return null;
     }
 
-    public List<Paragraph> getParagraphs(int globalStart, int globalEnd) {
+    private List<Paragraph> getParagraphs(int globalStart, int globalEnd) {
         List<Paragraph> selectedParagraphs = new ArrayList<>();
         int startPos = 0;
         int endPos = 0;
@@ -495,11 +563,11 @@ public class NoteEditorManagerImpl {
         return selectedParagraphs;
     }
 
-    public int getParagraphIndex(Paragraph paragraph) {
+    private int getParagraphIndex(Paragraph paragraph) {
         return mNote.getParagraphs().indexOf(paragraph);
     }
 
-    public int getParagraphBeginWithHead(Paragraph aim) {
+    private int getParagraphBeginWithHead(Paragraph aim) {
         int pos = getParagraphBegin(aim);
         if (aim.isHeadStyle()) {
             pos++;
@@ -507,7 +575,7 @@ public class NoteEditorManagerImpl {
         return pos;
     }
 
-    public int getParagraphBegin(Paragraph aim) {
+    private int getParagraphBegin(Paragraph aim) {
         int startPos = 0;
         int endPos;
         for (Paragraph paragraph : mNote.getParagraphs()) {
@@ -520,7 +588,7 @@ public class NoteEditorManagerImpl {
         return startPos;
     }
 
-    public int getParagraphEnd(Paragraph aim) {
+    private int getParagraphEnd(Paragraph aim) {
         int begin = getParagraphBegin(aim);
         return begin + aim.getLength();
     }
@@ -533,11 +601,11 @@ public class NoteEditorManagerImpl {
         }
     }
 
-    public Paragraph createParagraph(int index) {
+    private Paragraph createParagraph(int index) {
         return createParagraph(index, mOptions.getIndentation(), mOptions.getLineStyle());
     }
 
-    public Paragraph createParagraph(int index, int indentation, int lineStyle) {
+    private Paragraph createParagraph(int index, int indentation, int lineStyle) {
         Paragraph newParagraph = new ParagraphBuilder()
                 .lineStyle(lineStyle)
                 .indentation(indentation)
@@ -548,7 +616,7 @@ public class NoteEditorManagerImpl {
         return newParagraph;
     }
 
-    public Paragraph createDividingParagraph(int index) {
+    private Paragraph createDividingParagraph(int index) {
         Paragraph newParagraph = new ParagraphBuilder()
                 .dividingLine(true)
                 .image(false)
@@ -557,7 +625,7 @@ public class NoteEditorManagerImpl {
         return newParagraph;
     }
 
-    public Paragraph createImageParagraph(int index, String url) {
+    private Paragraph createImageParagraph(int index, String url) {
         Paragraph newParagraph = new ParagraphBuilder()
                 .image(url)
                 .build();
@@ -565,12 +633,12 @@ public class NoteEditorManagerImpl {
         return newParagraph;
     }
 
-    public void setSeletion(int globalPos) {
+    private void setSeletion(int globalPos) {
         mSelectionStart = globalPos;
         mSelectionEnd = globalPos;
     }
 
-    public void setSeletion(int globalStart, int globalEnd) {
+    private void setSeletion(int globalStart, int globalEnd) {
         mSelectionStart = globalStart;
         mSelectionEnd = globalEnd;
     }
@@ -587,7 +655,7 @@ public class NoteEditorManagerImpl {
      * @param end
      * @return
      */
-    public Options detectStyle(int start, int end) {
+    private Options detectStyle(int start, int end) {
         int startPos = 0;
         int endPos;
         int lineStyle = -1;
@@ -617,7 +685,10 @@ public class NoteEditorManagerImpl {
         }
         lineStyle = Math.max(0, lineStyle);
         indentation = Math.max(0, indentation);
-        return Options.getSameStyle(indentation, lineStyle, wordStyles);
+        boolean canRestroke = mRevocationManager.isCanRevoke();
+        boolean canRecover = mRevocationManager.isCanRecover();
+
+        return Options.getSameStyle(canRestroke, canRecover, indentation, lineStyle, wordStyles);
     }
 
     public boolean onSpanTouchUp(int globalPos) {
@@ -641,21 +712,21 @@ public class NoteEditorManagerImpl {
         return false;
     }
 
-    public void clickCheckBox(Paragraph paragraph) {
+    private void clickCheckBox(Paragraph paragraph) {
         paragraph.setCheckbox(false);
         paragraph.setUnCheckbox(true);
         mNote.setDirty(true);
         requestDraw();
     }
 
-    public void clickUncheckBox(Paragraph paragraph) {
+    private void clickUncheckBox(Paragraph paragraph) {
         paragraph.setUnCheckbox(false);
         paragraph.setCheckbox(true);
         mNote.setDirty(true);
         requestDraw();
     }
 
-    public void clickImage(Paragraph paragraph) {
+    private void clickImage(Paragraph paragraph) {
         notifyClickImageListener(paragraph);
     }
 
@@ -664,10 +735,18 @@ public class NoteEditorManagerImpl {
         mEditorText.post(new Runnable() {
             @Override
             public void run() {
-                print();
+                Log.d(TAG, toString());
                 mRender.draw(mEditorText, mNote.getParagraphs(), mSelectionStart, mSelectionEnd);
             }
         });
+    }
+
+    public NoteSnap recover() {
+        return mRevocationManager.recover(mNote, mSelectionStart, mSelectionEnd);
+    }
+
+    public NoteSnap revoke() {
+        return mRevocationManager.revoke(mNote, mSelectionStart, mSelectionEnd);
     }
 
     /**
@@ -681,16 +760,38 @@ public class NoteEditorManagerImpl {
         }
     }
 
-    public void print() {
+    private void beginRetrokeAction(boolean isContinous) {
+        mRevocationManager.beginAction(mNote, mSelectionStart, mSelectionEnd, isContinous);
+    }
+
+    private void endRetrokeAction() {
+        mRevocationManager.endAction();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
         List<Paragraph> paragraphs = mNote.getParagraphs();
-        Log.d(TAG,
-                " count: " + paragraphs.size() +
-                " selection: ( " + mSelectionStart + " , " + mSelectionEnd + " )");
+        stringBuilder.append(" count: ")
+                .append(paragraphs.size())
+                .append(" selection: ( ")
+                .append(mSelectionStart)
+                .append(" , ")
+                .append(mSelectionEnd)
+                .append(" )");
+
         for (Paragraph paragraph: paragraphs) {
             int startPos = getParagraphBegin(paragraph);
             int endPos = getParagraphEnd(paragraph);
-            Log.e(TAG, paragraph.getLineStyle() + " [ " + startPos + "->" + endPos + " ] " + paragraph.toString());
+            stringBuilder.append(paragraph.getLineStyle())
+                    .append(" [ ")
+                    .append(startPos)
+                    .append("->")
+                    .append(endPos)
+                    .append(" ] ")
+                    .append(paragraph.toString());
         }
+        return stringBuilder.toString();
     }
 
     public String getSelectionText() {

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.widget.Toast;
 import com.jscheng.srich.model.NoteModel;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteSnap;
 import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 import com.jscheng.srich.route.Router;
@@ -35,6 +36,7 @@ public class EditNotePresenter extends IPresenter {
     }
 
     public interface EditNoteView extends IView {
+        void apply(Note mNote, int selectionStart, int selectionEnd);
         void writingMode(boolean isEditorBarEnable);
         void readingMode();
         void loadingMode();
@@ -43,7 +45,6 @@ public class EditNotePresenter extends IPresenter {
         void showFormatDialog();
         void showAlbumDialog();
         void showNetworkDialog();
-        void setNote(Note note);
         void showLoading();
         void hideLoading();
     }
@@ -82,7 +83,7 @@ public class EditNotePresenter extends IPresenter {
               @Override
               public void onNext(Boolean isNew) {
                   isNewNote = isNew;
-                  mView.setNote(mNote);
+                  mView.apply(mNote, 0, 0);
               }
 
               @Override
@@ -135,12 +136,20 @@ public class EditNotePresenter extends IPresenter {
 
     }
 
-    public void tapRedo() {
-
+    public void tapRecover(NoteSnap noteSnap) {
+        if (noteSnap == null) {
+            return;
+        }
+        mNote.setParagraphs(noteSnap.getParagraphs());
+        mView.apply(mNote, noteSnap.getSelectionStart(), noteSnap.getSelectionEnd());
     }
 
-    public void tapUndo() {
-
+    public void tapRetroke(NoteSnap noteSnap) {
+        if (noteSnap == null) {
+            return;
+        }
+        mNote.setParagraphs(noteSnap.getParagraphs());
+        mView.apply(mNote, noteSnap.getSelectionStart(), noteSnap.getSelectionEnd());
     }
 
 

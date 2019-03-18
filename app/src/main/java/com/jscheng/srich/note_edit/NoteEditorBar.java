@@ -1,4 +1,4 @@
-package com.jscheng.srich.editor;
+package com.jscheng.srich.note_edit;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -13,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jscheng.srich.R;
+import com.jscheng.srich.editor.INoteEditorManager;
+import com.jscheng.srich.editor.NoteEditorSelectionListener;
+import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Options;
 
 /**
@@ -54,8 +57,8 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
         init();
     }
 
-    public void setEditorText(NoteEditorText mEditorText) {
-        this.mStyleManager = mEditorText.getStyleManager();
+    public void setStyleManager(INoteEditorManager styleManager) {
+        this.mStyleManager = styleManager;
         this.mStyleManager.addSelectionChangeListener(this);
     }
 
@@ -124,12 +127,18 @@ public class NoteEditorBar extends FrameLayout implements ViewTreeObserver.OnGlo
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         getRootView().getViewTreeObserver().addOnGlobalLayoutListener(this);
+        if (mStyleManager != null) {
+            mStyleManager.addSelectionChangeListener(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        if (mStyleManager != null) {
+            mStyleManager.removeSelectionChangeListener(this);
+        }
     }
 
     public void show() {

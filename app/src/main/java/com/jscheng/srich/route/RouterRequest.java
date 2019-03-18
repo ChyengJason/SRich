@@ -3,6 +3,7 @@ package com.jscheng.srich.route;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class RouterRequest {
         if (context == null) {
             throw new RuntimeException("context cannot be null");
         }
-        if (uri == null || uri.isEmpty()) {
+        if (TextUtils.isEmpty(uri)) {
             throw new RuntimeException("uri cannot be null or isEmpty");
         }
         Object object = Router.getRouteTable().get(uri);

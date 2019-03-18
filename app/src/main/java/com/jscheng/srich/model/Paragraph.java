@@ -1,5 +1,7 @@
 package com.jscheng.srich.model;
 
+import android.text.TextUtils;
+
 import com.jscheng.srich.editor.NoteEditorConfig;
 import com.jscheng.srich.editor.NoteEditorRender;
 
@@ -37,8 +39,10 @@ public class Paragraph {
         Paragraph paragraph = new Paragraph();
         paragraph.words.append(words);
         paragraph.wordStyles.addAll(wordStyles);
+        paragraph.setImage(imageUrl);
         paragraph.lineStyle = lineStyle;
         paragraph.indentation = indentation;
+
         return paragraph;
     }
 
@@ -212,7 +216,7 @@ public class Paragraph {
 
     public void setImage(String url) {
         imageUrl = url;
-        lineStyle = Style.setLineStyle(lineStyle, !url.isEmpty(), Style.Image);
+        lineStyle = Style.setLineStyle(lineStyle, !TextUtils.isEmpty(url), Style.Image);
     }
 
     public void setImage(boolean image) {

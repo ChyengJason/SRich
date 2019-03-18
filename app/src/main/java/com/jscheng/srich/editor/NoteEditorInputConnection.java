@@ -9,9 +9,9 @@ import android.view.inputmethod.InputConnectionWrapper;
  */
 public class NoteEditorInputConnection extends InputConnectionWrapper {
     private static final String TAG = "InputConnection";
-    private NoteEditorManager mStyleManager;
+    private INoteEditorManager mStyleManager;
 
-    public NoteEditorInputConnection(NoteEditorManager mStyleManager) {
+    public NoteEditorInputConnection(INoteEditorManager mStyleManager) {
         super(null, true);
         this.mStyleManager = mStyleManager;
     }

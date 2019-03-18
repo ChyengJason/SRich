@@ -1,6 +1,7 @@
 package com.jscheng.srich.editor;
 import android.net.Uri;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteSnap;
 
 /**
  * Created By Chengjunsen on 2019/2/27
@@ -12,13 +13,27 @@ public class NoteEditorManager implements INoteEditorManager{
         mManagerImpl = new NoteEditorManagerImpl(editorText);
     }
 
-    public void reset(Note note) {
-        mManagerImpl.setNote(note);
+    public void apply(Note note) {
+        mManagerImpl.apply(note);
+    }
+
+    public void apply(NoteSnap noteSnap) {
+        mManagerImpl.apply(noteSnap);
+    }
+
+    @Override
+    public void apply(Note mNote, int selectionStart, int selectionEnd) {
+        mManagerImpl.apply(mNote, selectionStart, selectionEnd);
     }
 
     @Override
     public void addSelectionChangeListener(NoteEditorSelectionListener listener) {
         mManagerImpl.addSelectionChangeListener(listener);
+    }
+
+    @Override
+    public void removeSelectionChangeListener(NoteEditorSelectionListener listener) {
+        mManagerImpl.removeSelectionChangeListener(listener);
     }
 
     @Override
@@ -117,19 +132,19 @@ public class NoteEditorManager implements INoteEditorManager{
 
     @Override
     public void commandDeleteSelection(boolean draw) {
-        mManagerImpl.deleteSelection();
+        mManagerImpl.inputDeleteSelection();
         if (draw) { requestDraw(); }
     }
 
     @Override
     public void commandDelete(boolean draw) {
-        mManagerImpl.deleteSelection();
+        mManagerImpl.inputDelete();
         if (draw) { requestDraw(); }
     }
 
     @Override
     public void commandDelete(int num, boolean draw) {
-        mManagerImpl.deleteSelection(num);
+        mManagerImpl.inputDeleteSelection(num);
         if (draw) { requestDraw(); }
     }
 
@@ -163,6 +178,16 @@ public class NoteEditorManager implements INoteEditorManager{
             }
         }
         if (draw) { requestDraw(); }
+    }
+
+    @Override
+    public NoteSnap commandRecover() {
+        return mManagerImpl.recover();
+    }
+
+    @Override
+    public NoteSnap commandRetroke() {
+        return mManagerImpl.revoke();
     }
 
     public String getSelectionText() {

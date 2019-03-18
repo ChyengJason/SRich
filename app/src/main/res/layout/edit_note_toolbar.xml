@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
-        android:id="@+id/redo_btn"
+        android:id="@+id/retroke_btn"
         android:layout_width="@dimen/edit_note_toolbar_btn_size"
         android:layout_height="@dimen/edit_note_toolbar_btn_size"
         android:layout_marginRight="20dp"
@@ -38,12 +38,12 @@
         android:scaleType="centerCrop"
         android:clickable="true"
         android:enabled="false"
-        app:layout_constraintRight_toLeftOf="@id/undo_btn"
+        app:layout_constraintRight_toLeftOf="@+id/recover_btn"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
-        android:id="@+id/undo_btn"
+        android:id="@+id/recover_btn"
         android:layout_width="@dimen/edit_note_toolbar_btn_size"
         android:layout_height="@dimen/edit_note_toolbar_btn_size"
         android:layout_marginRight="20dp"

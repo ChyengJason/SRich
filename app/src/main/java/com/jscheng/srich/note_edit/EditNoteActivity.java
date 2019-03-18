@@ -10,7 +10,6 @@ import android.view.View;
 import com.jscheng.annotations.Route;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
-import com.jscheng.srich.editor.NoteEditorBar;
 import com.jscheng.srich.editor.NoteEditorClickListener;
 import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Note;
@@ -55,17 +54,13 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
 
         mToolbar = findViewById(R.id.edit_note_toolbar);
         mToolbar.setPresenter(mPresenter);
+        mToolbar.setStyleManager(mEditorText.getStyleManager());
 
         mEditorBar = findViewById(R.id.edit_note_bar);
-        mEditorBar.setEditorText(mEditorText);
+        mEditorBar.setStyleManager(mEditorText.getStyleManager());
         mEditorBar.hide();
 
         requestPermission();
-    }
-
-    @Override
-    public void setNote(Note note) {
-        mEditorText.reset(note);
     }
 
     @Override
@@ -76,6 +71,11 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
     @Override
     public void hideLoading() {
         mLoadingView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void apply(Note mNote, int selectionStart, int selectionEnd) {
+        mEditorText.getStyleManager().apply(mNote, selectionStart, selectionEnd);
     }
 
     @Override

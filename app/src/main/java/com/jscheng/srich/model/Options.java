@@ -13,6 +13,10 @@ public class Options {
 
     private int indentation;
 
+    private boolean isCanRecover;
+
+    private boolean isCanRetroke;
+
     public Options() {
         this.wordStyle = 0;
         this.lineStyle = 0;
@@ -145,8 +149,11 @@ public class Options {
         this.lineStyle = lineStyle;
     }
 
-    public static Options getSameStyle(int indentation, int lineStyle, List<Integer> wordStyles) {
+    public static Options getSameStyle(boolean isCanRecover, boolean isCanRetroke,
+                                       int indentation, int lineStyle, List<Integer> wordStyles) {
         Options options = new Options();
+        options.setCanRecover(isCanRecover);
+        options.setCanRetroke(isCanRetroke);
         options.setLineStyle(lineStyle);
         options.setIndentation(indentation);
 
@@ -185,5 +192,21 @@ public class Options {
             }
         }
         return options;
+    }
+
+    public boolean isCanRecover() {
+        return isCanRecover;
+    }
+
+    public void setCanRecover(boolean canRecover) {
+        isCanRecover = canRecover;
+    }
+
+    public boolean isCanRetroke() {
+        return isCanRetroke;
+    }
+
+    public void setCanRetroke(boolean canRetroke) {
+        isCanRetroke = canRetroke;
     }
 }

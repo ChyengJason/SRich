@@ -1,7 +1,6 @@
 package com.jscheng.srich.editor;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Layout;
@@ -14,6 +13,7 @@ import com.jscheng.srich.editor.spans.NoteClickSpan;
 import com.jscheng.srich.image_loader.NoteImageListener;
 import com.jscheng.srich.image_loader.NoteImageLoader;
 import com.jscheng.srich.model.Note;
+import com.jscheng.srich.model.NoteSnap;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
 /**
@@ -57,10 +57,6 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
         this.setLineSpacing(NoteEditorConfig.LineSpacing, 1f);
 
         this.readingMode();
-    }
-
-    public void reset(Note note) {
-        this.mStyleManager.reset(note);
     }
 
     // 写模式
@@ -127,13 +123,13 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NoteImageLoader.with(getContext()).addImageListener(this);
+        NoteImageLoader.addImageListener(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        NoteImageLoader.with(getContext()).removeImageListener(this);
+        NoteImageLoader.removeImageListener(this);
     }
 
     public INoteEditorManager getStyleManager() {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
@@ -86,7 +87,7 @@ public class NoteImageLoader implements IImagePoolListener {
     }
 
     public Bitmap getBitmap(String url, int maxWidth) {
-        if (url == null || url.isEmpty()) {
+        if (TextUtils.isEmpty(url)) {
             return null;
         }
         String key = getKeyFromUrl(url);

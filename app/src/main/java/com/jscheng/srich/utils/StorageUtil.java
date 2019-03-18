@@ -2,6 +2,7 @@ package com.jscheng.srich.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ public class StorageUtil {
     }
 
     public static void overwiteFile(String path, String text) {
-        if (path == null && path.isEmpty()) {
+        if (TextUtils.isEmpty(text)) {
             Log.e(TAG, "overwiteFile: path is null");
             return;
         }

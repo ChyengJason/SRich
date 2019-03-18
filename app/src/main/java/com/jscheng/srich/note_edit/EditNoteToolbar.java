@@ -9,19 +9,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.jscheng.srich.R;
+import com.jscheng.srich.editor.INoteEditorManager;
+import com.jscheng.srich.editor.NoteEditorSelectionListener;
+import com.jscheng.srich.model.Options;
 
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class EditNoteToolbar extends LinearLayout implements View.OnClickListener {
+public class EditNoteToolbar extends LinearLayout implements View.OnClickListener, NoteEditorSelectionListener {
     private ImageView mBackView;
     private ImageView mMoreView;
-    private ImageView mRedoView;
-    private ImageView mUndoView;
+    private ImageView mRetrokeView;
+    private ImageView mRecoverView;
     private ImageView mFormatView;
     private ImageView mAttachView;
     private ImageView mTickView;
     private EditNotePresenter mPresenter;
+    private INoteEditorManager mStyleManager;
 
     public EditNoteToolbar(Context context) {
         this(context, null);
@@ -43,11 +47,13 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
         mTickView = findViewById(R.id.tick_btn);
         mTickView.setOnClickListener(this);
 
-        mRedoView = findViewById(R.id.redo_btn);
-        mRedoView.setOnClickListener(this);
+        mRetrokeView = findViewById(R.id.retroke_btn);
+        mRetrokeView.setEnabled(false);
+        mRetrokeView.setOnClickListener(this);
 
-        mUndoView = findViewById(R.id.undo_btn);
-        mUndoView.setOnClickListener(this);
+        mRecoverView = findViewById(R.id.recover_btn);
+        mRecoverView.setEnabled(false);
+        mRecoverView.setOnClickListener(this);
 
         mAttachView = findViewById(R.id.attach_btn);
         mAttachView.setOnClickListener(this);
@@ -63,8 +69,8 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
     public void writingMode() {
         mBackView.setVisibility(GONE);
         mTickView.setVisibility(VISIBLE);
-        mUndoView.setVisibility(VISIBLE);
-        mRedoView.setVisibility(VISIBLE);
+        mRecoverView.setVisibility(VISIBLE);
+        mRetrokeView.setVisibility(VISIBLE);
         mAttachView.setVisibility(VISIBLE);
         mFormatView.setVisibility(VISIBLE);
     }
@@ -72,8 +78,8 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
     public void readingMode() {
         mBackView.setVisibility(VISIBLE);
         mTickView.setVisibility(GONE);
-        mUndoView.setVisibility(GONE);
-        mRedoView.setVisibility(GONE);
+        mRecoverView.setVisibility(GONE);
+        mRetrokeView.setVisibility(GONE);
         mAttachView.setVisibility(GONE);
         mFormatView.setVisibility(GONE);
     }
@@ -91,11 +97,11 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
             case R.id.tick_btn:
                 mPresenter.tapTick();
                 break;
-            case R.id.undo_btn:
-                mPresenter.tapUndo();
+            case R.id.retroke_btn:
+                mPresenter.tapRetroke(mStyleManager.commandRetroke());
                 break;
-            case R.id.redo_btn:
-                mPresenter.tapRedo();
+            case R.id.recover_btn:
+                mPresenter.tapRecover(mStyleManager.commandRecover());
                 break;
             case R.id.format_btn:
                 boolean isEnable = !mFormatView.isSelected();
@@ -118,11 +124,38 @@ public class EditNoteToolbar extends LinearLayout implements View.OnClickListene
         mFormatView.setSelected(isEnable);
     }
 
-    public void setUndoEnable(boolean isEnable) {
-        mUndoView.setEnabled(isEnable);
+    public void setRetrokeEnable(boolean isEnable) {
+        mRecoverView.setEnabled(isEnable);
     }
 
-    public void setRedoEnable(boolean isEnable) {
-        mRedoView.setEnabled(isEnable);
+    public void setRecoverEnable(boolean isEnable) {
+        mRetrokeView.setEnabled(isEnable);
+    }
+
+    @Override
+    public void onStyleChange(int start, int end, Options options) {
+        setRetrokeEnable(options.isCanRetroke());
+        setRecoverEnable(options.isCanRecover());
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mStyleManager != null) {
+            mStyleManager.removeSelectionChangeListener(this);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mStyleManager != null) {
+            mStyleManager.addSelectionChangeListener(this);
+        }
+    }
+
+    public void setStyleManager(INoteEditorManager editorManager) {
+        this.mStyleManager = editorManager;
+        this.mStyleManager.addSelectionChangeListener(this);
     }
 }
