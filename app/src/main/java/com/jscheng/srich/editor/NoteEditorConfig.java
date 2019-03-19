@@ -7,7 +7,7 @@ public class NoteEditorConfig {
 
     public static final int HighLightColor = 0xFFCBE5EF;
 
-    public static final int HighLightBackgroundColor = 0xf5f595;
+    public static final int HighLightBackgroundColor = 0xf5f59555;
 
     public static final int CursorColor = 0xFF000000;
 
