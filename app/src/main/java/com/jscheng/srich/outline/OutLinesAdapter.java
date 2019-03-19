@@ -140,6 +140,15 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
                 mPresenter.tapNote(outline.getNote().getId());
             }
         });
+
+        noteViewHolder.contentLayout.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                mPresenter.taplongNote(outline.getNote().getId());
+                return false;
+            }
+        });
     }
 
     @Override

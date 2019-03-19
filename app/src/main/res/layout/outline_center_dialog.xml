@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
+
+    <TextView
+        android:id="@+id/delete_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/outline_dialog_item_height"
+        android:text="@string/note_outline_delete"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:textColor="@color/font_black_color"
+        android:textSize="16sp"/>
+</LinearLayout>

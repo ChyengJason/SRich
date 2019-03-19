@@ -27,6 +27,7 @@ public class OutLinePresenter extends IPresenter {
 
     public interface OutLineView extends IView {
         void setData(List<Note> ntoes);
+        void showCenterDialog(String id);
     }
 
     @Override
@@ -67,5 +68,14 @@ public class OutLinePresenter extends IPresenter {
 
     public void tapNote(String id) {
         Router.with((Context)mView).route("editnote").intent("id", id).go();
+    }
+
+    public void taplongNote(String id) {
+        mView.showCenterDialog(id);
+    }
+
+    public void tapDelete(String id) {
+        NoteModel.deleteNote((Context)mView, id);
+        reload();
     }
 }

@@ -25,14 +25,15 @@ import java.util.List;
 public class OutLinesActivity extends BaseActivity
         implements OutLinePresenter.OutLineView, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
     private final static String TAG = "OutLinesActivity";
-    private OutLinePresenter mPresenter = null;
-    private RecyclerView mRecyclerView = null;
-    private LinearLayoutManager mLayoutManager = null;
-    private OutLinesAdapter mRecyclerAdapter = null;
-    private RelativeLayout mHeadDateLayout = null;
-    private TextView mHeadDateText = null;
-    private FloatNewButton mFloatButton = null;
-    private SwipeRefreshLayout mSwipeLayout = null;
+    private OutLinePresenter mPresenter;
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
+    private OutLinesAdapter mRecyclerAdapter ;
+    private RelativeLayout mHeadDateLayout;
+    private TextView mHeadDateText;
+    private FloatNewButton mFloatButton;
+    private SwipeRefreshLayout mSwipeLayout;
+    private OutLineCenterDialog mCenterDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +63,14 @@ public class OutLinesActivity extends BaseActivity
     public void setData(List<Note> notes) {
         mSwipeLayout.setRefreshing(false);
         mRecyclerAdapter.setData(notes);
+    }
+
+    @Override
+    public void showCenterDialog(String id) {
+        if (mCenterDialog == null) {
+            mCenterDialog = new OutLineCenterDialog(this, mPresenter);
+        }
+        mCenterDialog.show(id);
     }
 
     private void tapNewButton() {
