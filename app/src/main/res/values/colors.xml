@@ -19,4 +19,5 @@
     <color name="outline_line_color">#EBEBEB</color>
     <color name="outline_item_date_text_color">#979797</color>
     <color name="image_preview_background_color">#000</color>
+    <color name="black_color">#000</color>
 </resources>

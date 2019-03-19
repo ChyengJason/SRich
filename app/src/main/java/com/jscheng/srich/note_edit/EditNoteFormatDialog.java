@@ -21,6 +21,7 @@ public class EditNoteFormatDialog extends Dialog implements View.OnClickListener
         getWindow().setWindowAnimations(R.style.EditNoteBottomDialogAnimTheme);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         findViewById(R.id.dialog_album).setOnClickListener(this);
+        findViewById(R.id.dialog_random).setOnClickListener(this);
         findViewById(R.id.dialog_network).setOnClickListener(this);
         findViewById(R.id.dialog_cancel).setOnClickListener(this);
     }
@@ -36,6 +37,9 @@ public class EditNoteFormatDialog extends Dialog implements View.OnClickListener
                 mPresenter.tapNetworkUrl();
                 this.dismiss();
                 break;
+            case R.id.dialog_random:
+                mPresenter.tapRandomUrl();
+                this.dismiss();
             case R.id.dialog_cancel:
                 this.dismiss();
                 break;

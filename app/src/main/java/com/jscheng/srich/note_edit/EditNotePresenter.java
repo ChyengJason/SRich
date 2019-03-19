@@ -11,7 +11,11 @@ import com.jscheng.srich.mvp.IPresenter;
 import com.jscheng.srich.mvp.IView;
 import com.jscheng.srich.route.Router;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -42,6 +46,7 @@ public class EditNotePresenter extends IPresenter {
         void loadingMode();
         void finish();
         void setEditorbar(boolean isEnable);
+        void insertImage(String url);
         void showFormatDialog();
         void showAlbumDialog();
         void showNetworkDialog();
@@ -104,6 +109,23 @@ public class EditNotePresenter extends IPresenter {
     @Override
     public void onDestroy(@NotNull LifecycleOwner owner) {
         this.mView = null;
+    }
+
+    public void tapRandomUrl() {
+        List<String> urls = new ArrayList<>();
+        urls.add("https://upload-images.jianshu.io/upload_images/7722639-621573aa9b77e25e.jpeg");
+        urls.add("https://upload-images.jianshu.io/upload_images/65111-d12d78fef3de7563.jpg");
+        urls.add("https://upload-images.jianshu.io/upload_images/65111-efd97a12d7edf0f2.jpg");
+        urls.add("https://upload-images.jianshu.io/upload_images/12672250-b44dd1bcf6be6073.jpg");
+        urls.add("https://upload-images.jianshu.io/upload_images/6098829-17c9c40a7addff81.png");
+
+        Random random = new Random();
+        String url = urls.get(random.nextInt(urls.size()));
+        mView.insertImage(url);
+    }
+
+    public void tapInsertUrl(String url) {
+        mView.insertImage(url);
     }
 
     public void tapNetworkUrl() {

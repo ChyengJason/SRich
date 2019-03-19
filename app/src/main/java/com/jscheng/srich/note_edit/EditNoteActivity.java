@@ -140,15 +140,12 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
 
     @Override
     public void showNetworkDialog() {
-        List<String> urls = new ArrayList<>();
-        urls.add("https://upload-images.jianshu.io/upload_images/7722639-621573aa9b77e25e.jpeg");
-        urls.add("https://upload-images.jianshu.io/upload_images/5185243-17b362f03fada750.png");
-        urls.add("https://upload-images.jianshu.io/upload_images/851787-05da829df447c9a4.jpg");
-        urls.add("https://upload-images.jianshu.io/upload_images/5279191-ffd9e07ef242457d.png");
-        urls.add("https://upload-images.jianshu.io/upload_images/1781119-076ca4fe67b6cf5e.jpg");
+        EditNoteInputDialog dialog = new EditNoteInputDialog(this, mPresenter);
+        dialog.show();
+    }
 
-        Random random = new Random();
-        String url = urls.get(random.nextInt(urls.size()));
+    @Override
+    public void insertImage(String url) {
         mEditorText.getStyleManager().commandImage(url, true);
     }
 
@@ -157,7 +154,7 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         if (resultCode == RESULT_OK) {
             if (requestCode == ACTION_PICK_CODE) {
                 Uri uri = data.getData();
-                mEditorText.getStyleManager().commandImage(uri, true);
+                insertImage(uri.toString());
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

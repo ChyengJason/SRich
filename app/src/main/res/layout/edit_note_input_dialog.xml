@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dip"
+    android:background="@drawable/editor_note_dialog_edit"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="80dip"
+        android:gravity="center"
+        android:textColor="#333333"
+        android:textSize="16sp" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/contentEditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dip"
+        android:layout_marginBottom="20dip"
+        android:layout_marginEnd="28dip"
+        android:layout_marginStart="28dip"
+        android:background="@drawable/editor_note_dialog_edit"
+        android:paddingEnd="12dip"
+        android:paddingStart="12dip"
+        android:textColor="#666666"
+        android:textSize="14sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#DEDEDE" />
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/cancelTextView"
+            android:background="@drawable/editor_note_dialog_text_left"
+            android:gravity="center"
+            android:clickable="true"
+            android:text="取消"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="#DEDEDE" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/confirmTextView"
+            android:layout_weight="1"
+            android:background="@drawable/editor_note_dialog_text_right"
+            android:gravity="center"
+            android:clickable="true"
+            android:text="确定"
+            android:textColor="#A6937C"
+            android:textSize="14sp" />
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</android.support.v7.widget.LinearLayoutCompat>

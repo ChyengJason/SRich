@@ -10,7 +10,7 @@ import com.jscheng.srich.editor.NoteEditorConfig;
  */
 public class NoteBackgroundSpan extends BackgroundColorSpan{
 
-    private final static int color = NoteEditorConfig.HighLightColor;
+    private final static int color = NoteEditorConfig.HighLightBackgroundColor;
 
     public NoteBackgroundSpan() {
         super(color);
