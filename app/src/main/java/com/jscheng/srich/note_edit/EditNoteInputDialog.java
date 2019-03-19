@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.utils.UrlUtil;
 
 /**
  * Created By Chengjunsen on 2019/3/19
@@ -105,7 +104,7 @@ public class EditNoteInputDialog implements View.OnClickListener{
             return;
         }
 
-        if (!UrlUtil.isUrl(url)){
+        if (!url.startsWith("http")){
             Toast.makeText(context, "链接不合法", Toast.LENGTH_SHORT).show();
             return;
         }

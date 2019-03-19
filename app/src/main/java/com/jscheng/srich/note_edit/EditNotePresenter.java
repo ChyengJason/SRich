@@ -117,7 +117,6 @@ public class EditNotePresenter extends IPresenter {
         urls.add("https://upload-images.jianshu.io/upload_images/65111-d12d78fef3de7563.jpg");
         urls.add("https://upload-images.jianshu.io/upload_images/65111-efd97a12d7edf0f2.jpg");
         urls.add("https://upload-images.jianshu.io/upload_images/12672250-b44dd1bcf6be6073.jpg");
-        urls.add("https://upload-images.jianshu.io/upload_images/6098829-17c9c40a7addff81.png");
 
         Random random = new Random();
         String url = urls.get(random.nextInt(urls.size()));
