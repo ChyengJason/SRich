@@ -7,6 +7,7 @@ import com.jscheng.srich.converter.StyleCode;
 import java.util.List;
 
 /**
+ * Note对象 转成 文本数据
  * Created By Chengjunsen on 2019/3/11
  */
 public class ParagraphEncoder {

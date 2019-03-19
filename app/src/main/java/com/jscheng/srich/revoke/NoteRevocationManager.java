@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 /**
  * Created By Chengjunsen on 2019/3/18
+ * 撤销与反撤销
  */
 public class NoteRevocationManager {
 

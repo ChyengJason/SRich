@@ -3,6 +3,7 @@ package com.jscheng.srich.model;
 import java.util.List;
 
 /**
+ * 编辑模式下，用于表示当前的样式
  * Created By Chengjunsen on 2019/2/26
  */
 public class Options {

@@ -1,6 +1,5 @@
 package com.jscheng.srich.image_preview;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import com.jscheng.srich.widget.PinchImageView;
 import java.util.List;
 
 /**
+ * 图片预览
  * Created By Chengjunsen on 2019/3/15
  */
 @Route("imagePreview")

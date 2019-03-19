@@ -10,6 +10,9 @@ import com.jscheng.srich.model.NoteBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 数据库工具
+ */
 public class NoteDao {
     private NoteDboOpener mNoteDboOpener;
 

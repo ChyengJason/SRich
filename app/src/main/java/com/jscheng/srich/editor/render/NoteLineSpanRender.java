@@ -11,6 +11,7 @@ import com.jscheng.srich.editor.NoteEditorRender;
 import com.jscheng.srich.model.Paragraph;
 
 /**
+ * 绘制行样式
  * Created By Chengjunsen on 2019/3/4
  */
 public abstract class NoteLineSpanRender<T> {

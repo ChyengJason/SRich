@@ -11,6 +11,7 @@ import com.jscheng.srich.model.Paragraph;
 import java.util.List;
 
 /**
+ * 绘制字体样式
  * Created By Chengjunsen on 2019/3/4
  */
 public abstract class NoteWordSpanRender<T extends CharacterStyle> {

@@ -3,6 +3,7 @@ package com.jscheng.srich.model;
 import java.util.List;
 
 /**
+ * Note的快照，用于撤销、反撤销
  * Created By Chengjunsen on 2019/3/8
  */
 public class NoteSnap {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 文本数据 转成 Note对象
  * Created By Chengjunsen on 2019/3/11
  */
 public class ParagraphDecoder {

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * 图片加载库
  * Created By Chengjunsen on 2019/3/11
  */
 public class NoteImageLoader implements IImagePoolListener {
