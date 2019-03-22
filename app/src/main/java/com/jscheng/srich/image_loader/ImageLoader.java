@@ -54,6 +54,12 @@ public class ImageLoader implements ImageFetcherCallback{
     public void load(String url, ImageView imageView) {
         String key = ImageKeyFactory.generateKey(url);
         ImageViewTarget mViewTarget = new ImageViewTarget(imageView, key, url);
+
+        int width = imageView.getMeasuredWidth();
+        if (width > 0 && mMemoryCache.isCache(key, width)) {
+            mViewTarget.onResourceReady(url, key);
+            return;
+        }
         if (mDiskCache.isCache(key)) {
             mViewTarget.onResourceReady(url, key);
             return;

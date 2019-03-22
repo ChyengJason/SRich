@@ -38,6 +38,6 @@ public class ImageMemoryCache {
     }
 
     public synchronized boolean isCache(String key, int width) {
-        return mMemoryCache.get(key) != null;
+        return mMemoryCache.get(key + width) != null;
     }
 }
