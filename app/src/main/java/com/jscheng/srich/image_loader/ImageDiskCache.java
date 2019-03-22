@@ -3,23 +3,23 @@ package com.jscheng.srich.image_loader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.LruCache;
+import android.graphics.Matrix;
 import android.util.Size;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 import com.jscheng.srich.utils.StorageUtil;
 import com.jscheng.srich.utils.VersionUtil;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Created By Chengjunsen on 2019/3/13
+ * Created By Chengjunsen on 2019/3/21
  */
-public class NoteDiskCache {
+public class ImageDiskCache {
     /**
      * DiskLrcCache文件夹名字
      */
@@ -33,7 +33,7 @@ public class NoteDiskCache {
      */
     private static DiskLruCache mDiskCache;
 
-    public NoteDiskCache(Context context) {
+    public ImageDiskCache(Context context) {
         try {
             File diskCacheFile = getDiskCachePath(context, DiskLrcCacheDirName);
             int versionCode = VersionUtil.getVersionCode(context);
@@ -51,28 +51,6 @@ public class NoteDiskCache {
             e.printStackTrace();
         }
         return snapshot != null && snapshot.getLength(0) > 0;
-    }
-
-    public Size getSize(String key) {
-        DiskLruCache.Snapshot snapshot = null;
-        try {
-            snapshot = mDiskCache.get(key);
-            if (snapshot != null) {
-                FileInputStream inputStream = (FileInputStream) snapshot.getInputStream(0);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                options.inPreferredConfig = Bitmap.Config.RGB_565;
-                BitmapFactory.decodeStream(inputStream, null, options);
-                options.inJustDecodeBounds = false;
-                int bitmapWidth = options.outWidth;
-                int bitmapHeight = options.outHeight;
-                inputStream.close();
-                return new Size(bitmapWidth, bitmapHeight);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public void put(InputStream inputStream, String key) {
@@ -99,25 +77,27 @@ public class NoteDiskCache {
 
     public Bitmap get(String key, int maxWidth) {
         try {
-            Size actualSize = getSize(key);
-            if (actualSize != null && actualSize.getWidth() > 0 && actualSize.getHeight() > 0) {
-                DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
-                if (snapshot != null) {
-                    snapshot = mDiskCache.get(key);
-                    InputStream inputStream = snapshot.getInputStream(0);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    if (maxWidth > 0)  {
-                        options.inSampleSize = actualSize.getWidth() > maxWidth ? Math.round((float)actualSize.getWidth()/(float)maxWidth) : 1;
-                    }
-                    options.inPreferredConfig = Bitmap.Config.RGB_565;
-                    options.inJustDecodeBounds = false;
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, options);
-                    inputStream.close();
-                    return bitmap;
-                } else {
-                    mDiskCache.remove(key);
-                    return null;
+            DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+            if (snapshot != null) {
+                snapshot = mDiskCache.get(key);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                BufferedInputStream inputStream = new BufferedInputStream(snapshot.getInputStream(0));
+                int degree = DownSampler.getRotate(inputStream);
+                Size actualSize = DownSampler.getDimensions(inputStream, options);
+
+                int actualWidth = (degree == 90 || degree == 180) ? actualSize.getHeight() : actualSize.getWidth();
+                if (maxWidth > 0)  {
+                    options.inSampleSize = actualWidth > maxWidth ? Math.round((float)actualWidth/(float)maxWidth) : 1;
                 }
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                options.inJustDecodeBounds = false;
+                Bitmap bitmap = DownSampler.decodeStream(inputStream, options);
+                bitmap = rotate(bitmap, degree);
+                inputStream.close();
+                return bitmap;
+            } else {
+                mDiskCache.remove(key);
+                return null;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -125,13 +105,17 @@ public class NoteDiskCache {
         return null;
     }
 
-    public boolean remove(String key) {
-        try {
-            return mDiskCache.remove(key);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private Bitmap rotate(Bitmap bitmap, int degree) {
+        if (degree <= 0) {
+            return bitmap;
         }
-        return false;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        bitmap.recycle();
+        return newBitmap;
     }
 
     private File getDiskCachePath(Context context, String uniqueName){

@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 /**
- * Created By Chengjunsen on 2019/3/13
+ * Created By Chengjunsen on 2019/3/21
  */
-public class NoteMemoryCache {
+public class ImageMemoryCache {
     /**
      * 最大内存缓存空间
      */
@@ -16,7 +16,7 @@ public class NoteMemoryCache {
      */
     private static LruCache<String, Bitmap> mMemoryCache;
 
-    public NoteMemoryCache() {
+    public ImageMemoryCache() {
         mMemoryCache = new LruCache<String, Bitmap>(mMemoryCacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap value) {

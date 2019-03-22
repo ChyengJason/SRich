@@ -10,16 +10,14 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import com.jscheng.srich.editor.spans.NoteClickSpan;
-import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NoteImageLoader;
-import com.jscheng.srich.model.Note;
-import com.jscheng.srich.model.NoteSnap;
+import com.jscheng.srich.image_loader.ImageGlobalListener;
+import com.jscheng.srich.image_loader.ImageLoader;
 import com.jscheng.srich.utils.ClipboardUtil;
 import com.jscheng.srich.utils.KeyboardUtil;
 /**
  * Created By Chengjunsen on 2019/2/21
  */
-public class NoteEditorText extends AppCompatEditText implements NoteImageListener {
+public class NoteEditorText extends AppCompatEditText implements ImageGlobalListener {
     private static final String TAG = "NoteEditorText";
     private NoteEditorManager mStyleManager;
     private NoteEditorInputConnection mInputConnection;
@@ -123,13 +121,13 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NoteImageLoader.addImageListener(this);
+        ImageLoader.with(getContext()).addGlobalImageListener(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        NoteImageLoader.removeImageListener(this);
+        ImageLoader.with(getContext()).removeGlobalImageListener(this);
     }
 
     public INoteEditorManager getStyleManager() {
@@ -220,12 +218,12 @@ public class NoteEditorText extends AppCompatEditText implements NoteImageListen
     }
 
     @Override
-    public void onNoteImageSuccess(String url) {
+    public void onImageLoadSuccess(String url) {
         mStyleManager.requestDraw();
     }
 
     @Override
-    public void onNoteImageFailed(String url, String err) {
+    public void onImageLoadFailed(String url, String err) {
 
     }
 }

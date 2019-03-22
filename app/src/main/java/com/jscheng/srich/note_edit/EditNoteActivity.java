@@ -15,11 +15,10 @@ import com.jscheng.srich.editor.NoteEditorText;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.utils.KeyboardUtil;
 import com.jscheng.srich.utils.PermissionUtil;
+import com.jscheng.srich.utils.UriPathUtil;
 import com.jscheng.srich.widget.CircularProgressView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 编辑页
@@ -155,7 +154,8 @@ public class EditNoteActivity extends BaseActivity implements EditNotePresenter.
         if (resultCode == RESULT_OK) {
             if (requestCode == ACTION_PICK_CODE) {
                 Uri uri = data.getData();
-                insertImage(uri.toString());
+                String path = UriPathUtil.getAbsulotePath(this, uri);
+                insertImage(path);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

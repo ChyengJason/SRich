@@ -2,7 +2,7 @@ package com.jscheng.srich.editor;
 
 import android.util.Log;
 
-import com.jscheng.srich.image_loader.NoteImageLoader;
+import com.jscheng.srich.image_loader.ImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.NoteBuilder;
 import com.jscheng.srich.model.NoteSnap;
@@ -318,7 +318,7 @@ public class NoteEditorManagerImpl {
     public void inputImage(String url) {
         beginRetrokeAction(false);
         int pos = mSelectionStart;
-        NoteImageLoader.with(mEditorText.getContext()).loadBitmap(url);
+        ImageLoader.with(mEditorText.getContext()).load(url);
 
         // 获取段落
         Paragraph lastParagraph = getParagraph(pos);

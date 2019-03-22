@@ -110,5 +110,6 @@ public class EditNoteInputDialog implements View.OnClickListener{
         }
 
         presenter.tapInsertUrl(url);
+        dismiss();
     }
 }

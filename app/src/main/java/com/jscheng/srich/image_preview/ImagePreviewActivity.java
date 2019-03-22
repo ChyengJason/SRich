@@ -1,7 +1,6 @@
 package com.jscheng.srich.image_preview;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.WindowManager;
@@ -9,7 +8,7 @@ import android.view.WindowManager;
 import com.jscheng.annotations.Route;
 import com.jscheng.srich.BaseActivity;
 import com.jscheng.srich.R;
-import com.jscheng.srich.image_loader.NoteImageLoader;
+import com.jscheng.srich.image_loader.ImageLoader;
 import com.jscheng.srich.widget.PinchImageView;
 
 import java.util.List;
@@ -43,9 +42,6 @@ public class ImagePreviewActivity extends BaseActivity {
            return;
        }
        String url = urls.get(index);
-       Bitmap bitmap= NoteImageLoader.with(this).getBitmap(url);
-       if (bitmap != null) {
-           mImageView.setImageBitmap(bitmap);
-       }
+       ImageLoader.with(this).load(url, mImageView);
     }
 }

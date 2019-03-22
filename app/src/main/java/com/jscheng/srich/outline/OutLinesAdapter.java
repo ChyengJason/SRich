@@ -1,7 +1,6 @@
 package com.jscheng.srich.outline;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jscheng.srich.R;
-import com.jscheng.srich.image_loader.NoteImageListener;
-import com.jscheng.srich.image_loader.NoteImageLoader;
+import com.jscheng.srich.image_loader.ImageLoader;
 import com.jscheng.srich.model.Note;
 import com.jscheng.srich.model.OutLine;
 import com.jscheng.srich.utils.DateUtil;
@@ -26,7 +24,7 @@ import java.util.List;
 /**
  * Created By Chengjunsen on 2019/2/20
  */
-public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageListener {
+public class OutLinesAdapter extends RecyclerView.Adapter {
     private final static String TAG = "Adapter";
     private final static int TYPE_ITEM_DATE_BAR = 1;
     private final static int TYPE_ITEM_NOTE = 2;
@@ -131,7 +129,7 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
             noteViewHolder.summaryImage.setVisibility(View.GONE );
         } else {
             noteViewHolder.summaryImage.setVisibility(View.VISIBLE);
-            NoteImageLoader.with(mContext).getBitmap(summaryImageUrl, noteViewHolder.summaryImage);
+            ImageLoader.with(mContext).load(summaryImageUrl, noteViewHolder.summaryImage);
         }
 
         noteViewHolder.contentLayout.setOnClickListener(new View.OnClickListener() {
@@ -159,20 +157,6 @@ public class OutLinesAdapter extends RecyclerView.Adapter implements NoteImageLi
     @Override
     public int getItemCount() {
         return mOutlines.size();
-    }
-
-    @Override
-    public void onNoteImageSuccess(String url) {
-        ImageView summaryImageView = mParentView.findViewWithTag(url);
-        if (summaryImageView != null) {
-            Bitmap bitmap = NoteImageLoader.with(mContext).getBitmap(url, summaryImageView.getWidth());
-            summaryImageView.setImageBitmap(bitmap);
-        }
-    }
-
-    @Override
-    public void onNoteImageFailed(String url, String err) {
-
     }
 
     private class ItemDateViewHolder extends RecyclerView.ViewHolder {

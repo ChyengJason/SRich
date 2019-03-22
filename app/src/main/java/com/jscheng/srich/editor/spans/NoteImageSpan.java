@@ -9,16 +9,18 @@ import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.text.style.AlignmentSpan;
 import android.text.style.ImageSpan;
+
 /**
  * Created By Chengjunsen on 2019/3/6
- * implements AlignmentSpan
  */
 public class NoteImageSpan extends ImageSpan implements AlignmentSpan, NoteClickSpan{
 
     private int margin = 30;
+    private int maxWidth;
 
-    public NoteImageSpan(Drawable drawable) {
+    public NoteImageSpan(Drawable drawable, int maxWidth) {
         super(drawable, ALIGN_BASELINE);
+        this.maxWidth = maxWidth;
     }
 
     @Override
@@ -41,23 +43,24 @@ public class NoteImageSpan extends ImageSpan implements AlignmentSpan, NoteClick
             fm.bottom = 0;
         }
 
-        return rect.right;
+        return Math.min(rect.right, maxWidth);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text,
                      @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x,
                      int top, int y, int bottom, @NonNull Paint paint) {
-        Drawable b = getDrawable();
+        Drawable d = getDrawable();
+        Rect rect = d.getBounds();
         canvas.save();
 
-        int transY = bottom - b.getBounds().bottom - margin;
+        int transY = bottom - rect.bottom - margin;
         if (mVerticalAlignment == ALIGN_BASELINE) {
             transY -= paint.getFontMetricsInt().descent;
         }
 
         canvas.translate(x, transY);
-        b.draw(canvas);
+        d.draw(canvas);
         canvas.restore();
     }
 }
