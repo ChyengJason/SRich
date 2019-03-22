@@ -59,20 +59,20 @@
 
 
 ##### 附上
-1、BackgroundColorSpan 背景色
-2、ForegroundColorSpan 文本颜色（前景色）
-3、RasterizerSpan 光栅效果
-4、StrikethroughSpan 删除线
-5、SuggestionSpan 相当于占位符
-6、UnderlineSpan 下划线
-7、AbsoluteSizeSpan 绝对大小（文本字体）
-8、DynamicDrawableSpan 设置图片，基于文本基线或底部对齐。
-9、ImageSpan 图片
-10、RelativeSizeSpan 相对大小（文本字体）
-11、ReplacementSpan 父类，一般不用
-12、URLSpan 文本超链接
-13、StyleSpan 字体样式
-14、SubscriptSpan 下标
-15、SuperscriptSpan 上标
-16、TextAppearanceSpan 文本外貌（包括字体、大小、样式和颜色）
-17、TypefaceSpan 文本字体
+1. BackgroundColorSpan 背景色
+2. ForegroundColorSpan 文本颜色（前景色）
+3. RasterizerSpan 光栅效果
+4. StrikethroughSpan 删除线
+5. SuggestionSpan 相当于占位符
+6. UnderlineSpan 下划线
+7. AbsoluteSizeSpan 绝对大小（文本字体）
+8. DynamicDrawableSpan 设置图片，基于文本基线或底部对齐。
+9. ImageSpan 图片
+10. RelativeSizeSpan 相对大小（文本字体）
+11. ReplacementSpan 父类，一般不用
+12. URLSpan 文本超链接
+13. StyleSpan 字体样式
+14. SubscriptSpan 下标
+15. SuperscriptSpan 上标
+16. TextAppearanceSpan 文本外貌（包括字体、大小、样式和颜色）
+17. TypefaceSpan 文本字体
