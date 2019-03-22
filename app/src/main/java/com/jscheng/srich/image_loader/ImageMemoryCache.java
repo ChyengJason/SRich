@@ -25,19 +25,19 @@ public class ImageMemoryCache {
         };
     }
 
-    public synchronized Bitmap get(String key) {
-        return mMemoryCache.get(key);
+    public synchronized Bitmap get(String key, int width) {
+        return mMemoryCache.get(key + width);
     }
 
-    public synchronized void remove(String key) {
-        mMemoryCache.remove(key);
+    public synchronized void remove(String key, int width) {
+        mMemoryCache.remove(key + width);
     }
 
-    public synchronized void put(String key, Bitmap bitmap) {
-        mMemoryCache.put(key, bitmap);
+    public synchronized void put(String key, int width, Bitmap bitmap) {
+        mMemoryCache.put(key + width, bitmap);
     }
 
-    public synchronized boolean isCache(String key) {
+    public synchronized boolean isCache(String key, int width) {
         return mMemoryCache.get(key) != null;
     }
 }

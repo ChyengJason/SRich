@@ -54,25 +54,17 @@ public class ImageLoader implements ImageFetcherCallback{
     public void load(String url, ImageView imageView) {
         String key = ImageKeyFactory.generateKey(url);
         ImageViewTarget mViewTarget = new ImageViewTarget(imageView, key, url);
-        Bitmap bitmap = mMemoryCache.get(key);
-        if (bitmap != null) {
+        if (mDiskCache.isCache(key)) {
             mViewTarget.onResourceReady(url, key);
             return;
         }
-        int maxWidth = mViewTarget.getMaxWidth();
-        if (maxWidth > 0) {
-            bitmap = mDiskCache.get(key, maxWidth);
-            if (bitmap != null) {
-                mViewTarget.onResourceReady(url, key);
-                return;
-            }
-        }
         mTargets.add(mViewTarget);
+        mFetcher.load(url, key);
     }
 
     public void load(String url) {
         String key = ImageKeyFactory.generateKey(url);
-        if (mMemoryCache.isCache(key) || mDiskCache.isCache(key)) {
+        if (mDiskCache.isCache(key)) {
             return;
         }
         mFetcher.load(url, key);
@@ -80,14 +72,14 @@ public class ImageLoader implements ImageFetcherCallback{
 
     public Bitmap get(String url, int maxWidth) {
         String key = ImageKeyFactory.generateKey(url);
-        Bitmap bitmap = mMemoryCache.get(key);
+        Bitmap bitmap = mMemoryCache.get(key, maxWidth);
         if (bitmap != null) {
             return bitmap;
         }
 
         bitmap = mDiskCache.get(key, maxWidth);
         if (bitmap != null) {
-            mMemoryCache.put(key, bitmap);
+            mMemoryCache.put(key, maxWidth, bitmap);
             return bitmap;
         }
 
@@ -97,13 +89,13 @@ public class ImageLoader implements ImageFetcherCallback{
 
     public Bitmap getCache(String url, int maxWidth) {
         String key = ImageKeyFactory.generateKey(url);
-        Bitmap bitmap = mMemoryCache.get(key);
+        Bitmap bitmap = mMemoryCache.get(key, maxWidth);
         if (bitmap != null) {
             return bitmap;
         }
         bitmap = mDiskCache.get(key, maxWidth);
         if (bitmap != null) {
-            mMemoryCache.put(key, bitmap);
+            mMemoryCache.put(key, maxWidth, bitmap);
             return bitmap;
         }
         return null;

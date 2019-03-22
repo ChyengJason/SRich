@@ -11,4 +11,7 @@ public class ImageKeyFactory {
         return MdUtil.encode(url);
     }
 
+    public static String generateKey(String url, int width) {
+        return MdUtil.encode(url + width);
+    }
 }

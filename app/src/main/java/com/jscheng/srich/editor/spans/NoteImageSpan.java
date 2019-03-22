@@ -2,6 +2,7 @@ package com.jscheng.srich.editor.spans;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -16,11 +17,9 @@ import android.text.style.ImageSpan;
 public class NoteImageSpan extends ImageSpan implements AlignmentSpan, NoteClickSpan{
 
     private int margin = 30;
-    private int maxWidth;
 
-    public NoteImageSpan(Drawable drawable, int maxWidth) {
+    public NoteImageSpan(BitmapDrawable drawable) {
         super(drawable, ALIGN_BASELINE);
-        this.maxWidth = maxWidth;
     }
 
     @Override
@@ -43,14 +42,14 @@ public class NoteImageSpan extends ImageSpan implements AlignmentSpan, NoteClick
             fm.bottom = 0;
         }
 
-        return Math.min(rect.right, maxWidth);
+        return rect.right;
     }
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text,
                      @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x,
                      int top, int y, int bottom, @NonNull Paint paint) {
-        Drawable d = getDrawable();
+        BitmapDrawable d = (BitmapDrawable)getDrawable();
         Rect rect = d.getBounds();
         canvas.save();
 

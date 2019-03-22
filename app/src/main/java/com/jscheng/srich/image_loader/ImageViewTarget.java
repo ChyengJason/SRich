@@ -15,10 +15,10 @@ public class ImageViewTarget implements ImageTarget {
     private String key;
 
     public ImageViewTarget(ImageView imageView, String key, String url) {
+        imageView.setTag(key);
         this.mImageView = new WeakReference(imageView) ;
         this.key = key;
         this.url = url;
-        imageView.setTag(key);
     }
 
     @Override
@@ -34,8 +34,8 @@ public class ImageViewTarget implements ImageTarget {
             observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    imageView.getViewTreeObserver().removeOnPreDrawListener(this);
                     setResource(url, key);
+                    imageView.getViewTreeObserver().removeOnPreDrawListener(this);
                     return false;
                 }
             });

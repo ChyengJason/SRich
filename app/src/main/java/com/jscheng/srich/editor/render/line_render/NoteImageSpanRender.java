@@ -1,6 +1,7 @@
 package com.jscheng.srich.editor.render.line_render;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -32,14 +33,16 @@ public class NoteImageSpanRender extends NoteLineSpanRender<NoteImageSpan> {
     protected NoteImageSpan createSpan(int num, int level, String url) {
         int width = mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
         Bitmap bitmap = ImageLoader.with(mView.getContext()).get(url, width);
-        Drawable drawable;
-        if (bitmap != null) {
-            drawable = new BitmapDrawable(mView.getResources(), bitmap);
-            drawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        } else {
-            drawable = mView.getResources().getDrawable(R.mipmap.ic_note_edit_loading);
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(mView.getResources(), R.mipmap.ic_note_edit_loading);
         }
-        return new NoteImageSpan(drawable, width);
+
+        int actualWidth = Math.min(width, bitmap.getWidth());
+        int actualHeight = (int) ((float) actualWidth / bitmap.getWidth() * bitmap.getHeight());
+
+        BitmapDrawable drawable = new BitmapDrawable(mView.getResources(), bitmap);
+        drawable.setBounds(0, 0, actualWidth, actualHeight);
+
+        return new NoteImageSpan(drawable);
     }
 }
